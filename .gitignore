@@ -1,0 +1,73 @@
+# Unity generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+
+# Asset meta data should be versioned
+!/[Aa]ssets/**/*.meta
+!/[Pp]ackages/**/*.meta
+!/[Pp]roject[Ss]ettings/**/*.meta
+
+# Auto-generated Visual Studio / JetBrains Rider files
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Rider
+.idea/
+*.sln.iml
+
+# Unity cache and generated IDE settings
+/[Aa]ssets/AssetStoreTools*
+/[Aa]ssets/Plugins/Editor/JetBrains*
+
+# Addressables
+/[Aa]ssets/AddressableAssetsData/*/*.bin*
+
+# iOS / Android generated files
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.ipa
+*.xcworkspace
+*.xcodeproj
+DerivedData/
+.gradle/
+
+# Crash reports
+sysinfo.txt
+
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs and profiler data
+*.log
+*.stackdump
+
+# Temporary package manager files
+.upm/
+
+# Uncomment if you use Burst output artifacts
+# /[Aa]ssets/BurstDebugInformation_DoNotShip/
+# /[Aa]ssets/StreamingAssets/aa.meta
+# /[Aa]ssets/StreamingAssets/aa/
