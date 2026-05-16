@@ -59,7 +59,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 0,
             gameTitle = "Cipher Rush",
-            description = "Falling symbols drop from above, and your task is to quickly click the ones that match the target symbol. Each correct click gives you +10 points, while clicking the wrong symbol or missing the correct one costs you -5 points.",
+            description = "Falling symbols drop from above, and your task is to quickly react to the target symbol. If the target is white, click matching symbols for +10 points, while wrong clicks or missed matches cost -5. If the target turns red, do not click matching symbols; clicking them at this time costs -5, while letting them go gives +10. Clicking a matching symbol or letting it fall always updates the target symbol.",
             cognitiveSkills = "Attention + Perception",
             sceneName = "Minigame1"
         };
@@ -67,10 +67,10 @@ public class MinigameDataStore : MonoBehaviour
         minigames[1] = new GameData
         {
             id = 1,
-            gameTitle = "Hue Hunt",
-            description = "Two color-based categories will appear dynamically during gameplay. Each mole belongs to one of these categories, determined by its color. Your task is to quickly identify the correct category and whack only the matching moles while ignoring the rest. As the categories keep shifting, you’ll need sharp attention and fast reflexes to stay accurate under pressure.",
+            gameTitle = "Match-a-Mole",
+            description = "A single mole appears at one of nine possible locations. Before each rise, the target can be one of the two mole types or a bomb symbol. Click the mole for +10 points when its type matches the target image, lose -10 for clicking the wrong type, and if the target is a bomb, clicking any mole gives -10.",
             cognitiveSkills = "Reflex + Attention",
-            sceneName = "MemoryScene"
+            sceneName = "Minigame2"
         };
     }
 

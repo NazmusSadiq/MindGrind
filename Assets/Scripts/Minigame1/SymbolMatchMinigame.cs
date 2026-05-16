@@ -27,6 +27,7 @@ public class SymbolMatchMinigame : MonoBehaviour
     [Header("Symbols")]
     [SerializeField] private SymbolEntry[] symbols;
     [SerializeField, Range(0f, 1f)] private float targetSpawnChance = 0.35f;
+    [SerializeField, Range(0f, 1f)] private float redTargetChance = 0.2f;
 
     [Header("Gameplay")]
     [SerializeField] private float gameDuration = 45f;
@@ -38,6 +39,8 @@ public class SymbolMatchMinigame : MonoBehaviour
     private int score;
     private float timeRemaining;
     private bool isGameRunning;
+    private bool isCurrentTargetRed;
+    private bool wasPreviousTargetRed;
     private Coroutine spawnRoutine;
 
     private void Start()
@@ -170,7 +173,10 @@ public class SymbolMatchMinigame : MonoBehaviour
     private void PickNextTarget()
     {
         currentTargetIndex = Random.Range(0, symbols.Length);
+        isCurrentTargetRed = !wasPreviousTargetRed && Random.value <= redTargetChance;
+        wasPreviousTargetRed = isCurrentTargetRed;
         targetSymbolImage.sprite = symbols[currentTargetIndex].sprite;
+        targetSymbolImage.color = isCurrentTargetRed ? Color.red : Color.white;
         targetSymbolImage.SetNativeSize();
     }
 
@@ -200,8 +206,16 @@ public class SymbolMatchMinigame : MonoBehaviour
 
         if (fallingObject.SymbolIndex == currentTargetIndex)
         {
-            score += 10;
-            PickNextTarget();
+            if (isCurrentTargetRed)
+            {
+                score -= 5;
+                PickNextTarget();
+            }
+            else
+            {
+                score += 10;
+                PickNextTarget();
+            }
         }
         else
         {
@@ -222,7 +236,7 @@ public class SymbolMatchMinigame : MonoBehaviour
 
         if (fallingObject.SymbolIndex == currentTargetIndex)
         {
-            score -= 5;
+            score += isCurrentTargetRed ? 10 : -5;
             UpdateScoreUI();
             PickNextTarget();
         }

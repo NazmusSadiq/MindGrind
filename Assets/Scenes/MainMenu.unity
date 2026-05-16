@@ -1579,11 +1579,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 967626829185620757, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_Name
-      value: Hue Hunt Card
+      value: Match-a-Mole Card
       objectReference: {fileID: 0}
     - target: {fileID: 1852566566131942542, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_text
-      value: Hue Hunt
+      value: Match-a-Mole
       objectReference: {fileID: 0}
     - target: {fileID: 1852566566131942542, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_fontSize
