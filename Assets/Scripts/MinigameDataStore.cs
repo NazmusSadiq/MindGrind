@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -53,7 +53,7 @@ public class MinigameDataStore : MonoBehaviour
 
     private void InitializeData()
     {
-        minigames = new GameData[2];
+        minigames = new GameData[3];
 
         minigames[0] = new GameData
         {
@@ -71,6 +71,15 @@ public class MinigameDataStore : MonoBehaviour
             description = "A single mole appears at one of nine possible locations. Before each rise, the target can be one of the two mole types or a bomb symbol. Click the mole for +10 points when its type matches the target image, lose -10 for clicking the wrong type, and if the target is a bomb, clicking any mole gives -10.",
             cognitiveSkills = "Reflex + Attention",
             sceneName = "Minigame2"
+        };
+
+        minigames[2] = new GameData
+        {
+            id = 2,
+            gameTitle = "Good Guy, Bad Guy",
+            description = "Before each round, you see two rows showing good guys and bad guys for a short time. Then these 8 guys appear on a board. Your task is to click only on the bad guys before the timer expires; each correct click adds 10 points, and each wrong click deducts 10 points. The game ends after 5 rounds",
+            cognitiveSkills = "Memory + Attention",
+            sceneName = "Minigame3"
         };
     }
 

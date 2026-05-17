@@ -2206,11 +2206,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 967626829185620757, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_Name
-      value: Hue Hunt Card (1)
+      value: Good Guy, Bad Guy Card
       objectReference: {fileID: 0}
     - target: {fileID: 1852566566131942542, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_text
-      value: Hue Hunt
+      value: Good Guy, Bad Guy
       objectReference: {fileID: 0}
     - target: {fileID: 1852566566131942542, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_fontSize
@@ -2218,7 +2218,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2894099207623160507, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_text
-      value: Attention + Reflex
+      value: Memory + Attention
       objectReference: {fileID: 0}
     - target: {fileID: 2894099207623160507, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_fontSize
@@ -2290,7 +2290,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4185835046525535972, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4185835046525535972, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_BoolArgument
@@ -2931,7 +2931,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4185835046525535972, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4185835046525535972, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_BoolArgument
@@ -3981,7 +3981,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4185835046525535972, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4185835046525535972, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_BoolArgument
@@ -4556,7 +4556,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4185835046525535972, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4185835046525535972, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_BoolArgument
