@@ -53,7 +53,7 @@ public class MinigameDataStore : MonoBehaviour
 
     private void InitializeData()
     {
-        minigames = new GameData[3];
+        minigames = new GameData[15];
 
         minigames[0] = new GameData
         {
@@ -80,6 +80,15 @@ public class MinigameDataStore : MonoBehaviour
             description = "Before each round, you see two rows showing good guys and bad guys for a short time. Then these 8 guys appear on a board. Your task is to click only on the bad guys before the timer expires; each correct click adds 10 points, and each wrong click deducts 10 points. The game ends after 5 rounds",
             cognitiveSkills = "Memory + Attention",
             sceneName = "Minigame3"
+        };
+
+        minigames[14] = new GameData
+        {
+            id = 14,
+            gameTitle = "Word Game",
+            description = "You are shown the first 3 letters of a word and must complete it using a valid dictionary word. Each correct word gives points equal to its full length (min 5 letters, max 10 letters), and no word can be repeated. A new random prefix appears immediately after every correct answer. You can also skip the current prefix to move to a new one, but doing so deducts 3 points.",
+            cognitiveSkills = "Learning",
+            sceneName = "Minigame15"
         };
     }
 

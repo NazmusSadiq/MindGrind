@@ -1,37 +1,70 @@
-using UnityEngine;
-using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
 
 public class square_gen : MonoBehaviour
 {
-    public float x_pos = 0, y_pos = 10;
-    public float x_spacing = 50;
-    public GameObject Square;
-    public string[] words = new string[5] { "Circle", "Square", "Triangle", "Rectangle", "Cube" };
-
     private const int RevealedLetterCount = 3;
+    private const int MaxWordLength = 10;
+
+    [Header("References")]
+    [SerializeField] private GameObject[] squares;
+    [SerializeField] private TMP_Text messageText;
+    [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private TMP_Text timeRemainingText;
+    [SerializeField] private MinigameBestScoreStore bestScoreStore;
+
+    [Header("Dictionary")]
+    [SerializeField] private TextAsset wordDictionaryFile;
+    private string currentPrefix;
+
+    private readonly Dictionary<string, List<string>> wordGroups =
+        new Dictionary<string, List<string>>();
+
+    private readonly List<string> availablePrefixes =
+        new List<string>();
+
+    [Header("Gameplay")]
+    [SerializeField] private float gameDuration = 60f;
+    [SerializeField] private Color activeSquareColor = new Color(1f, 0.9f, 0.35f);
+
+    private readonly List<string> remainingWords = new List<string>();
 
     private string target;
     private char[] enteredLetters;
     private TMP_Text[] squareTexts;
     private Image[] squareImages;
-    private TMP_Text messageText;
+    private Color[] defaultSquareColors;
     private int activeIndex = -1;
+    private int score;
+    private float timeRemaining;
+    private bool isGameRunning;
+    private Coroutine messageRoutine;
+    private Color defaultMessageColor = Color.white;
 #if ENABLE_INPUT_SYSTEM
     private Keyboard subscribedKeyboard;
 #endif
 
 #if ENABLE_INPUT_SYSTEM
-    void OnEnable()
+    private void OnEnable()
     {
         SubscribeKeyboard();
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
+        if (messageRoutine != null)
+        {
+            StopCoroutine(messageRoutine);
+            messageRoutine = null;
+        }
+
         if (subscribedKeyboard != null)
         {
             subscribedKeyboard.onTextInput -= HandleTextInput;
@@ -40,101 +73,72 @@ public class square_gen : MonoBehaviour
     }
 #endif
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        if (Square == null)
+#if !ENABLE_INPUT_SYSTEM
+        Debug.LogError("square_gen requires the Input System package.", this);
+        enabled = false;
+        return;
+#endif
+        LoadDictionary();
+
+        if (!HasValidSetup())
         {
-            Debug.LogWarning("square_gen needs a Square prefab assigned.", this);
+            enabled = false;
             return;
         }
 
-        target = words[Random.Range(0, words.Length)];
+        remainingWords.Clear();
+        remainingWords.AddRange(BuildUniqueWordList());
 
-        int n = target.Length;
-        enteredLetters = new char[n];
-        squareTexts = new TMP_Text[n];
-        squareImages = new Image[n];
+        score = 0;
+        timeRemaining = gameDuration;
+        isGameRunning = true;
 
-        for (int i = 0; i < n; i++)
+        if (messageText != null)
         {
-            GameObject square = Instantiate(Square, transform);
-            square.transform.SetAsLastSibling();
-            square.name = "Square " + (i + 1);
-
-            RectTransform squareRect = square.GetComponent<RectTransform>();
-            if (squareRect != null)
-            {
-                float squareWidth = squareRect.sizeDelta.x;
-                float xOffset = i * (squareWidth + x_spacing);
-
-                squareRect.anchoredPosition = new Vector2(x_pos + xOffset, y_pos);
-                squareRect.localRotation = Quaternion.identity;
-                squareRect.localScale = Vector3.one;
-            }
-
-            squareImages[i] = MakeVisibleOnCanvas(square);
-            squareTexts[i] = CreateLetterText(square.transform);
-
-            if (i < RevealedLetterCount)
-            {
-                enteredLetters[i] = target[i];
-                squareTexts[i].text = target[i].ToString();
-            }
-
-            int squareIndex = i;
-            Button button = square.GetComponent<Button>();
-            if (button == null)
-            {
-                button = square.AddComponent<Button>();
-            }
-
-            button.targetGraphic = squareImages[i];
-            button.onClick.AddListener(() => TryActivateSquare(squareIndex));
+            defaultMessageColor = messageText.color;
         }
 
-        CreateMessageText();
-        SetActiveSquare(Mathf.Min(RevealedLetterCount, n - 1));
+        UpdateScoreUI();
+        UpdateTimerUI();
+        SetMessage(string.Empty);
+
+        if (!LoadNextWord())
+        {
+            EndGame();
+        }
     }
 
-    void Update()
+    private void Update()
     {
+        if (!isGameRunning)
+        {
+            return;
+        }
+
 #if ENABLE_INPUT_SYSTEM
         SubscribeKeyboard();
 
         Keyboard keyboard = Keyboard.current;
+        if (keyboard != null && keyboard.backspaceKey.wasPressedThisFrame)
+        {
+            HandleBackspace();
+        }
+
         if (keyboard != null && (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame))
         {
             ValidateAnswer();
         }
-#elif ENABLE_LEGACY_INPUT_MANAGER
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-        {
-            ValidateAnswer();
-            return;
-        }
-
-        if (activeIndex < 0)
-        {
-            return;
-        }
-
-        foreach (char typedCharacter in Input.inputString)
-        {
-            if (typedCharacter == '\b' || typedCharacter == '\n' || typedCharacter == '\r')
-            {
-                continue;
-            }
-
-            if (!char.IsLetter(typedCharacter))
-            {
-                continue;
-            }
-
-            EnterLetter(typedCharacter);
-            break;
-        }
 #endif
+
+        timeRemaining -= Time.deltaTime;
+        UpdateTimerUI();
+
+        if (timeRemaining <= 0f)
+        {
+            EndGame();
+        }
     }
 
 #if ENABLE_INPUT_SYSTEM
@@ -156,7 +160,7 @@ public class square_gen : MonoBehaviour
 
     private void HandleTextInput(char typedCharacter)
     {
-        if (activeIndex < 0 || typedCharacter == '\n' || typedCharacter == '\r' || !char.IsLetter(typedCharacter))
+        if (!isGameRunning || activeIndex < 0 || typedCharacter == '\n' || typedCharacter == '\r' || !char.IsLetter(typedCharacter))
         {
             return;
         }
@@ -165,122 +169,382 @@ public class square_gen : MonoBehaviour
     }
 #endif
 
-    private Image MakeVisibleOnCanvas(GameObject square)
+    private void LoadDictionary()
     {
-        SpriteRenderer spriteRenderer = square.GetComponent<SpriteRenderer>();
-        Image image = square.GetComponent<Image>();
+        wordGroups.Clear();
+        availablePrefixes.Clear();
 
-        if (image == null)
+        if (wordDictionaryFile == null)
         {
-            image = square.AddComponent<Image>();
-        }
-
-        if (spriteRenderer != null)
-        {
-            image.sprite = spriteRenderer.sprite;
-            image.color = spriteRenderer.color;
-            spriteRenderer.enabled = false;
-        }
-
-        image.raycastTarget = true;
-        return image;
-    }
-
-    private TMP_Text CreateLetterText(Transform square)
-    {
-        GameObject textObject = new GameObject("Letter");
-        textObject.layer = square.gameObject.layer;
-        textObject.transform.SetParent(square, false);
-
-        RectTransform textRect = textObject.AddComponent<RectTransform>();
-        textRect.anchorMin = Vector2.zero;
-        textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = Vector2.zero;
-        textRect.offsetMax = Vector2.zero;
-
-        TMP_Text text = textObject.AddComponent<TextMeshProUGUI>();
-        text.alignment = TextAlignmentOptions.Center;
-        text.color = Color.black;
-        text.fontSize = 48;
-        text.text = "";
-        text.raycastTarget = false;
-
-        return text;
-    }
-
-    private void CreateMessageText()
-    {
-        GameObject textObject = new GameObject("Result Message");
-        textObject.layer = gameObject.layer;
-        textObject.transform.SetParent(transform, false);
-
-        RectTransform textRect = textObject.AddComponent<RectTransform>();
-        textRect.anchorMin = new Vector2(0.5f, 0.5f);
-        textRect.anchorMax = new Vector2(0.5f, 0.5f);
-        textRect.pivot = new Vector2(0.5f, 0.5f);
-        textRect.anchoredPosition = new Vector2(x_pos + 200, y_pos - 120);
-        textRect.sizeDelta = new Vector2(500, 80);
-
-        messageText = textObject.AddComponent<TextMeshProUGUI>();
-        messageText.alignment = TextAlignmentOptions.Center;
-        messageText.color = Color.black;
-        messageText.fontSize = 36;
-        messageText.text = "";
-        messageText.raycastTarget = false;
-    }
-
-    private void TryActivateSquare(int index)
-    {
-        if (index < RevealedLetterCount || index >= enteredLetters.Length)
-        {
+            Debug.LogError("Dictionary file missing.");
             return;
         }
 
-        if (index > RevealedLetterCount && enteredLetters[index - 1] == '\0')
+        string[] lines = wordDictionaryFile.text.Split('\n');
+
+        string currentPrefix = null;
+
+        for (int i = 0; i < lines.Length; i++)
         {
-            return;
+            string line = lines[i].Trim().ToLower();
+
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            if (line.Length == 3)
+            {
+                currentPrefix = line;
+
+                if (!wordGroups.ContainsKey(currentPrefix))
+                {
+                    wordGroups[currentPrefix] = new List<string>();
+                    availablePrefixes.Add(currentPrefix);
+                }
+            }
+            else
+            {
+                if (currentPrefix == null)
+                {
+                    continue;
+                }
+
+                if (line.Length >= 5 && line.Length <= 10)
+                {
+                    wordGroups[currentPrefix].Add(line);
+                }
+            }
+        }
+    }
+
+    private bool HasValidSetup()
+    {
+        bool hasSquares = squares != null && squares.Length > 0;
+        bool hasReferences = scoreText != null && timeRemainingText != null && bestScoreStore != null;
+
+        if (!hasSquares || !hasReferences)
+        {
+            Debug.LogError("square_gen is missing required references.", this);
+            return false;
         }
 
-        SetActiveSquare(index);
+        List<string> uniqueWords = BuildUniqueWordList();
+        if (uniqueWords.Count == 0)
+        {
+            Debug.LogError("square_gen needs at least one unique word longer than three letters.", this);
+            return false;
+        }
+
+        int longestWordLength = 0;
+        for (int i = 0; i < uniqueWords.Count; i++)
+        {
+            if (uniqueWords[i].Length > longestWordLength)
+            {
+                longestWordLength = uniqueWords[i].Length;
+            }
+        }
+
+        if (longestWordLength > squares.Length)
+        {
+            Debug.LogError("square_gen needs enough assigned square objects for the longest word.", this);
+            return false;
+        }
+
+        squareTexts = new TMP_Text[squares.Length];
+        squareImages = new Image[squares.Length];
+        defaultSquareColors = new Color[squares.Length];
+
+        for (int i = 0; i < squares.Length; i++)
+        {
+            if (squares[i] == null)
+            {
+                Debug.LogError("Every square slot must be assigned in square_gen.", this);
+                return false;
+            }
+
+            squareTexts[i] = squares[i].GetComponentInChildren<TMP_Text>(true);
+            squareImages[i] = squares[i].GetComponent<Image>();
+            if (squareImages[i] == null)
+            {
+                squareImages[i] = squares[i].GetComponentInChildren<Image>(true);
+            }
+
+            if (squareTexts[i] == null || squareImages[i] == null)
+            {
+                Debug.LogError("Each square needs an Image and a child TMP_Text.", squares[i]);
+                return false;
+            }
+
+            defaultSquareColors[i] = squareImages[i].color;
+            squares[i].SetActive(false);
+        }
+
+        return true;
+    }
+
+    private List<string> BuildUniqueWordList()
+    {
+        List<string> result = new List<string>();
+
+        if (availablePrefixes.Count == 0)
+        {
+            return result;
+        }
+
+        currentPrefix =
+            availablePrefixes[Random.Range(0, availablePrefixes.Count)];
+
+        HashSet<string> uniqueWords =
+            new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+
+        foreach (string word in wordGroups[currentPrefix])
+        {
+            if (uniqueWords.Add(word))
+            {
+                result.Add(word);
+            }
+        }
+
+        return result;
+    }
+
+    private bool LoadNextWord()
+    {
+        remainingWords.Clear();
+        remainingWords.AddRange(BuildUniqueWordList());
+
+        if (remainingWords.Count == 0)
+        {
+            return false;
+        }
+
+        int displayLength = MaxWordLength;
+
+        enteredLetters = new char[displayLength];
+
+        for (int i = 0; i < squares.Length; i++)
+        {
+            bool shouldShowSquare = i < displayLength;
+            squares[i].SetActive(shouldShowSquare);
+
+            if (!shouldShowSquare)
+            {
+                continue;
+            }
+
+            bool isRevealedLetter = i < RevealedLetterCount;
+
+            if (isRevealedLetter)
+            {
+                enteredLetters[i] = currentPrefix[i];
+                squareTexts[i].text = currentPrefix[i].ToString();
+            }
+            else
+            {
+                enteredLetters[i] = '\0';
+                squareTexts[i].text = string.Empty;
+            }
+
+            squareImages[i].color = defaultSquareColors[i];
+        }
+
+        SetActiveSquare(RevealedLetterCount);
+
+        return true;
     }
 
     private void SetActiveSquare(int index)
     {
-        activeIndex = index >= RevealedLetterCount && index < enteredLetters.Length ? index : -1;
+        activeIndex = enteredLetters != null && index >= RevealedLetterCount && index < enteredLetters.Length && index < MaxWordLength ? index : -1;
 
         for (int i = 0; i < squareImages.Length; i++)
         {
-            squareImages[i].color = i == activeIndex ? new Color(1f, 0.9f, 0.35f) : Color.white;
+            if (squareImages[i] == null)
+            {
+                continue;
+            }
+
+            squareImages[i].color = i == activeIndex ? activeSquareColor : defaultSquareColors[i];
         }
     }
 
     private void EnterLetter(char letter)
     {
+        if (activeIndex < 0 || enteredLetters == null || activeIndex >= enteredLetters.Length || activeIndex >= MaxWordLength)
+        {
+            return;
+        }
+
         enteredLetters[activeIndex] = letter;
         squareTexts[activeIndex].text = letter.ToString();
 
         int nextIndex = activeIndex + 1;
-        if (nextIndex < enteredLetters.Length)
+        SetActiveSquare(nextIndex < enteredLetters.Length ? nextIndex : -1);
+    }
+
+    private void HandleBackspace()
+    {
+        if (!isGameRunning || enteredLetters == null)
         {
-            SetActiveSquare(nextIndex);
+            return;
         }
-        else
+
+        for (int i = Mathf.Min(enteredLetters.Length, MaxWordLength) - 1; i >= RevealedLetterCount; i--)
         {
-            SetActiveSquare(-1);
+            if (enteredLetters[i] == '\0')
+            {
+                continue;
+            }
+
+            enteredLetters[i] = '\0';
+            squareTexts[i].text = string.Empty;
+            SetActiveSquare(i);
+            return;
         }
+    }
+
+    private void ResetPlayerInput()
+    {
+        if (enteredLetters == null)
+        {
+            return;
+        }
+
+        for (int i = RevealedLetterCount; i < enteredLetters.Length; i++)
+        {
+            enteredLetters[i] = '\0';
+            squareTexts[i].text = string.Empty;
+        }
+
+        SetActiveSquare(RevealedLetterCount);
     }
 
     private void ValidateAnswer()
     {
-        string enteredWord = new string(enteredLetters);
+        if (!isGameRunning || enteredLetters == null)
+        {
+            return;
+        }
 
-        if (enteredWord.Equals(target, System.StringComparison.OrdinalIgnoreCase))
+        string enteredWord =
+            new string(enteredLetters)
+            .Replace("\0", "")
+            .ToLower();
+
+        bool isValid =
+            remainingWords.Contains(enteredWord);
+
+        if (!isValid)
         {
-            messageText.text = "Correct!";
+            ResetPlayerInput();
+            ShowTemporaryMessage("Try again", Color.red);
+            return;
         }
-        else
+
+        score += enteredWord.Length;
+
+        UpdateScoreUI();
+
+        ShowTemporaryMessage("Success", Color.green);
+
+        if (!LoadNextWord())
         {
-            messageText.text = "Try again";
+            EndGame();
         }
+    }
+
+    private void UpdateScoreUI()
+    {
+        scoreText.text = $"Score: {score}";
+    }
+
+    private void UpdateTimerUI()
+    {
+        int secondsLeft = Mathf.CeilToInt(Mathf.Max(0f, timeRemaining));
+        timeRemainingText.text = secondsLeft.ToString();
+    }
+
+    private void SetMessage(string message)
+    {
+        if (messageText != null)
+        {
+            messageText.color = defaultMessageColor;
+            messageText.text = message;
+        }
+    }
+
+    private void ShowTemporaryMessage(string message, Color color)
+    {
+        if (messageText == null)
+        {
+            return;
+        }
+
+        if (messageRoutine != null)
+        {
+            StopCoroutine(messageRoutine);
+        }
+
+        messageRoutine = StartCoroutine(ClearMessageAfterDelay(message, color));
+    }
+
+    private IEnumerator ClearMessageAfterDelay(string message, Color color)
+    {
+        messageText.color = color;
+        messageText.text = message;
+        yield return new WaitForSeconds(2f);
+        SetMessage(string.Empty);
+        messageRoutine = null;
+    }
+
+    public void SkipWord()
+    {
+        if (!isGameRunning || enteredLetters == null)
+        {
+            return;
+        }
+
+        score = Mathf.Max(0, score - 3);
+        UpdateScoreUI();
+
+        ShowTemporaryMessage("Skipped", Color.yellow);
+
+        ResetPlayerInput();
+
+        if (!LoadNextWord())
+        {
+            EndGame();
+        }
+    }
+
+    private void EndGame()
+    {
+        if (!isGameRunning)
+        {
+            return;
+        }
+
+        if (squares != null)
+        {
+            for (int i = 0; i < squares.Length; i++)
+            {
+                if (squares[i] != null)
+                {
+                    squares[i].SetActive(false);
+                }
+            }
+        }
+
+        isGameRunning = false;
+        timeRemaining = 0f;
+        UpdateTimerUI();
+        SetActiveSquare(-1);
+
+        string minigameId = SceneManager.GetActiveScene().name;
+        int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
+
+        bestScoreStore.ShowStats(score, bestScore);
+        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }
