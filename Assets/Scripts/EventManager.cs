@@ -38,8 +38,6 @@ public class MainMenu : MonoBehaviour
 
     public void processNext()
     {
-        Time.timeScale = 1f;
-
         if (isStoryMode)
         {
             Debug.Log("Process next from story mode.");
@@ -48,6 +46,12 @@ public class MainMenu : MonoBehaviour
 
         SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneLoaded += OnSceneLoaded;
+        LoadMainMenu();
+    }
+
+    public void LoadMainMenu()
+    {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(MainMenuSceneName);
     }
 

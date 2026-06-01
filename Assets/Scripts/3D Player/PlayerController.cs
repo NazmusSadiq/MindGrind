@@ -7,6 +7,17 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     public bool IsDead => currentState == PlayerState.Dead;
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => maxHealth;
+    public float HealthNormalized => maxHealth > 0 ? Mathf.Clamp01((float)currentHealth / maxHealth) : 0f;
+
+    public enum ControlDirection
+    {
+        Up,
+        Right,
+        Down,
+        Left
+    }
 
     private enum PlayerState
     {
@@ -26,6 +37,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float sprintMultiplier = 2f;
     [SerializeField] private float rotationSpeed = 12f;
+    [SerializeField] private ControlDirection controlDirection = ControlDirection.Up;
 
     // ================= INTERACTION =================
     [Header("Interaction")]
@@ -47,6 +59,10 @@ public class PlayerController : MonoBehaviour
     // ================= ANIMATION =================
     [Header("Animation")]
     [SerializeField] private Animator animator;
+
+    [Header("UI")]
+    [SerializeField] private GameObject gameOverMenu;
+    [SerializeField] private float deathMenuDelay = 3f;
 
     [SerializeField] private string moveSpeedParam = "MoveSpeed";
     [SerializeField] private string isMovingParam = "IsMoving";
@@ -137,6 +153,7 @@ public class PlayerController : MonoBehaviour
         if (IsLocked()) return;
 
         Vector2 input = moveAction.ReadValue<Vector2>();
+        input = RemapMovementInput(input);
         bool sprint = sprintAction.ReadValue<float>() > 0.1f;
 
         Vector3 move = new Vector3(-input.y, 0f, input.x);
@@ -160,6 +177,39 @@ public class PlayerController : MonoBehaviour
         {
             if (!IsLocked())
                 currentState = PlayerState.Idle;
+        }
+    }
+
+    public void SetControlDirection(ControlDirection direction)
+    {
+        controlDirection = direction;
+    }
+
+    public void ShowGameOverMenu()
+    {
+        if (playerInput != null)
+            playerInput.DeactivateInput();
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        Time.timeScale = 0f;
+
+        if (gameOverMenu != null)
+            gameOverMenu.SetActive(true);
+    }
+
+    private Vector2 RemapMovementInput(Vector2 input)
+    {
+        switch (controlDirection)
+        {
+            case ControlDirection.Right:
+                return new Vector2(-input.y, input.x);
+            case ControlDirection.Down:
+                return -input;
+            case ControlDirection.Left:
+                return new Vector2(input.y, -input.x);
+            default:
+                return input;
         }
     }
 
@@ -291,7 +341,16 @@ public class PlayerController : MonoBehaviour
         if (currentHealth <= 0)
             Die();
         else
+        {
+            if (animator != null)
+            {
+                animator.SetBool(attackBoolParam, false);
+                animator.SetBool(isBlockingParam, false);
+                animator.SetBool(hitBoolParam, true);
+            }
+
             TakeHit();
+        }
     }
 
     public bool TryBlockAttack(Vector3 attackerPosition)
@@ -321,6 +380,15 @@ public class PlayerController : MonoBehaviour
             animator.SetBool(hitBoolParam, false);
             animator.SetBool(deathBoolParam, true);
         }
+
+        if (gameOverMenu != null)
+            StartCoroutine(ShowGameOverMenuAfterDelay());
+    }
+
+    private IEnumerator ShowGameOverMenuAfterDelay()
+    {
+        yield return new WaitForSeconds(deathMenuDelay);
+        ShowGameOverMenu();
     }
 
     private void TakeHit()
@@ -328,20 +396,14 @@ public class PlayerController : MonoBehaviour
         StopAllCoroutines();
         attackDamageApplied = false;
         forcedFaceTimer = 0f;
+
+        currentState = PlayerState.Hit;
+
         hitCoroutine = StartCoroutine(HitRoutine());
     }
 
     private IEnumerator HitRoutine()
     {
-        currentState = PlayerState.Hit;
-
-        if (animator != null)
-        {
-            animator.SetBool(attackBoolParam, false);
-            animator.SetBool(isBlockingParam, false);
-            animator.SetBool(hitBoolParam, true);
-        }
-
         yield return new WaitForSeconds(hitDuration);
 
         if (animator != null)
