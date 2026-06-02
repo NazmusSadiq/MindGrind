@@ -39,9 +39,9 @@ public class MinigameBestScoreStore : MonoBehaviour
 
         Time.timeScale = 0f;
 
-        if (gameTitleText != null && MinigameDataStore.Instance != null)
+        if (gameTitleText != null)
         {
-            gameTitleText.text = MinigameDataStore.Instance.GetCurrentGame().gameTitle;
+            gameTitleText.text = MinigameDataStore.GetCurrentGame().gameTitle;
         }
 
         if (currentScoreText != null)

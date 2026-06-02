@@ -1,13 +1,32 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class MainMenu : MonoBehaviour
 {
     private const string MainMenuSceneName = "MainMenu";
+    private const string StartSceneName = "Level1";
     private const string MiniGamesButtonName = "MiniGames_Button";
+    private const string StoryModeTitleObjectName = "Title";
+    private const string StoryModeDescriptionObjectName = "Description";
+    private const string StoryModeAttributesObjectName = "Attributes";
+    private const string StoryModeBestScoreObjectName = "BestScore";
+
+    [SerializeField] private string storyModeNextSceneName = "Level1";
+    [SerializeField] private GameObject storyModeDetailsPanel;
+
+    private TMP_Text storyModeTitleText;
+    private TMP_Text storyModeDescriptionText;
+    private TMP_Text storyModeAttributesText;
+    private TMP_Text storyModeHighestScoreText;
 
     private static bool isStoryMode;
+
+    private void Awake()
+    {
+        CacheStoryModeDetailsReferences();
+    }
 
     public void QuitGame()
     {
@@ -25,8 +44,15 @@ public class MainMenu : MonoBehaviour
     {
         Time.timeScale = 1f;
 
+        MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
+        if (string.IsNullOrWhiteSpace(currentGame.sceneName))
+        {
+            Debug.LogWarning("Current minigame scene name is not set.", this);
+            return;
+        }
+
         SceneManager.LoadScene(
-            MinigameDataStore.Instance.GetCurrentGame().sceneName
+            currentGame.sceneName
         );
     }
 
@@ -36,11 +62,24 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    public void StartGame()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(StartSceneName);
+    }
+
     public void processNext()
     {
         if (isStoryMode)
         {
-            Debug.Log("Process next from story mode.");
+            if (string.IsNullOrWhiteSpace(storyModeNextSceneName))
+            {
+                Debug.LogWarning("Story mode next scene name is not set.", this);
+                return;
+            }
+
+            SceneManager.LoadScene(storyModeNextSceneName);
+            PauseGameAndShowDetailsPanel();
             return;
         }
 
@@ -51,8 +90,150 @@ public class MainMenu : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        Time.timeScale = 1f;
         SceneManager.LoadScene(MainMenuSceneName);
+        Time.timeScale = 1f;
+    }
+
+    public static void PauseGameAndShowDetailsPanel()
+    {
+        if (!isStoryMode)
+        {
+            return;
+        }
+
+        SceneManager.sceneLoaded -= OnStoryModeSceneLoaded;
+        SceneManager.sceneLoaded += OnStoryModeSceneLoaded;
+    }
+
+    public void HideDetailsPanelAndResumeGame()
+    {
+        if (storyModeDetailsPanel == null)
+        {
+            Debug.LogWarning("Story mode details panel is not assigned.", this);
+            Time.timeScale = 1f;
+            return;
+        }
+
+        storyModeDetailsPanel.SetActive(false);
+        Time.timeScale = 1f;
+    }
+
+    private void ShowDetailsPanelAndPauseGame()
+    {
+        if (storyModeDetailsPanel == null)
+        {
+            Debug.LogWarning("Story mode details panel is not assigned.", this);
+            Time.timeScale = 1f;
+            return;
+        }
+
+        UpdateDescription(GetCurrentLevelId());
+        storyModeDetailsPanel.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void UpdateDescription(int levelId)
+    {
+        MinigameDataStore.GameData gameData;
+        if (!MinigameDataStore.TryGetGameData(levelId, out gameData)
+            && !MinigameDataStore.TryGetGameDataBySceneName(SceneManager.GetActiveScene().name, out gameData))
+        {
+            Debug.LogWarning($"Could not find minigame details for level id '{levelId}'.", this);
+            return;
+        }
+
+        MinigameDataStore.SetCurrentGame(gameData);
+        CacheStoryModeDetailsReferences();
+
+        if (storyModeTitleText != null)
+        {
+            storyModeTitleText.text = gameData.gameTitle;
+        }
+
+        if (storyModeDescriptionText != null)
+        {
+            storyModeDescriptionText.text = gameData.description;
+        }
+
+        if (storyModeAttributesText != null)
+        {
+            storyModeAttributesText.text = gameData.cognitiveSkills;
+        }
+
+        if (storyModeHighestScoreText != null)
+        {
+            int highestScore = MinigameBestScoreStore.GetBestScore(gameData.sceneName);
+            storyModeHighestScoreText.text = $"Highest Score: {highestScore}";
+        }
+    }
+
+    private int GetCurrentLevelId()
+    {
+        MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
+        string activeSceneName = SceneManager.GetActiveScene().name;
+
+        if (!string.IsNullOrWhiteSpace(currentGame.sceneName) && currentGame.sceneName == activeSceneName)
+        {
+            return currentGame.id;
+        }
+
+        if (MinigameDataStore.TryGetGameDataBySceneName(activeSceneName, out MinigameDataStore.GameData sceneGame))
+        {
+            return sceneGame.id;
+        }
+
+        return currentGame.id;
+    }
+
+    private void CacheStoryModeDetailsReferences()
+    {
+        if (storyModeDetailsPanel == null)
+        {
+            return;
+        }
+
+        storyModeTitleText ??= GetStoryModeText(StoryModeTitleObjectName);
+        storyModeDescriptionText ??= GetStoryModeText(StoryModeDescriptionObjectName);
+        storyModeAttributesText ??= GetStoryModeText(StoryModeAttributesObjectName);
+        storyModeHighestScoreText ??= GetStoryModeText(StoryModeBestScoreObjectName);
+    }
+
+    private TMP_Text GetStoryModeText(string childObjectName)
+    {
+        Transform child = storyModeDetailsPanel.transform.Find(childObjectName);
+        if (child == null)
+        {
+            Debug.LogWarning($"Could not find '{childObjectName}' under '{storyModeDetailsPanel.name}'.", this);
+            return null;
+        }
+
+        TMP_Text text = child.GetComponent<TMP_Text>();
+        if (text == null)
+        {
+            text = child.GetComponentInChildren<TMP_Text>(true);
+        }
+
+        if (text == null)
+        {
+            Debug.LogWarning($"'{childObjectName}' does not have a TMP_Text component.", this);
+        }
+
+        return text;
+    }
+
+    private static void OnStoryModeSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        SceneManager.sceneLoaded -= OnStoryModeSceneLoaded;
+
+        MainMenu mainMenu = FindObjectOfType<MainMenu>();
+        if (mainMenu == null)
+        {
+            Debug.LogWarning($"Could not find a {nameof(MainMenu)} in scene '{scene.name}'.");
+            Time.timeScale = 1f;
+            return;
+        }
+
+        mainMenu.ShowDetailsPanelAndPauseGame();
     }
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)

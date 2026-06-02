@@ -5,6 +5,8 @@ using TMPro;
 public class MinigameDataStore : MonoBehaviour
 {
     private static MinigameDataStore instance;
+    private static GameData[] minigames;
+    private static GameData currentGame;
 
     public static MinigameDataStore Instance
     {
@@ -28,10 +30,6 @@ public class MinigameDataStore : MonoBehaviour
         public Sprite thumbnail;
     }
 
-    [SerializeField] private GameData[] minigames;
-
-    public GameData currentGame;
-
     [Header("UI")]
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text descriptionText;
@@ -48,11 +46,16 @@ public class MinigameDataStore : MonoBehaviour
 
         instance = this;
 
-        InitializeData();
+        EnsureDataInitialized();
     }
 
-    private void InitializeData()
+    private static void EnsureDataInitialized()
     {
+        if (minigames != null && minigames.Length > 0)
+        {
+            return;
+        }
+
         minigames = new GameData[15];
 
         minigames[0] = new GameData
@@ -92,14 +95,57 @@ public class MinigameDataStore : MonoBehaviour
         };
     }
 
-    public void UpdateDetails(int id)
+    public static bool TryGetGameData(int id, out GameData gameData)
     {
+        EnsureDataInitialized();
+
         for (int i = 0; i < minigames.Length; i++)
         {
-            if (minigames[i].id == id)
+            if (minigames[i].id == id && !string.IsNullOrWhiteSpace(minigames[i].sceneName))
             {
-                currentGame = minigames[i];
+                gameData = minigames[i];
+                return true;
             }
+        }
+
+        gameData = default;
+        return false;
+    }
+
+    public static bool TryGetGameDataBySceneName(string sceneName, out GameData gameData)
+    {
+        EnsureDataInitialized();
+
+        if (string.IsNullOrWhiteSpace(sceneName))
+        {
+            gameData = default;
+            return false;
+        }
+
+        for (int i = 0; i < minigames.Length; i++)
+        {
+            if (minigames[i].sceneName == sceneName)
+            {
+                gameData = minigames[i];
+                return true;
+            }
+        }
+
+        gameData = default;
+        return false;
+    }
+
+    public static void SetCurrentGame(GameData gameData)
+    {
+        currentGame = gameData;
+    }
+
+    public void UpdateDetails(int id)
+    {
+        if (!TryGetGameData(id, out currentGame))
+        {
+            Debug.LogWarning($"Could not find minigame data for id '{id}'.", this);
+            return;
         }
 
         titleText.text = currentGame.gameTitle;
@@ -112,8 +158,9 @@ public class MinigameDataStore : MonoBehaviour
         return;
     }
 
-    public GameData GetCurrentGame()
+    public static GameData GetCurrentGame()
     {
+        EnsureDataInitialized();
         return currentGame;
     }
 }

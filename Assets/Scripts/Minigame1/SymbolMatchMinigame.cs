@@ -134,6 +134,8 @@ public class SymbolMatchMinigame : MonoBehaviour
 
     private IEnumerator SpawnLoop()
     {
+        yield return new WaitForSeconds(spawnInterval);
+
         while (isGameRunning)
         {
             SpawnFallingObject();

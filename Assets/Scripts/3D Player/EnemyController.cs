@@ -6,6 +6,7 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     public bool IsDead => currentState == EnemyState.Dead;
+    public bool IsAware => isAware;
 
     private enum EnemyState
     {
@@ -60,6 +61,20 @@ public class EnemyController : MonoBehaviour
     private Coroutine attackCoroutine;
     private Coroutine hitCoroutine;
     private int currentHealth;
+    private bool isAware;
+
+    public static bool IsAnyEnemyAware()
+    {
+        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
+
+        foreach (EnemyController enemy in enemies)
+        {
+            if (enemy.IsAware)
+                return true;
+        }
+
+        return false;
+    }
 
     private void Awake()
     {
@@ -82,7 +97,10 @@ public class EnemyController : MonoBehaviour
             PlayerController player = playerTarget.GetComponent<PlayerController>();
 
             if (player != null && player.IsDead)
+            {
                 playerTarget = null;
+                isAware = false;
+            }
         }
 
         if (playerTarget == null)
@@ -90,17 +108,24 @@ public class EnemyController : MonoBehaviour
 
         if (currentState == EnemyState.Dead || isAttacking || isTakingHit)
         {
+            if (currentState == EnemyState.Dead)
+                isAware = false;
+
             UpdateAnimations();
             return;
         }
 
-        if (CanSeePlayer())
+        bool canSeePlayer = CanSeePlayer();
+
+        if (canSeePlayer)
         {
+            isAware = true;
             StopWaiting();
             HandleChase();
         }
         else
         {
+            isAware = false;
             HandlePatrol();
         }
 
@@ -241,6 +266,7 @@ public class EnemyController : MonoBehaviour
         }
 
         isAttacking = true;
+        isAware = true;
         attackDamageApplied = false;
         currentState = EnemyState.Attack;
 
@@ -261,9 +287,15 @@ public class EnemyController : MonoBehaviour
         attackCoroutine = null;
 
         if (CanSeePlayer())
+        {
+            isAware = true;
             currentState = EnemyState.Chase;
+        }
         else
+        {
+            isAware = false;
             currentState = EnemyState.Patrol;
+        }
     }
 
     public void TakeDamage(int amount)
@@ -321,9 +353,15 @@ public class EnemyController : MonoBehaviour
         hitCoroutine = null;
 
         if (CanSeePlayer())
+        {
+            isAware = true;
             currentState = EnemyState.Chase;
+        }
         else
+        {
+            isAware = false;
             currentState = EnemyState.Patrol;
+        }
     }
 
     private void StopAttack()
@@ -345,6 +383,7 @@ public class EnemyController : MonoBehaviour
     {
         currentHealth = 0;
         currentState = EnemyState.Dead;
+        isAware = false;
 
         StopWaiting();
         StopAttack();

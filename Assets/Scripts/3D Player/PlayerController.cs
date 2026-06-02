@@ -89,6 +89,7 @@ public class PlayerController : MonoBehaviour
     private float forcedFaceTimer;
     private Vector3 forcedFacePosition;
     private Coroutine hitCoroutine;
+    private bool inputCallbacksRegistered;
 
     private void Awake()
     {
@@ -105,12 +106,60 @@ public class PlayerController : MonoBehaviour
         interactAction = playerInput.actions["Interact"];
         attackAction = playerInput.actions["Attack"];
         blockAction = playerInput.actions["Block"];
+    }
 
-        interactAction.performed += _ => TryInteract();
-        attackAction.performed += _ => TryAttack();
+    private void OnEnable()
+    {
+        RegisterInputCallbacks();
+    }
 
-        blockAction.performed += _ => StartBlocking();
-        blockAction.canceled += _ => StopBlocking();
+    private void OnDisable()
+    {
+        UnregisterInputCallbacks();
+    }
+
+    private void RegisterInputCallbacks()
+    {
+        if (inputCallbacksRegistered || interactAction == null || attackAction == null || blockAction == null)
+            return;
+
+        interactAction.performed += OnInteractPerformed;
+        attackAction.performed += OnAttackPerformed;
+        blockAction.performed += OnBlockPerformed;
+        blockAction.canceled += OnBlockCanceled;
+        inputCallbacksRegistered = true;
+    }
+
+    private void UnregisterInputCallbacks()
+    {
+        if (!inputCallbacksRegistered || interactAction == null || attackAction == null || blockAction == null)
+            return;
+
+        interactAction.performed -= OnInteractPerformed;
+        attackAction.performed -= OnAttackPerformed;
+        blockAction.performed -= OnBlockPerformed;
+        blockAction.canceled -= OnBlockCanceled;
+        inputCallbacksRegistered = false;
+    }
+
+    private void OnInteractPerformed(InputAction.CallbackContext context)
+    {
+        TryInteract();
+    }
+
+    private void OnAttackPerformed(InputAction.CallbackContext context)
+    {
+        TryAttack();
+    }
+
+    private void OnBlockPerformed(InputAction.CallbackContext context)
+    {
+        StartBlocking();
+    }
+
+    private void OnBlockCanceled(InputAction.CallbackContext context)
+    {
+        StopBlocking();
     }
 
     private void Update()
