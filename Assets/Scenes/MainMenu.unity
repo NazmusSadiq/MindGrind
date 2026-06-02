@@ -2814,11 +2814,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 967626829185620757, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_Name
-      value: Hue Hunt Card (2)
+      value: Feed The Fishes
       objectReference: {fileID: 0}
     - target: {fileID: 1852566566131942542, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_text
-      value: Hue Hunt
+      value: Feed The Fishes
       objectReference: {fileID: 0}
     - target: {fileID: 1852566566131942542, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_fontSize
@@ -2826,7 +2826,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2894099207623160507, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_text
-      value: Attention + Reflex
+      value: Attention + Memory
       objectReference: {fileID: 0}
     - target: {fileID: 2894099207623160507, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_fontSize
@@ -3060,14 +3060,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc01b56a25e243a498a47ecf3febd410, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinigameData
-  minigames: []
-  currentGame:
-    id: 0
-    gameTitle: 
-    description: 
-    cognitiveSkills: 
-    sceneName: 
-    thumbnail: {fileID: 0}
   titleText: {fileID: 2125301858}
   descriptionText: {fileID: 268628671}
   skillsText: {fileID: 286681481}
@@ -3532,7 +3524,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1210652172}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: LoadMiniGame
         m_Mode: 1
