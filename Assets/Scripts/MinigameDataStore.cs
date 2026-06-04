@@ -85,6 +85,15 @@ public class MinigameDataStore : MonoBehaviour
             sceneName = "Minigame3"
         };
 
+        minigames[3] = new GameData
+        {
+            id = 3,
+            gameTitle = "Feed The Fishes",
+            description = "Some identical fishes swim around the tank and keep changing direction as they bounce off the boundaries. Click a fish to feed it: feeding an unfed fish gives +10 points, but feeding a fish that has already been fed costs -10 points. After each feeding, you must wait for some time before feeding another fish.",
+            cognitiveSkills = "Memory + Attention",
+            sceneName = "Minigame4"
+        };
+
         minigames[14] = new GameData
         {
             id = 14,
