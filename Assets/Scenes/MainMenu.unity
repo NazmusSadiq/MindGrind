@@ -2814,11 +2814,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 967626829185620757, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_Name
-      value: Feed The Fishes
+      value: Shape Sync Card
       objectReference: {fileID: 0}
     - target: {fileID: 1852566566131942542, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_text
-      value: Feed The Fishes
+      value: Shape Sync
       objectReference: {fileID: 0}
     - target: {fileID: 1852566566131942542, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_fontSize
@@ -2826,7 +2826,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2894099207623160507, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_text
-      value: Attention + Memory
+      value: Attention + Timing
       objectReference: {fileID: 0}
     - target: {fileID: 2894099207623160507, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_fontSize
@@ -2898,7 +2898,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4185835046525535972, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_IntArgument
-      value: 3
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 4185835046525535972, guid: 97f137081b8e41541bba58b14bc6af89, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_BoolArgument
