@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class HueHuntMinigame : MonoBehaviour
 {
     private const int BombTargetIndex = -1;
+    private const float InitialSpawnDelay = 1f;
 
     [Header("References")]
     [SerializeField] private HueHuntMole mole;
@@ -41,6 +42,7 @@ public class HueHuntMinigame : MonoBehaviour
         }
 
         mole.Initialize(this);
+        mole.ForceHide();
 
         score = 0;
         timeRemaining = gameDuration;
@@ -151,6 +153,8 @@ public class HueHuntMinigame : MonoBehaviour
 
     private IEnumerator SpawnLoop()
     {
+        yield return new WaitForSeconds(InitialSpawnDelay);
+
         while (isGameRunning)
         {
             if (!mole.IsRaised)
