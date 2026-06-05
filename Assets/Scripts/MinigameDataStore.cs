@@ -56,7 +56,7 @@ public class MinigameDataStore : MonoBehaviour
             return;
         }
 
-        minigames = new GameData[15];
+        minigames = new GameData[16];
 
         minigames[0] = new GameData
         {
@@ -110,6 +110,15 @@ public class MinigameDataStore : MonoBehaviour
             description = "You are shown the first 3 letters of a word and must complete it using a valid dictionary word. Each correct word gives points equal to its full length (min 5 letters, max 10 letters), and no word can be repeated. A new random prefix appears immediately after every correct answer. You can also skip the current prefix to move to a new one, but doing so deducts 3 points.",
             cognitiveSkills = "Learning",
             sceneName = "Minigame15"
+        };
+
+        minigames[15] = new GameData
+        {
+            id = 15,
+            gameTitle = "Sequence Match",
+            description = "A sequence of characters is shown briefly, then a shuffled target list appears. Enter the target characters in the order they appeared in the original sequence. Correct answers add 10 points and increase the target count, while wrong answers deduct 10 points and start a new sequence.",
+            cognitiveSkills = "Memory + Sequencing",
+            sceneName = "Minigame16"
         };
     }
 
