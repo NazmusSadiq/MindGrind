@@ -1504,6 +1504,8 @@ MonoBehaviour:
   maxObjectsPerShape: 20
   colorSwitchFrequency: 1.25
   objectSizeRange: {x: 42, y: 64}
+  reservedTopAreaHeight: 100
+  spawnSpacing: 8
   worldSpawnAreaSize: {x: 8, y: 4.5}
   worldObjectSizeRange: {x: 0.4, y: 0.7}
   green: {r: 0.2, g: 0.9, b: 0.35, a: 1}
