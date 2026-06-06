@@ -1,12 +1,12 @@
 using UnityEngine;
 
-[RequireComponent(typeof(SpriteRenderer), typeof(BoxCollider2D))]
+[RequireComponent(typeof(SpriteRenderer), typeof(BoxCollider2D), typeof(Rigidbody2D))]
 public class FallingColorBox : MonoBehaviour
 {
     private SearchPasswordFromBoxMinigame gameManager;
     private BoxCollider2D boxCollider;
     private SpriteRenderer spriteRenderer;
-    private float fallSpeed;
+    private Rigidbody2D rigidBody;
     private float missY;
     private bool isHandled;
 
@@ -17,17 +17,30 @@ public class FallingColorBox : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider = GetComponent<BoxCollider2D>();
+        rigidBody = GetComponent<Rigidbody2D>();
+
+        if (rigidBody == null)
+        {
+            rigidBody = gameObject.AddComponent<Rigidbody2D>();
+        }
+
+        rigidBody.gravityScale = 0f;
+        rigidBody.freezeRotation = true;
+        rigidBody.interpolation = RigidbodyInterpolation2D.Interpolate;
+        rigidBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         UpdateColliderToMatchSprite();
     }
 
-    public void Initialize(SearchPasswordFromBoxMinigame manager, int colorIndex, Color color, string hiddenLetter, float speed, float missPositionY)
+    public void Initialize(SearchPasswordFromBoxMinigame manager, int colorIndex, Color color, string hiddenLetter, Vector2 launchVelocity, float gravityScale, float missPositionY)
     {
         gameManager = manager;
         ColorIndex = colorIndex;
         HiddenLetter = hiddenLetter;
-        fallSpeed = speed;
+        isHandled = false;
         missY = missPositionY;
         spriteRenderer.color = color;
+        rigidBody.linearVelocity = launchVelocity;
+        rigidBody.gravityScale = gravityScale;
         UpdateColliderToMatchSprite();
     }
 
@@ -38,11 +51,15 @@ public class FallingColorBox : MonoBehaviour
             return;
         }
 
-        transform.Translate(Vector3.down * fallSpeed * Time.deltaTime, Space.World);
-
         if (transform.position.y <= missY)
         {
             isHandled = true;
+
+            if (rigidBody != null)
+            {
+                rigidBody.linearVelocity = Vector2.zero;
+                rigidBody.simulated = false;
+            }
 
             if (gameManager != null)
             {
