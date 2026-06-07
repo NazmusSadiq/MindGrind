@@ -56,7 +56,7 @@ public class MinigameDataStore : MonoBehaviour
             return;
         }
 
-        minigames = new GameData[15];
+        minigames = new GameData[16];
 
         minigames[0] = new GameData
         {
@@ -94,6 +94,24 @@ public class MinigameDataStore : MonoBehaviour
             sceneName = "Minigame4"
         };
 
+        minigames[6] = new GameData
+        {
+            id = 6,
+            gameTitle = "Column Word",
+            description = "Each round shows a set of columns with three letters in each column. Type one letter from each column to form a valid dictionary word. A correct word gives +10 points and advances to the next round with one more column, while an invalid word costs -5 points.",
+            cognitiveSkills = "Attention + Vocabulary",
+            sceneName = "Minigame7"
+        };
+
+        minigames[13] = new GameData
+        {
+            id = 13,
+            gameTitle = "Shape Sync",
+            description = "Squares, triangles, and circles keep changing between green, blue, and pink. Watch the target shape at the top and press Enter only when every object of that shape has the same color. A correct answer adds 10 points and increases the number of objects, while a wrong answer deducts 10 points.",
+            cognitiveSkills = "Attention + Reflex",
+            sceneName = "Minigame14"
+        };
+
         minigames[14] = new GameData
         {
             id = 14,
@@ -101,6 +119,15 @@ public class MinigameDataStore : MonoBehaviour
             description = "You are shown the first 3 letters of a word and must complete it using a valid dictionary word. Each correct word gives points equal to its full length (min 5 letters, max 10 letters), and no word can be repeated. A new random prefix appears immediately after every correct answer. You can also skip the current prefix to move to a new one, but doing so deducts 3 points.",
             cognitiveSkills = "Learning",
             sceneName = "Minigame15"
+        };
+
+        minigames[15] = new GameData
+        {
+            id = 15,
+            gameTitle = "Sequence Match",
+            description = "A sequence of characters is shown briefly, then a shuffled target list appears. Enter the target characters in the order they appeared in the original sequence. For example: if sequence was 'friend' and target is 'def' then enter 'fed' as the letters d,e,f occured in that order. Correct answers add 10 points and increase the target count, while wrong answers deduct 10 points.",
+            cognitiveSkills = "Memory",
+            sceneName = "Minigame16"
         };
     }
 
