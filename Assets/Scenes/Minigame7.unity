@@ -6803,7 +6803,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Too hard ? See next one
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8227,7 +8227,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 128.84, y: -143}
+  m_AnchoredPosition: {x: 3.24, y: -143}
   m_SizeDelta: {x: 115.68, y: 40.92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1327554853
@@ -9751,11 +9751,12 @@ MonoBehaviour:
   timeRemainingText: {fileID: 862130713}
   messageText: {fileID: 1126155452}
   bestScoreStore: {fileID: 1515275007}
-  wordDictionaryFile: {fileID: 4900000, guid: 1261d65fd55cd224e9db08d7e60e34f5, type: 3}
+  wordDictionaryFile: {fileID: 4900000, guid: 611f919338a5a3c4b98d93b6ebab842f, type: 3}
   gameDuration: 60
   startingColumnCount: 4
   maxColumnCount: 10
   lettersPerColumn: 3
+  wordsPerPuzzle: 3
   activeSquareColor: {r: 1, g: 0.9, b: 0.35, a: 1}
 --- !u!1 &1528487257
 GameObject:
