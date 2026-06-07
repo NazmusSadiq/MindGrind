@@ -116,8 +116,8 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 15,
             gameTitle = "Sequence Match",
-            description = "A sequence of characters is shown briefly, then a shuffled target list appears. Enter the target characters in the order they appeared in the original sequence. Correct answers add 10 points and increase the target count, while wrong answers deduct 10 points and start a new sequence.",
-            cognitiveSkills = "Memory + Sequencing",
+            description = "A sequence of characters is shown briefly, then a shuffled target list appears. Enter the target characters in the order they appeared in the original sequence. For example: if sequence was 'friend' and target is 'def' then enter 'fed' as the letters d,e,f occured in that order. Correct answers add 10 points and increase the target count, while wrong answers deduct 10 points.",
+            cognitiveSkills = "Memory",
             sceneName = "Minigame16"
         };
     }

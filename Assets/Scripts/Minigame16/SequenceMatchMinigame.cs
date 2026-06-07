@@ -14,7 +14,6 @@ public class SequenceMatchMinigame : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text timeRemainingText;
     [SerializeField] private TMP_InputField answerInputField;
-    [SerializeField] private Button submitButton;
     // FIXED: Changed to SerializeField so it can be assigned via the Unity Inspector, matching File 1
     [SerializeField] private MinigameBestScoreStore bestScoreStore; 
 
@@ -39,12 +38,6 @@ public class SequenceMatchMinigame : MonoBehaviour
 
     private void Awake()
     {
-        if (submitButton != null)
-        {
-            submitButton.onClick.RemoveListener(SubmitAnswer);
-            submitButton.onClick.AddListener(SubmitAnswer);
-        }
-
         if (answerInputField != null)
         {
             answerInputField.onSubmit.RemoveListener(SubmitAnswerFromInput);
@@ -91,10 +84,6 @@ public class SequenceMatchMinigame : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (submitButton != null)
-        {
-            submitButton.onClick.RemoveListener(SubmitAnswer);
-        }
 
         if (answerInputField != null)
         {
@@ -110,7 +99,6 @@ public class SequenceMatchMinigame : MonoBehaviour
             && scoreText != null
             && timeRemainingText != null
             && answerInputField != null
-            && submitButton != null
             && bestScoreStore != null;
             
         if (!hasReferences)
@@ -267,11 +255,6 @@ public class SequenceMatchMinigame : MonoBehaviour
         if (answerInputField != null)
         {
             answerInputField.interactable = isInteractable;
-        }
-
-        if (submitButton != null)
-        {
-            submitButton.interactable = isInteractable;
         }
     }
 
