@@ -99,7 +99,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 13,
             gameTitle = "Shape Sync",
             description = "Squares, triangles, and circles keep changing between green, blue, and pink. Watch the target shape at the top and press Enter only when every object of that shape has the same color. A correct answer adds 10 points and increases the number of objects, while a wrong answer deducts 10 points.",
-            cognitiveSkills = "Attention + Timing",
+            cognitiveSkills = "Attention + Reflex",
             sceneName = "Minigame14"
         };
 
