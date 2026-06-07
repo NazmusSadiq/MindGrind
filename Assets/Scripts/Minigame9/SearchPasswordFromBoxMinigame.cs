@@ -23,10 +23,8 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
         "stargazer",
         "goldenrod",
         "storybook",
-        "paintwork",
         "stronghold",
         "waterfall",
-        "earthbound",
         "snowflake",
         "timetable",
         "sandstorm",
@@ -42,13 +40,12 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
         "extraordinary",
         "visualization",
         "investigation",
-        "neighborhoods",
+        "neighborhood",
         "administrator",
         "interpretation",
         "manufacturing",
         "crossroad",
         "tightrope",
-        "whirlpool",
         "overdrive",
         "rainbowed",
         "northgate",
@@ -67,6 +64,13 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
     {
         public string id;
         public Color color = Color.white;
+    }
+
+    [System.Serializable]
+    public class LaunchOption
+    {
+        [Range(0f, 180f)] public float angleDegrees;
+        public float launchSpeed = 5f;
     }
 
     [Header("References")]
@@ -89,14 +93,28 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
     [SerializeField] private ColorEntry[] colors;
     [SerializeField, Range(0f, 1f)] private float targetSpawnChance = 0.35f;
 
+    [Header("Launch")]
+    [SerializeField] private LaunchOption[] leftLaunchOptions =
+    {
+        new LaunchOption { angleDegrees = 30f, launchSpeed = 4.5f },
+        new LaunchOption { angleDegrees = 45f, launchSpeed = 5.5f },
+        new LaunchOption { angleDegrees = 60f, launchSpeed = 6.5f }
+    };
+    [SerializeField] private LaunchOption[] rightLaunchOptions =
+    {
+        new LaunchOption { angleDegrees = 150f, launchSpeed = 4.5f },
+        new LaunchOption { angleDegrees = 135f, launchSpeed = 5.5f },
+        new LaunchOption { angleDegrees = 120f, launchSpeed = 6.5f }
+    };
+    [SerializeField] private Vector2 spawnJitter = new Vector2(0.3f, 0.2f);
+    [SerializeField] private float launchGravityScale = 2.6f;
+
     [Header("Password")]
     [SerializeField] private string[] passwordWords = DefaultPasswordWords;
 
     [Header("Gameplay")]
     [SerializeField] private float gameDuration = DefaultGameDuration;
     [SerializeField] private float spawnInterval = 0.75f;
-    [SerializeField] private Vector2 fallSpeedRange = new Vector2(3.5f, 5f);
-    [SerializeField] private Vector2 spawnRotationRange = new Vector2(0f, 360f);
     [SerializeField] private float targetSwitchInterval = 7f;
     [SerializeField] private float revealedLetterDuration = 3f;
 
@@ -110,6 +128,7 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
     private float targetSwitchTimer;
     private string currentPassword;
     private int currentLetterIndex;
+    private int revealedLetterIndex;
     private string currentTargetLetter;
     private int attemptsRemaining = 3;
     private string[] validPasswordWords;
@@ -218,6 +237,9 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
         bool hasSpawnPoints = spawnLeftPoint != null && spawnRightPoint != null;
         bool hasReferences = fallingBoxPrefab != null && targetColorImage != null && missLine != null && bestScoreStore != null;
         bool hasTimeValue = timeValueText != null;
+        bool hasLeftLaunchOptions = leftLaunchOptions != null && leftLaunchOptions.Length > 0;
+        bool hasRightLaunchOptions = rightLaunchOptions != null && rightLaunchOptions.Length > 0;
+        bool hasValidGravity = launchGravityScale > 0f;
         if (passwordWords == null || passwordWords.Length == 0)
         {
             passwordWords = (string[])DefaultPasswordWords.Clone();
@@ -226,7 +248,7 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
         bool hasPasswords = passwordWords != null && passwordWords.Length > 0;
         bool hasPasswordUi = passwordPanel != null && passwordInputField != null && submitPasswordButton != null;
 
-        if (!hasValidColors || !hasSpawnPoints || !hasReferences || !hasPasswords || !hasTimeValue || !hasPasswordUi)
+        if (!hasValidColors || !hasSpawnPoints || !hasReferences || !hasPasswords || !hasTimeValue || !hasPasswordUi || !hasLeftLaunchOptions || !hasRightLaunchOptions || !hasValidGravity)
         {
             Debug.LogError("SearchPasswordFromBoxMinigame is missing required references.", this);
             return false;
@@ -291,17 +313,56 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
 
     private void SpawnFallingBox()
     {
-        int colorIndex = GetRandomSpawnColorIndex();
-        float spawnX = Random.Range(spawnLeftPoint.position.x, spawnRightPoint.position.x);
-        Vector3 spawnPosition = new Vector3(spawnX, spawnLeftPoint.position.y, 0f);
-        float spawnRotationZ = Random.Range(spawnRotationRange.x, spawnRotationRange.y);
-        Quaternion spawnRotation = Quaternion.Euler(0f, 0f, spawnRotationZ);
+        bool spawnFromLeft = Random.value < 0.5f;
+        Transform spawnPoint = spawnFromLeft ? spawnLeftPoint : spawnRightPoint;
+        LaunchOption[] launchOptions = spawnFromLeft ? leftLaunchOptions : rightLaunchOptions;
 
-        FallingColorBox fallingBox = Instantiate(fallingBoxPrefab, spawnPosition, spawnRotation);
-        float fallSpeed = Random.Range(fallSpeedRange.x, fallSpeedRange.y);
+        if (!TryGetRandomLaunchOption(launchOptions, out LaunchOption launchOption))
+        {
+            return;
+        }
+
+        int colorIndex = GetRandomSpawnColorIndex();
+        Vector3 spawnPosition = GetSpawnPosition(spawnPoint);
+        FallingColorBox fallingBox = Instantiate(fallingBoxPrefab, spawnPosition, Quaternion.identity);
 
         string hiddenLetter = GetSpawnLetter(colorIndex);
-        fallingBox.Initialize(this, colorIndex, colors[colorIndex].color, hiddenLetter, fallSpeed, missLine.position.y);
+        fallingBox.Initialize(this, colorIndex, colors[colorIndex].color, hiddenLetter, AngleToVelocity(launchOption.angleDegrees, launchOption.launchSpeed), launchGravityScale, missLine.position.y);
+    }
+
+    private Vector3 GetSpawnPosition(Transform spawnPoint)
+    {
+        float offsetX = Random.Range(-spawnJitter.x, spawnJitter.x);
+        float offsetY = Random.Range(-spawnJitter.y, spawnJitter.y);
+        return new Vector3(spawnPoint.position.x + offsetX, spawnPoint.position.y + offsetY, 0f);
+    }
+
+    private bool TryGetRandomLaunchOption(LaunchOption[] launchOptions, out LaunchOption launchOption)
+    {
+        launchOption = null;
+
+        if (launchOptions == null || launchOptions.Length == 0)
+        {
+            Debug.LogError("SearchPasswordFromBoxMinigame needs at least one launch option on each side.", this);
+            return false;
+        }
+
+        int index = Random.Range(0, launchOptions.Length);
+        launchOption = launchOptions[index];
+
+        if (launchOption == null)
+        {
+            Debug.LogError("A launch option is missing in the inspector.", this);
+            return false;
+        }
+
+        return true;
+    }
+
+    private Vector2 AngleToVelocity(float angleDegrees, float speed)
+    {
+        float radians = angleDegrees * Mathf.Deg2Rad;
+        return new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) * speed;
     }
 
     private int GetRandomSpawnColorIndex()
@@ -337,6 +398,7 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
         int wordIndex = Random.Range(0, validPasswordWords.Length);
         currentPassword = validPasswordWords[wordIndex];
         currentLetterIndex = 0;
+        revealedLetterIndex = 0;
     }
 
     private void AdvanceTargetPhase()
@@ -390,16 +452,19 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
         if (fallingBox.ColorIndex == currentTargetIndex)
         {
             score += 10;
-            ShowRevealedLetter(fallingBox.HiddenLetter);
-            if (currentLetterIndex >= currentPassword.Length - 1)
+            if (currentPassword.Length > 0)
             {
-                BeginPasswordEntry();
-            }
-            else
-            {
-                currentLetterIndex++;
-                SetTargetForCurrentPhase();
-                targetSwitchTimer = targetSwitchInterval;
+                string letterToShow = currentPassword.Substring(revealedLetterIndex, 1);
+                ShowRevealedLetter(letterToShow);
+
+                if (revealedLetterIndex >= currentPassword.Length - 1)
+                {
+                    BeginPasswordEntry();
+                }
+                else
+                {
+                    revealedLetterIndex++;
+                }
             }
         }
         else
