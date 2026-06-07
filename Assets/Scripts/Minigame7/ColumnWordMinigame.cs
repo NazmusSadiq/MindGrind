@@ -15,8 +15,11 @@ public class ColumnWordMinigame : MonoBehaviour
     private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     [Header("References")]
-    [SerializeField] private GameObject[] columnBoxes;
+    [SerializeField] private GameObject[] topBoxes;
+    [SerializeField] private GameObject[] middleBoxes;
+    [SerializeField] private GameObject[] bottomBoxes;
     [SerializeField] private GameObject[] answerBoxes;
+    [SerializeField] private Button skipButton;
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text timeRemainingText;
     [SerializeField] private TMP_Text messageText;
@@ -28,7 +31,7 @@ public class ColumnWordMinigame : MonoBehaviour
     [Header("Gameplay")]
     [SerializeField] private float gameDuration = 60f;
     [SerializeField] private int startingColumnCount = 4;
-    [SerializeField] private int maxColumnCount = 10;
+    [SerializeField] private int maxColumnCount = 30;
     [SerializeField] private int lettersPerColumn = 3;
     [SerializeField] private Color activeSquareColor = new Color(1f, 0.9f, 0.35f);
 
@@ -37,9 +40,15 @@ public class ColumnWordMinigame : MonoBehaviour
     private readonly HashSet<string> currentValidWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     private readonly List<char[]> currentColumnOptions = new List<char[]>();
 
-    private TMP_Text[] columnTexts;
-    private Image[] columnImages;
-    private Color[] defaultColumnColors;
+    private TMP_Text[] topTexts;
+    private Image[] topImages;
+    private Color[] defaultTopColors;
+    private TMP_Text[] middleTexts;
+    private Image[] middleImages;
+    private Color[] defaultMiddleColors;
+    private TMP_Text[] bottomTexts;
+    private Image[] bottomImages;
+    private Color[] defaultBottomColors;
     private TMP_Text[] answerTexts;
     private Image[] answerImages;
     private Color[] defaultAnswerColors;
@@ -95,6 +104,8 @@ public class ColumnWordMinigame : MonoBehaviour
             return;
         }
 
+        SetupSkipButton();
+
         Time.timeScale = 1f;
         score = 0;
         timeRemaining = gameDuration;
@@ -145,6 +156,18 @@ public class ColumnWordMinigame : MonoBehaviour
         {
             EndGame();
         }
+    }
+
+    private void SetupSkipButton()
+    {
+        if (skipButton == null)
+        {
+            Debug.LogWarning("ColumnWordMinigame has no skip button assigned. The skip feature will be unavailable.", this);
+            return;
+        }
+
+        skipButton.onClick.RemoveListener(SkipFormation);
+        skipButton.onClick.AddListener(SkipFormation);
     }
 
 #if ENABLE_INPUT_SYSTEM
@@ -224,7 +247,9 @@ public class ColumnWordMinigame : MonoBehaviour
 
     private bool HasValidSetup()
     {
-        bool hasReferences = columnBoxes != null
+        bool hasReferences = topBoxes != null
+            && middleBoxes != null
+            && bottomBoxes != null
             && answerBoxes != null
             && scoreText != null
             && timeRemainingText != null
@@ -255,10 +280,12 @@ public class ColumnWordMinigame : MonoBehaviour
             return false;
         }
 
-        int availableBoxCount = Mathf.Min(columnBoxes.Length, answerBoxes.Length);
+        int availableBoxCount = Mathf.Min(
+            Mathf.Min(topBoxes.Length, middleBoxes.Length),
+            Mathf.Min(bottomBoxes.Length, answerBoxes.Length));
         if (availableBoxCount < 1)
         {
-            Debug.LogError("ColumnWordMinigame needs at least one column box and one answer box.", this);
+            Debug.LogError("ColumnWordMinigame needs top, middle, bottom, and answer boxes assigned.", this);
             return false;
         }
 
@@ -271,63 +298,37 @@ public class ColumnWordMinigame : MonoBehaviour
             return false;
         }
 
-        columnTexts = new TMP_Text[columnBoxes.Length];
-        columnImages = new Image[columnBoxes.Length];
-        defaultColumnColors = new Color[columnBoxes.Length];
+        topTexts = new TMP_Text[topBoxes.Length];
+        topImages = new Image[topBoxes.Length];
+        defaultTopColors = new Color[topBoxes.Length];
+        middleTexts = new TMP_Text[middleBoxes.Length];
+        middleImages = new Image[middleBoxes.Length];
+        defaultMiddleColors = new Color[middleBoxes.Length];
+        bottomTexts = new TMP_Text[bottomBoxes.Length];
+        bottomImages = new Image[bottomBoxes.Length];
+        defaultBottomColors = new Color[bottomBoxes.Length];
         answerTexts = new TMP_Text[answerBoxes.Length];
         answerImages = new Image[answerBoxes.Length];
         defaultAnswerColors = new Color[answerBoxes.Length];
 
-        for (int i = 0; i < columnBoxes.Length; i++)
+        if (!CacheRow(topBoxes, topTexts, topImages, defaultTopColors, "top"))
         {
-            if (columnBoxes[i] == null)
-            {
-                Debug.LogError("Every column box must be assigned in ColumnWordMinigame.", this);
-                return false;
-            }
-
-            columnTexts[i] = columnBoxes[i].GetComponentInChildren<TMP_Text>(true);
-            columnImages[i] = columnBoxes[i].GetComponent<Image>();
-
-            if (columnImages[i] == null)
-            {
-                columnImages[i] = columnBoxes[i].GetComponentInChildren<Image>(true);
-            }
-
-            if (columnTexts[i] == null || columnImages[i] == null)
-            {
-                Debug.LogError("Each column box needs an Image and a child TMP_Text.", columnBoxes[i]);
-                return false;
-            }
-
-            defaultColumnColors[i] = columnImages[i].color;
-            columnBoxes[i].SetActive(false);
+            return false;
         }
 
-        for (int i = 0; i < answerBoxes.Length; i++)
+        if (!CacheRow(middleBoxes, middleTexts, middleImages, defaultMiddleColors, "middle"))
         {
-            if (answerBoxes[i] == null)
-            {
-                Debug.LogError("Every answer box must be assigned in ColumnWordMinigame.", this);
-                return false;
-            }
+            return false;
+        }
 
-            answerTexts[i] = answerBoxes[i].GetComponentInChildren<TMP_Text>(true);
-            answerImages[i] = answerBoxes[i].GetComponent<Image>();
+        if (!CacheRow(bottomBoxes, bottomTexts, bottomImages, defaultBottomColors, "bottom"))
+        {
+            return false;
+        }
 
-            if (answerImages[i] == null)
-            {
-                answerImages[i] = answerBoxes[i].GetComponentInChildren<Image>(true);
-            }
-
-            if (answerTexts[i] == null || answerImages[i] == null)
-            {
-                Debug.LogError("Each answer box needs an Image and a child TMP_Text.", answerBoxes[i]);
-                return false;
-            }
-
-            defaultAnswerColors[i] = answerImages[i].color;
-            answerBoxes[i].SetActive(false);
+        if (!CacheRow(answerBoxes, answerTexts, answerImages, defaultAnswerColors, "answer"))
+        {
+            return false;
         }
 
         return true;
@@ -341,7 +342,7 @@ public class ColumnWordMinigame : MonoBehaviour
         }
 
         currentColumnCount = columnCount;
-        string targetWord = possibleWords[Random.Range(0, possibleWords.Count)];
+        string targetWord = possibleWords[UnityEngine.Random.Range(0, possibleWords.Count)];
 
         currentColumnOptions.Clear();
         currentValidWords.Clear();
@@ -388,18 +389,24 @@ public class ColumnWordMinigame : MonoBehaviour
 
     private void RefreshRoundVisuals()
     {
-        for (int i = 0; i < columnBoxes.Length; i++)
+        for (int i = 0; i < topBoxes.Length; i++)
         {
             bool shouldShow = i < currentColumnCount;
-            columnBoxes[i].SetActive(shouldShow);
+            topBoxes[i].SetActive(shouldShow);
+            middleBoxes[i].SetActive(shouldShow);
+            bottomBoxes[i].SetActive(shouldShow);
 
             if (!shouldShow)
             {
                 continue;
             }
 
-            columnTexts[i].text = BuildColumnLabel(currentColumnOptions[i]);
-            columnImages[i].color = defaultColumnColors[i];
+            topTexts[i].text = currentColumnOptions[i][0].ToString();
+            middleTexts[i].text = currentColumnOptions[i][1].ToString();
+            bottomTexts[i].text = currentColumnOptions[i][2].ToString();
+            topImages[i].color = defaultTopColors[i];
+            middleImages[i].color = defaultMiddleColors[i];
+            bottomImages[i].color = defaultBottomColors[i];
         }
 
         for (int i = 0; i < answerBoxes.Length; i++)
@@ -498,6 +505,21 @@ public class ColumnWordMinigame : MonoBehaviour
         }
     }
 
+    public void SkipFormation()
+    {
+        if (!isGameRunning)
+        {
+            return;
+        }
+
+        ShowTemporaryMessage("Skipped", Color.yellow);
+
+        if (!BuildRound(currentColumnCount))
+        {
+            EndGame();
+        }
+    }
+
     private void ResetCurrentGuess()
     {
         if (enteredLetters == null)
@@ -575,14 +597,17 @@ public class ColumnWordMinigame : MonoBehaviour
             answerImages[i].color = i == activeIndex ? activeSquareColor : defaultAnswerColors[i];
         }
 
-        for (int i = 0; i < columnImages.Length; i++)
+        for (int i = 0; i < topImages.Length; i++)
         {
-            if (columnImages[i] == null)
+            if (topImages[i] == null || middleImages[i] == null || bottomImages[i] == null)
             {
                 continue;
             }
 
-            columnImages[i].color = i == activeIndex ? activeSquareColor : defaultColumnColors[i];
+            Color color = i == activeIndex ? activeSquareColor : defaultTopColors[i];
+            topImages[i].color = color;
+            middleImages[i].color = i == activeIndex ? activeSquareColor : defaultMiddleColors[i];
+            bottomImages[i].color = i == activeIndex ? activeSquareColor : defaultBottomColors[i];
         }
     }
 
@@ -635,26 +660,6 @@ public class ColumnWordMinigame : MonoBehaviour
         }
 
         return -1;
-    }
-
-    private string BuildColumnLabel(char[] letters)
-    {
-        if (letters == null || letters.Length == 0)
-        {
-            return string.Empty;
-        }
-
-        StringBuilder builder = new StringBuilder(letters.Length * 2);
-        for (int i = 0; i < letters.Length; i++)
-        {
-            builder.Append(char.ToUpperInvariant(letters[i]));
-            if (i < letters.Length - 1)
-            {
-                builder.Append('\n');
-            }
-        }
-
-        return builder.ToString();
     }
 
     private void UpdateScoreUI()
@@ -722,7 +727,44 @@ public class ColumnWordMinigame : MonoBehaviour
 
     private char GetRandomLetter()
     {
-        return char.ToLowerInvariant(Alphabet[Random.Range(0, Alphabet.Length)]);
+        return char.ToLowerInvariant(Alphabet[UnityEngine.Random.Range(0, Alphabet.Length)]);
+    }
+
+    private bool CacheRow(GameObject[] boxes, TMP_Text[] texts, Image[] images, Color[] defaultColors, string rowName)
+    {
+        if (boxes == null)
+        {
+            Debug.LogError($"ColumnWordMinigame is missing the {rowName} row.", this);
+            return false;
+        }
+
+        for (int i = 0; i < boxes.Length; i++)
+        {
+            if (boxes[i] == null)
+            {
+                Debug.LogError($"Every {rowName} box must be assigned in ColumnWordMinigame.", this);
+                return false;
+            }
+
+            texts[i] = boxes[i].GetComponentInChildren<TMP_Text>(true);
+            images[i] = boxes[i].GetComponent<Image>();
+
+            if (images[i] == null)
+            {
+                images[i] = boxes[i].GetComponentInChildren<Image>(true);
+            }
+
+            if (texts[i] == null || images[i] == null)
+            {
+                Debug.LogError($"Each {rowName} box needs an Image and a child TMP_Text.", boxes[i]);
+                return false;
+            }
+
+            defaultColors[i] = images[i].color;
+            boxes[i].SetActive(false);
+        }
+
+        return true;
     }
 
     private bool ContainsLetter(IList<char> letters, char letter)
@@ -742,7 +784,7 @@ public class ColumnWordMinigame : MonoBehaviour
     {
         for (int i = list.Count - 1; i > 0; i--)
         {
-            int swapIndex = Random.Range(0, i + 1);
+            int swapIndex = UnityEngine.Random.Range(0, i + 1);
             T temp = list[i];
             list[i] = list[swapIndex];
             list[swapIndex] = temp;
@@ -756,13 +798,35 @@ public class ColumnWordMinigame : MonoBehaviour
             return;
         }
 
-        if (columnBoxes != null)
+        if (topBoxes != null)
         {
-            for (int i = 0; i < columnBoxes.Length; i++)
+            for (int i = 0; i < topBoxes.Length; i++)
             {
-                if (columnBoxes[i] != null)
+                if (topBoxes[i] != null)
                 {
-                    columnBoxes[i].SetActive(false);
+                    topBoxes[i].SetActive(false);
+                }
+            }
+        }
+
+        if (middleBoxes != null)
+        {
+            for (int i = 0; i < middleBoxes.Length; i++)
+            {
+                if (middleBoxes[i] != null)
+                {
+                    middleBoxes[i].SetActive(false);
+                }
+            }
+        }
+
+        if (bottomBoxes != null)
+        {
+            for (int i = 0; i < bottomBoxes.Length; i++)
+            {
+                if (bottomBoxes[i] != null)
+                {
+                    bottomBoxes[i].SetActive(false);
                 }
             }
         }
@@ -788,5 +852,13 @@ public class ColumnWordMinigame : MonoBehaviour
 
         bestScoreStore.ShowStats(score, bestScore);
         Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
+    }
+
+    private void OnDestroy()
+    {
+        if (skipButton != null)
+        {
+            skipButton.onClick.RemoveListener(SkipFormation);
+        }
     }
 }
