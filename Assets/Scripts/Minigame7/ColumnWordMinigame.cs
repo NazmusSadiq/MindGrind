@@ -33,6 +33,7 @@ public class ColumnWordMinigame : MonoBehaviour
     [SerializeField] private int startingColumnCount = 4;
     [SerializeField] private int maxColumnCount = 30;
     [SerializeField] private int lettersPerColumn = 3;
+    [SerializeField] private int wordsPerPuzzle = 3;
     [SerializeField] private Color activeSquareColor = new Color(1f, 0.9f, 0.35f);
 
     private readonly Dictionary<int, List<string>> wordsByLength = new Dictionary<int, List<string>>();
@@ -334,56 +335,124 @@ public class ColumnWordMinigame : MonoBehaviour
         return true;
     }
 
+    // private bool BuildRound(int columnCount)
+    // {
+    //     if (!wordsByLength.TryGetValue(columnCount, out List<string> possibleWords) || possibleWords.Count == 0)
+    //     {
+    //         return false;
+    //     }
+
+    //     currentColumnCount = columnCount;
+    //     string targetWord = possibleWords[UnityEngine.Random.Range(0, possibleWords.Count)];
+
+    //     currentColumnOptions.Clear();
+    //     currentValidWords.Clear();
+
+    //     for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
+    //     {
+    //         List<char> options = new List<char>(lettersPerColumn)
+    //         {
+    //             targetWord[columnIndex]
+    //         };
+
+    //         while (options.Count < lettersPerColumn)
+    //         {
+    //             char candidate = GetRandomLetter();
+    //             if (!ContainsLetter(options, candidate))
+    //             {
+    //                 options.Add(candidate);
+    //             }
+    //         }
+
+    //         Shuffle(options);
+    //         currentColumnOptions.Add(options.ToArray());
+    //     }
+
+    //     for (int i = 0; i < possibleWords.Count; i++)
+    //     {
+    //         string word = possibleWords[i];
+    //         if (WordFitsColumns(word))
+    //         {
+    //             currentValidWords.Add(word);
+    //         }
+    //     }
+
+    //     if (currentValidWords.Count == 0)
+    //     {
+    //         currentValidWords.Add(targetWord);
+    //     }
+
+    //     enteredLetters = new char[columnCount];
+    //     RefreshRoundVisuals();
+    //     SetActiveColumn(0);
+    //     return true;
+    // }
+
     private bool BuildRound(int columnCount)
     {
-        if (!wordsByLength.TryGetValue(columnCount, out List<string> possibleWords) || possibleWords.Count == 0)
+        if (!wordsByLength.TryGetValue(columnCount, out List<string> possibleWords))
+        {
+            return false;
+        }
+
+        if (possibleWords.Count < wordsPerPuzzle)
         {
             return false;
         }
 
         currentColumnCount = columnCount;
-        string targetWord = possibleWords[UnityEngine.Random.Range(0, possibleWords.Count)];
 
         currentColumnOptions.Clear();
         currentValidWords.Clear();
 
-        for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
-        {
-            List<char> options = new List<char>(lettersPerColumn)
-            {
-                targetWord[columnIndex]
-            };
+        List<string> selectedWords = new List<string>();
 
-            while (options.Count < lettersPerColumn)
+        List<string> candidates = new List<string>(possibleWords);
+
+        Shuffle(candidates);
+
+        for (int i = 0; i < wordsPerPuzzle && i < candidates.Count; i++)
+        {
+            selectedWords.Add(candidates[i]);
+            currentValidWords.Add(candidates[i]);
+        }
+
+        for (int column = 0; column < columnCount; column++)
+        {
+            List<char> columnLetters = new List<char>();
+
+            for (int wordIndex = 0; wordIndex < selectedWords.Count; wordIndex++)
             {
-                char candidate = GetRandomLetter();
-                if (!ContainsLetter(options, candidate))
+                columnLetters.Add(selectedWords[wordIndex][column]);
+            }
+
+            while (columnLetters.Count < lettersPerColumn)
+            {
+                char randomLetter = GetRandomLetter();
+
+                if (!ContainsLetter(columnLetters, randomLetter))
                 {
-                    options.Add(candidate);
+                    columnLetters.Add(randomLetter);
                 }
             }
 
-            Shuffle(options);
-            currentColumnOptions.Add(options.ToArray());
-        }
+            Shuffle(columnLetters);
 
-        for (int i = 0; i < possibleWords.Count; i++)
-        {
-            string word = possibleWords[i];
-            if (WordFitsColumns(word))
-            {
-                currentValidWords.Add(word);
-            }
-        }
-
-        if (currentValidWords.Count == 0)
-        {
-            currentValidWords.Add(targetWord);
+            currentColumnOptions.Add(columnLetters.ToArray());
         }
 
         enteredLetters = new char[columnCount];
+
         RefreshRoundVisuals();
         SetActiveColumn(0);
+
+        Debug.Log("Puzzle words:");
+
+        foreach (string word in selectedWords)
+        {
+            Debug.Log(word);
+        }
+
         return true;
     }
 
@@ -484,7 +553,7 @@ public class ColumnWordMinigame : MonoBehaviour
         }
 
         string guessedWord = BuildEnteredWord();
-        if (!currentValidWords.Contains(guessedWord))
+        if (!allDictionaryWords.Contains(guessedWord))
         {
             score -= 5;
             UpdateScoreUI();
