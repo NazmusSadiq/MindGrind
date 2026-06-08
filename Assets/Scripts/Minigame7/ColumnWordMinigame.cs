@@ -335,59 +335,6 @@ public class ColumnWordMinigame : MonoBehaviour
         return true;
     }
 
-    // private bool BuildRound(int columnCount)
-    // {
-    //     if (!wordsByLength.TryGetValue(columnCount, out List<string> possibleWords) || possibleWords.Count == 0)
-    //     {
-    //         return false;
-    //     }
-
-    //     currentColumnCount = columnCount;
-    //     string targetWord = possibleWords[UnityEngine.Random.Range(0, possibleWords.Count)];
-
-    //     currentColumnOptions.Clear();
-    //     currentValidWords.Clear();
-
-    //     for (int columnIndex = 0; columnIndex < columnCount; columnIndex++)
-    //     {
-    //         List<char> options = new List<char>(lettersPerColumn)
-    //         {
-    //             targetWord[columnIndex]
-    //         };
-
-    //         while (options.Count < lettersPerColumn)
-    //         {
-    //             char candidate = GetRandomLetter();
-    //             if (!ContainsLetter(options, candidate))
-    //             {
-    //                 options.Add(candidate);
-    //             }
-    //         }
-
-    //         Shuffle(options);
-    //         currentColumnOptions.Add(options.ToArray());
-    //     }
-
-    //     for (int i = 0; i < possibleWords.Count; i++)
-    //     {
-    //         string word = possibleWords[i];
-    //         if (WordFitsColumns(word))
-    //         {
-    //             currentValidWords.Add(word);
-    //         }
-    //     }
-
-    //     if (currentValidWords.Count == 0)
-    //     {
-    //         currentValidWords.Add(targetWord);
-    //     }
-
-    //     enteredLetters = new char[columnCount];
-    //     RefreshRoundVisuals();
-    //     SetActiveColumn(0);
-    //     return true;
-    // }
-
     private bool BuildRound(int columnCount)
     {
         if (!wordsByLength.TryGetValue(columnCount, out List<string> possibleWords))
@@ -733,7 +680,7 @@ public class ColumnWordMinigame : MonoBehaviour
 
     private void UpdateScoreUI()
     {
-        scoreText.text = $"Score: {score}";
+        scoreText.text = $"{score}";
     }
 
     private void UpdateTimerUI()
