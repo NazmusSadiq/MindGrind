@@ -5,7 +5,7 @@ public class Level1_Manager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerController playerController;
-    [SerializeField] private TMP_Text timeRemainingText; // Displays elapsed time now
+    [SerializeField] private TMP_Text timeRemainingText; 
     [SerializeField] private GameObject gameOverMenu;
     [SerializeField] private GameObject upArrow;
     [SerializeField] private GameObject rightArrow;

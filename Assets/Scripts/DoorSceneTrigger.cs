@@ -8,6 +8,7 @@ public class DoorSceneTrigger : MonoBehaviour
     [SerializeField] private GameObject successMenu;
     [SerializeField] private TMP_Text successCurrentScoreText;
     [SerializeField] private TMP_Text successBestScoreText;
+    [SerializeField] private bool canOpen;
 
     [Header("Score Settings (For IDs < 30)")]
     [SerializeField] private int currentScore;
@@ -21,13 +22,11 @@ public class DoorSceneTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponentInParent<PlayerController>() == null) return;
+        if (other.GetComponentInParent<PlayerController>() == null || !canOpen) return;
         if (EnemyController.IsAnyEnemyAware()) return;
 
         MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
 
-        // FIX: Check if the scene name is blank instead of checking if ID is 0! 
-        // This ensures Minigame ID 0 can load its profile naturally.
         if (string.IsNullOrEmpty(currentGame.sceneName))
         {
             string activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
@@ -38,7 +37,6 @@ public class DoorSceneTrigger : MonoBehaviour
             }
         }
 
-        // Proceed if we have a valid game title loaded from the database
         if (!string.IsNullOrEmpty(currentGame.gameTitle))
         {
             string activeIdString = currentGame.id.ToString();
@@ -47,18 +45,14 @@ public class DoorSceneTrigger : MonoBehaviour
             if (currentGame.id < 30)
             {
                 finalValueToSave = currentScore;
-                Debug.Log($"[DoorTrigger] Processing Point-Based Game (ID: {currentGame.id}). Sending Score: {finalValueToSave}");
             }
             else
             {
                 finalValueToSave = Mathf.RoundToInt(Time.timeSinceLevelLoad);
-                Debug.Log($"[DoorTrigger] Processing Time-Based Game (ID: {currentGame.id}). Sending Time: {finalValueToSave}s");
             }
 
-            // Save data directly into PlayerPrefs backend and get the updated record value back
             int updatedBestScore = MinigameBestScoreStore.UpdateBestScore(activeIdString, finalValueToSave);
 
-            // Update standard text fallbacks if assigned directly to this trigger
             if (successCurrentScoreText != null)
             {
                 successCurrentScoreText.text = currentGame.id < 30 ? $"Score: {finalValueToSave}" : $"Time: {finalValueToSave}s";
@@ -68,7 +62,6 @@ public class DoorSceneTrigger : MonoBehaviour
                 successBestScoreText.text = currentGame.id < 30 ? $"Best Score: {updatedBestScore}" : $"Best Time: {updatedBestScore}s";
             }
 
-            // Update your centralized scene canvas UI script component
             MinigameBestScoreStore uiStore = Object.FindFirstObjectByType<MinigameBestScoreStore>();
             if (uiStore != null)
             {

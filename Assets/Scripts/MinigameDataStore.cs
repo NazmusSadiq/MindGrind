@@ -58,15 +58,51 @@ public class MinigameDataStore : MonoBehaviour
 
         minigames = new GameData[35];
 
-        // these five are not minigames, but levels. using them for similar structure.
+        // these five are not minigames, but levels. Only using them for similar structure.
 
         minigames[30] = new GameData
         {
             id = 30,
             gameTitle = "Level 1",
-            description = "A grid of tiles briefly shows a pattern, then the tiles are shuffled. Click the tiles in the original pattern order. Each correct click adds 10 points and increases the pattern length, while each wrong click deducts 10 points.",
-            cognitiveSkills = "Memory + Attention",
+            description = "Your movement keys adapt to the orientation arrow, which always represents UP. (e.g., If the arrow points RIGHT, D moves you Up, and S moves you Right). Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail!",
+            cognitiveSkills = "Attention + Reflex",
             sceneName = "Level1"
+        };
+
+        minigames[31] = new GameData
+        {
+            id = 31,
+            gameTitle = "Level 2",
+            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay close attention at the start of the game when the safe boxes are revealed. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail!",
+            cognitiveSkills = "Memory + Attention",
+            sceneName = "Level2"
+        };
+
+        minigames[32] = new GameData
+        {
+            id = 32,
+            gameTitle = "Level 3",
+            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay close attention at the start of the game when the safe boxes are revealed. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail!",
+            cognitiveSkills = "Memory + Attention",
+            sceneName = "Level3"
+        };
+
+        minigames[33] = new GameData
+        {
+            id = 33,
+            gameTitle = "Level 4",
+            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay close attention at the start of the game when the safe boxes are revealed. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail!",
+            cognitiveSkills = "Memory + Attention",
+            sceneName = "Level4"
+        };
+
+        minigames[34] = new GameData
+        {
+            id = 35,
+            gameTitle = "Level 5",
+            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay close attention at the start of the game when the safe boxes are revealed. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail!",
+            cognitiveSkills = "Memory + Attention",
+            sceneName = "Level5"
         };
 
         // from here, actual minigame starts

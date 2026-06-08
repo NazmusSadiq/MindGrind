@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
@@ -31,7 +32,6 @@ public class MainMenu : MonoBehaviour
     public void QuitGame()
     {
         Debug.Log("Quit!");
-
         Application.Quit();
     }
 
@@ -51,9 +51,7 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-        SceneManager.LoadScene(
-            currentGame.sceneName
-        );
+        SceneManager.LoadScene(currentGame.sceneName);
     }
 
     public void RestartGame()
@@ -94,12 +92,8 @@ public class MainMenu : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-
     public static void PauseGameAndShowDetailsPanel()
     {
-        // REMOVE OR COMMENT OUT THIS LINE:
-        // if (!isStoryMode) { return; } 
-
         SceneManager.sceneLoaded -= OnStoryModeSceneLoaded;
         SceneManager.sceneLoaded += OnStoryModeSceneLoaded;
 
@@ -112,15 +106,31 @@ public class MainMenu : MonoBehaviour
 
     public void HideDetailsPanelAndResumeGame()
     {
-        if (storyModeDetailsPanel == null)
-        {
-            Debug.LogWarning("Story mode details panel is not assigned.", this);
-            Time.timeScale = 1f;
-            return;
-        }
+        if (storyModeDetailsPanel == null) return;
 
         storyModeDetailsPanel.SetActive(false);
         Time.timeScale = 1f;
+
+        StartCoroutine(EnableInputAfterDelay());
+    }
+
+    private IEnumerator EnableInputAfterDelay()
+    {
+        yield return new WaitForSeconds(0.25f);
+
+        Level2_Manager level2 = Object.FindFirstObjectByType<Level2_Manager>();
+        if (level2 != null)
+        {
+            level2.StartCinematicReveal();
+            yield break;
+        }
+
+        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+        if (player != null)
+        {
+            player.SetGameStarted(true);
+            player.EnableGameplayInput(true);
+        }
     }
 
     private void ShowDetailsPanelAndPauseGame()
@@ -132,14 +142,18 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-        // 1. Force identify the current level layout
         int correctLevelId = GetCurrentLevelId();
-
-        // 2. Explicitly update the active description profile using that ID
         UpdateDescription(correctLevelId);
 
         storyModeDetailsPanel.SetActive(true);
         Time.timeScale = 0f;
+
+        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+        if (player != null)
+        {
+            player.SetGameStarted(false);
+            player.EnableGameplayInput(false);
+        }
     }
 
     public void UpdateDescription(int levelId)
@@ -160,7 +174,6 @@ public class MainMenu : MonoBehaviour
         if (storyModeDescriptionText != null) storyModeDescriptionText.text = gameData.description;
         if (storyModeAttributesText != null) storyModeAttributesText.text = gameData.cognitiveSkills;
 
-        // Ensure this UI text component reads from the correct dynamic PlayerPrefs key string
         if (storyModeHighestScoreText != null)
         {
             int highestScore = MinigameBestScoreStore.GetBestScore(gameData.id.ToString());
@@ -171,7 +184,6 @@ public class MainMenu : MonoBehaviour
             }
             else
             {
-                // Format display text dynamically depending on whether it tracks score or time
                 storyModeHighestScoreText.text = gameData.id < 30 ?
                     $"Highest Score: {highestScore}" :
                     $"Best Time: {highestScore}s";

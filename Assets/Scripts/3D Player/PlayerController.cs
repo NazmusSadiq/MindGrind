@@ -32,6 +32,9 @@ public class PlayerController : MonoBehaviour
 
     private PlayerState currentState = PlayerState.Idle;
 
+    // ================= STATE MANAGEMENT =================
+    private bool gameStarted = false;
+
     // ================= MOVEMENT =================
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
@@ -198,6 +201,9 @@ public class PlayerController : MonoBehaviour
 
     private bool CanAct()
     {
+        // CRITICAL CHECK: Block execution if the game has not safely unpaused
+        if (!gameStarted) return false;
+
         return currentState == PlayerState.Idle || currentState == PlayerState.Move;
     }
 
@@ -553,7 +559,25 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat(moveSpeedParam, animSpeed, 0.1f, Time.deltaTime);
     }
 
-    // optional debug gizmo
+    public void SetGameStarted(bool started)
+    {
+        gameStarted = started;
+    }
+
+    public void EnableGameplayInput(bool enable)
+    {
+        if (playerInput == null) return;
+
+        if (enable)
+        {
+            playerInput.ActivateInput();
+        }
+        else
+        {
+            playerInput.DeactivateInput();
+        }
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
