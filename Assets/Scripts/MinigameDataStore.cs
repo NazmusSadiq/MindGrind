@@ -107,6 +107,15 @@ public class MinigameDataStore : MonoBehaviour
             sceneName = "Minigame4"
         };
 
+        minigames[6] = new GameData
+        {
+            id = 6,
+            gameTitle = "Column Word",
+            description = "Each round shows a set of columns with three letters in each column. Type one letter from each column to form a valid dictionary word. A correct word gives +10 points and advances to the next round with one more column, while an invalid word costs -5 points.",
+            cognitiveSkills = "Attention + Vocabulary",
+            sceneName = "Minigame7"
+        };
+
         minigames[13] = new GameData
         {
             id = 13,
