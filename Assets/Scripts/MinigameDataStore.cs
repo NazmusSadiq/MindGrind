@@ -56,7 +56,20 @@ public class MinigameDataStore : MonoBehaviour
             return;
         }
 
-        minigames = new GameData[16];
+        minigames = new GameData[35];
+
+        // these five are not minigames, but levels. using them for similar structure.
+
+        minigames[30] = new GameData
+        {
+            id = 30,
+            gameTitle = "Level 1",
+            description = "A grid of tiles briefly shows a pattern, then the tiles are shuffled. Click the tiles in the original pattern order. Each correct click adds 10 points and increases the pattern length, while each wrong click deducts 10 points.",
+            cognitiveSkills = "Memory + Attention",
+            sceneName = "Level1"
+        };
+
+        // from here, actual minigame starts
 
         minigames[0] = new GameData
         {
@@ -188,6 +201,9 @@ public class MinigameDataStore : MonoBehaviour
     public static GameData GetCurrentGame()
     {
         EnsureDataInitialized();
+
+        Debug.Log($"[MinigameDataStore] Current Game Info -> ID: {currentGame.id} | Title: {currentGame.gameTitle} | Scene: {currentGame.sceneName}");
+
         return currentGame;
     }
 }

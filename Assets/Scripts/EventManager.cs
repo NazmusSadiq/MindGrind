@@ -94,15 +94,20 @@ public class MainMenu : MonoBehaviour
         Time.timeScale = 1f;
     }
 
+
     public static void PauseGameAndShowDetailsPanel()
     {
-        if (!isStoryMode)
-        {
-            return;
-        }
+        // REMOVE OR COMMENT OUT THIS LINE:
+        // if (!isStoryMode) { return; } 
 
         SceneManager.sceneLoaded -= OnStoryModeSceneLoaded;
         SceneManager.sceneLoaded += OnStoryModeSceneLoaded;
+
+        MainMenu mainMenuInstance = Object.FindFirstObjectByType<MainMenu>();
+        if (mainMenuInstance != null)
+        {
+            mainMenuInstance.ShowDetailsPanelAndPauseGame();
+        }
     }
 
     public void HideDetailsPanelAndResumeGame()
@@ -127,7 +132,12 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-        UpdateDescription(GetCurrentLevelId());
+        // 1. Force identify the current level layout
+        int correctLevelId = GetCurrentLevelId();
+
+        // 2. Explicitly update the active description profile using that ID
+        UpdateDescription(correctLevelId);
+
         storyModeDetailsPanel.SetActive(true);
         Time.timeScale = 0f;
     }
@@ -135,35 +145,37 @@ public class MainMenu : MonoBehaviour
     public void UpdateDescription(int levelId)
     {
         MinigameDataStore.GameData gameData;
+
         if (!MinigameDataStore.TryGetGameData(levelId, out gameData)
             && !MinigameDataStore.TryGetGameDataBySceneName(SceneManager.GetActiveScene().name, out gameData))
         {
-            Debug.LogWarning($"Could not find minigame details for level id '{levelId}'.", this);
+            Debug.LogWarning($"Could not find minigame details.", this);
             return;
         }
 
         MinigameDataStore.SetCurrentGame(gameData);
         CacheStoryModeDetailsReferences();
 
-        if (storyModeTitleText != null)
-        {
-            storyModeTitleText.text = gameData.gameTitle;
-        }
+        if (storyModeTitleText != null) storyModeTitleText.text = gameData.gameTitle;
+        if (storyModeDescriptionText != null) storyModeDescriptionText.text = gameData.description;
+        if (storyModeAttributesText != null) storyModeAttributesText.text = gameData.cognitiveSkills;
 
-        if (storyModeDescriptionText != null)
-        {
-            storyModeDescriptionText.text = gameData.description;
-        }
-
-        if (storyModeAttributesText != null)
-        {
-            storyModeAttributesText.text = gameData.cognitiveSkills;
-        }
-
+        // Ensure this UI text component reads from the correct dynamic PlayerPrefs key string
         if (storyModeHighestScoreText != null)
         {
-            int highestScore = MinigameBestScoreStore.GetBestScore(gameData.sceneName);
-            storyModeHighestScoreText.text = $"Highest Score: {highestScore}";
+            int highestScore = MinigameBestScoreStore.GetBestScore(gameData.id.ToString());
+
+            if (highestScore == 0)
+            {
+                storyModeHighestScoreText.text = "Highest Score: None";
+            }
+            else
+            {
+                // Format display text dynamically depending on whether it tracks score or time
+                storyModeHighestScoreText.text = gameData.id < 30 ?
+                    $"Highest Score: {highestScore}" :
+                    $"Best Time: {highestScore}s";
+            }
         }
     }
 

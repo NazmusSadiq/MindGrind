@@ -13,6 +13,7 @@ public class EnemyController : MonoBehaviour
         Patrol,
         Wait,
         Chase,
+        Investigate,
         Attack,
         Hit,
         Dead
@@ -26,6 +27,8 @@ public class EnemyController : MonoBehaviour
 
     [Header("Detection")]
     [SerializeField] private float sightRange = 8f;
+    [SerializeField] private float viewAngle = 75f;
+    [SerializeField] private float forgetDuration = 3f;
     [SerializeField] private float chaseSpeed = 4f;
     [SerializeField] private float rotationSpeed = 10f;
 
@@ -62,6 +65,9 @@ public class EnemyController : MonoBehaviour
     private Coroutine hitCoroutine;
     private int currentHealth;
     private bool isAware;
+
+    private float forgetTimer;
+    private Vector3 lastKnownPosition;
 
     public static bool IsAnyEnemyAware()
     {
@@ -119,14 +125,45 @@ public class EnemyController : MonoBehaviour
 
         if (canSeePlayer)
         {
+            forgetTimer = forgetDuration;
             isAware = true;
+
+            if (playerTarget != null)
+                lastKnownPosition = playerTarget.position;
+
             StopWaiting();
             HandleChase();
+
+            // New: Alert nearby teammates since we see the player
+            AlertNearbyAllies();
+        }
+        else if (isAware)
+        {
+            forgetTimer -= Time.deltaTime;
+            if (forgetTimer <= 0f)
+            {
+                isAware = false;
+                currentState = EnemyState.Investigate;
+            }
+            else
+            {
+                HandleChase();
+                // New: Keep updating nearby teammates during the chase grace-period
+                AlertNearbyAllies();
+            }
         }
         else
         {
-            isAware = false;
-            HandlePatrol();
+            if (currentState == EnemyState.Investigate)
+            {
+                HandleInvestigation();
+                // New: Still alert allies while navigating to the investigation point
+                AlertNearbyAllies();
+            }
+            else
+            {
+                HandlePatrol();
+            }
         }
 
         UpdateAnimations();
@@ -157,10 +194,55 @@ public class EnemyController : MonoBehaviour
         if (direction.sqrMagnitude > sightRange * sightRange)
             return false;
 
+        Vector3 directionToTargetXZ = new Vector3(direction.x, 0f, direction.z).normalized;
+        Vector3 enemyForwardXZ = new Vector3(transform.forward.x, 0f, transform.forward.z).normalized;
+
+        float angleToPlayer = Vector3.Angle(enemyForwardXZ, directionToTargetXZ);
+
+        if (angleToPlayer > viewAngle * 0.5f)
+            return false;
+
         if (Physics.Raycast(origin, direction.normalized, out RaycastHit hit, sightRange))
             return hit.collider.CompareTag("Player");
 
         return false;
+    }
+
+    // New Method: Alerts unalerted enemies within half vision range
+    private void AlertNearbyAllies()
+    {
+        float alertRadius = sightRange * 0.5f;
+        Collider[] nearbyColliders = Physics.OverlapSphere(transform.position, alertRadius);
+
+        foreach (Collider col in nearbyColliders)
+        {
+            // Make sure we don't accidentally check ourselves
+            if (col.gameObject == this.gameObject)
+                continue;
+
+            EnemyController ally = col.GetComponent<EnemyController>();
+
+            // If we found a valid ally who isn't dead and isn't currently tracking the player
+            if (ally != null && !ally.IsDead && !ally.IsAware && ally.currentState != EnemyState.Investigate)
+            {
+                ally.ReceiveExternalAlert(lastKnownPosition);
+            }
+        }
+    }
+
+    // New Method: Called by other enemies to pass along target positions
+    public void ReceiveExternalAlert(Vector3 targetPosition)
+    {
+        if (currentState == EnemyState.Dead || isAttacking || isTakingHit)
+            return;
+
+        StopWaiting();
+
+        lastKnownPosition = targetPosition;
+        forgetTimer = forgetDuration;
+        isAware = true;
+
+        currentState = EnemyState.Chase;
     }
 
     private void HandlePatrol()
@@ -192,6 +274,32 @@ public class EnemyController : MonoBehaviour
         currentState = EnemyState.Wait;
         yield return new WaitForSeconds(waitAtPointDuration);
         movingToEndPoint = !movingToEndPoint;
+        waitCoroutine = null;
+        currentState = EnemyState.Patrol;
+    }
+
+    private void HandleInvestigation()
+    {
+        if (waitCoroutine != null)
+            return;
+
+        Vector3 direction = lastKnownPosition - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude <= reachDistance * reachDistance)
+        {
+            waitCoroutine = StartCoroutine(InvestigationWaitRoutine());
+            return;
+        }
+
+        Move(direction.normalized, chaseSpeed);
+    }
+
+    private IEnumerator InvestigationWaitRoutine()
+    {
+        currentState = EnemyState.Wait;
+        yield return new WaitForSeconds(waitAtPointDuration);
+
         waitCoroutine = null;
         currentState = EnemyState.Patrol;
     }
@@ -289,12 +397,20 @@ public class EnemyController : MonoBehaviour
         if (CanSeePlayer())
         {
             isAware = true;
+            forgetTimer = forgetDuration;
             currentState = EnemyState.Chase;
         }
         else
         {
-            isAware = false;
-            currentState = EnemyState.Patrol;
+            if (forgetTimer > 0)
+            {
+                currentState = EnemyState.Chase;
+            }
+            else
+            {
+                isAware = false;
+                currentState = EnemyState.Investigate;
+            }
         }
     }
 
@@ -312,6 +428,11 @@ public class EnemyController : MonoBehaviour
             Die();
             return;
         }
+
+        forgetTimer = forgetDuration;
+        isAware = true;
+        if (playerTarget != null)
+            lastKnownPosition = playerTarget.position;
 
         TakeHit();
     }
@@ -355,12 +476,20 @@ public class EnemyController : MonoBehaviour
         if (CanSeePlayer())
         {
             isAware = true;
+            forgetTimer = forgetDuration;
             currentState = EnemyState.Chase;
         }
         else
         {
-            isAware = false;
-            currentState = EnemyState.Patrol;
+            if (forgetTimer > 0)
+            {
+                currentState = EnemyState.Chase;
+            }
+            else
+            {
+                isAware = false;
+                currentState = EnemyState.Investigate;
+            }
         }
     }
 
@@ -431,13 +560,13 @@ public class EnemyController : MonoBehaviour
         if (animator == null)
             return;
 
-        bool moving = currentState == EnemyState.Patrol || currentState == EnemyState.Chase;
-        bool running = currentState == EnemyState.Chase;
+        bool moving = currentState == EnemyState.Patrol || currentState == EnemyState.Chase || currentState == EnemyState.Investigate;
+        bool running = currentState == EnemyState.Chase || currentState == EnemyState.Investigate;
         float animSpeed = 0f;
 
         if (currentState == EnemyState.Patrol)
             animSpeed = 0.5f;
-        else if (currentState == EnemyState.Chase)
+        else if (currentState == EnemyState.Chase || currentState == EnemyState.Investigate)
             animSpeed = 1f;
 
         animator.SetBool(isMovingParam, moving);
@@ -449,6 +578,27 @@ public class EnemyController : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
+
+        // Draw Alert Range (Half of sight range)
+        Gizmos.color = Color.orange;
+        Gizmos.DrawWireSphere(transform.position, sightRange * 0.5f);
+
+        Gizmos.color = Color.blue;
+        Vector3 forwardLook = transform.forward * sightRange;
+        Quaternion leftRayRotation = Quaternion.AngleAxis(-viewAngle * 0.5f, Vector3.up);
+        Quaternion rightRayRotation = Quaternion.AngleAxis(viewAngle * 0.5f, Vector3.up);
+        Vector3 leftRayDirection = leftRayRotation * forwardLook;
+        Vector3 rightRayDirection = rightRayRotation * forwardLook;
+
+        Gizmos.DrawLine(transform.position + Vector3.up, (transform.position + Vector3.up) + leftRayDirection);
+        Gizmos.DrawLine(transform.position + Vector3.up, (transform.position + Vector3.up) + rightRayDirection);
+
+        if (currentState == EnemyState.Investigate)
+        {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(lastKnownPosition, 0.5f);
+            Gizmos.DrawLine(transform.position + Vector3.up, lastKnownPosition + Vector3.up);
+        }
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);

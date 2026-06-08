@@ -5,7 +5,7 @@ public class Level1_Manager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerController playerController;
-    [SerializeField] private TMP_Text timeRemainingText;
+    [SerializeField] private TMP_Text timeRemainingText; // Displays elapsed time now
     [SerializeField] private GameObject gameOverMenu;
     [SerializeField] private GameObject upArrow;
     [SerializeField] private GameObject rightArrow;
@@ -13,20 +13,30 @@ public class Level1_Manager : MonoBehaviour
     [SerializeField] private GameObject leftArrow;
 
     [Header("Gameplay")]
-    [SerializeField] private float levelDuration = 60f;
     [SerializeField] private float initialNormalDuration = 10f;
     [SerializeField] private float directionChangeInterval = 10f;
 
     private float elapsedTime;
     private float nextDirectionChangeTime;
-    private float timeRemaining;
     private bool isLevelOver;
 
     private void Start()
     {
+        MainMenu mainMenuFallback = Object.FindFirstObjectByType<MainMenu>();
+        if (mainMenuFallback != null)
+        {
+            mainMenuFallback.SetStoryMode(true);
+        }
+        else
+        {
+            typeof(MainMenu).GetMethod("SetStoryMode", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)?
+                .Invoke(new GameObject("Temp_Menu_Initializer").AddComponent<MainMenu>(), new object[] { true });
+
+        }
+
         if (playerController == null)
         {
-            playerController = FindObjectOfType<PlayerController>();
+            playerController = Object.FindFirstObjectByType<PlayerController>();
         }
 
         if (playerController == null)
@@ -38,28 +48,26 @@ public class Level1_Manager : MonoBehaviour
 
         playerController.SetControlDirection(PlayerController.ControlDirection.Up);
         ShowArrow(PlayerController.ControlDirection.Up);
-        timeRemaining = Mathf.Max(0f, levelDuration);
+
+        elapsedTime = 0f;
         UpdateTimerUI();
         nextDirectionChangeTime = Mathf.Max(0f, initialNormalDuration);
+
+        MainMenu.PauseGameAndShowDetailsPanel();
     }
 
     private void Update()
     {
-        if (isLevelOver || playerController.IsDead)
-        {
-            return;
-        }
+        if (isLevelOver) return;
 
-        timeRemaining -= Time.deltaTime;
-        UpdateTimerUI();
-
-        if (timeRemaining <= 0f)
+        if (playerController.IsDead)
         {
             TriggerGameOver();
             return;
         }
 
         elapsedTime += Time.deltaTime;
+        UpdateTimerUI();
 
         if (elapsedTime < nextDirectionChangeTime)
         {
@@ -78,11 +86,19 @@ public class Level1_Manager : MonoBehaviour
         ShowArrow(direction);
     }
 
+    public void TriggerLevelComplete()
+    {
+        if (isLevelOver) return;
+
+        isLevelOver = true;
+        Debug.Log($"Level Completed in: {elapsedTime:F2} seconds!");
+
+        ShowArrow(null);
+    }
+
     private void TriggerGameOver()
     {
         isLevelOver = true;
-        timeRemaining = 0f;
-        UpdateTimerUI();
 
         if (playerController != null)
         {
@@ -98,8 +114,17 @@ public class Level1_Manager : MonoBehaviour
     {
         if (timeRemainingText != null)
         {
-            int secondsLeft = Mathf.CeilToInt(Mathf.Max(0f, timeRemaining));
-            timeRemainingText.text = secondsLeft.ToString();
+            int minutes = Mathf.FloorToInt(elapsedTime / 60f);
+            int seconds = Mathf.FloorToInt(elapsedTime % 60f);
+
+            if (minutes > 0)
+            {
+                timeRemainingText.text = string.Format("{0}:{1:00}", minutes, seconds);
+            }
+            else
+            {
+                timeRemainingText.text = seconds.ToString();
+            }
         }
     }
 

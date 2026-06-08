@@ -38,6 +38,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float sprintMultiplier = 2f;
     [SerializeField] private float rotationSpeed = 12f;
     [SerializeField] private ControlDirection controlDirection = ControlDirection.Up;
+    [SerializeField] private float gravity = -25f;
+    [SerializeField] private float groundedForce = -2f;
+
+    private float verticalVelocity;
 
     // ================= INTERACTION =================
     [Header("Interaction")]
@@ -203,30 +207,45 @@ public class PlayerController : MonoBehaviour
 
         Vector2 input = moveAction.ReadValue<Vector2>();
         input = RemapMovementInput(input);
+
         bool sprint = sprintAction.ReadValue<float>() > 0.1f;
 
         Vector3 move = new Vector3(-input.y, 0f, input.x);
 
-        if (move.sqrMagnitude > 0.001f)
+        if (characterController.isGrounded && verticalVelocity < 0f)
+        {
+            verticalVelocity = groundedForce;
+        }
+
+        verticalVelocity += gravity * Time.deltaTime;
+        move.y = verticalVelocity;
+
+        if (move.x != 0f || move.z != 0f)
         {
             currentState = PlayerState.Move;
 
-            Quaternion targetRot = Quaternion.LookRotation(move.normalized, Vector3.up);
+            Vector3 flatMove = new Vector3(move.x, 0f, move.z);
+
+            Quaternion targetRot =
+                Quaternion.LookRotation(flatMove.normalized, Vector3.up);
+
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
                 targetRot,
                 rotationSpeed * Time.deltaTime
             );
-
-            float speed = moveSpeed * (sprint ? sprintMultiplier : 1f);
-
-            characterController.Move(move * speed * Time.deltaTime);
         }
         else
         {
-            if (!IsLocked())
-                currentState = PlayerState.Idle;
+            currentState = PlayerState.Idle;
         }
+
+        float speed = moveSpeed * (sprint ? sprintMultiplier : 1f);
+
+        Vector3 finalMove =
+            new Vector3(move.x * speed, move.y, move.z * speed);
+
+        characterController.Move(finalMove * Time.deltaTime);
     }
 
     public void SetControlDirection(ControlDirection direction)
