@@ -32,12 +32,19 @@ public class PlayerController : MonoBehaviour
 
     private PlayerState currentState = PlayerState.Idle;
 
+    // ================= STATE MANAGEMENT =================
+    private bool gameStarted = false;
+
     // ================= MOVEMENT =================
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float sprintMultiplier = 2f;
     [SerializeField] private float rotationSpeed = 12f;
     [SerializeField] private ControlDirection controlDirection = ControlDirection.Up;
+    [SerializeField] private float gravity = -25f;
+    [SerializeField] private float groundedForce = -2f;
+
+    private float verticalVelocity;
 
     // ================= INTERACTION =================
     [Header("Interaction")]
@@ -194,6 +201,9 @@ public class PlayerController : MonoBehaviour
 
     private bool CanAct()
     {
+        // CRITICAL CHECK: Block execution if the game has not safely unpaused
+        if (!gameStarted) return false;
+
         return currentState == PlayerState.Idle || currentState == PlayerState.Move;
     }
 
@@ -203,30 +213,45 @@ public class PlayerController : MonoBehaviour
 
         Vector2 input = moveAction.ReadValue<Vector2>();
         input = RemapMovementInput(input);
+
         bool sprint = sprintAction.ReadValue<float>() > 0.1f;
 
         Vector3 move = new Vector3(-input.y, 0f, input.x);
 
-        if (move.sqrMagnitude > 0.001f)
+        if (characterController.isGrounded && verticalVelocity < 0f)
+        {
+            verticalVelocity = groundedForce;
+        }
+
+        verticalVelocity += gravity * Time.deltaTime;
+        move.y = verticalVelocity;
+
+        if (move.x != 0f || move.z != 0f)
         {
             currentState = PlayerState.Move;
 
-            Quaternion targetRot = Quaternion.LookRotation(move.normalized, Vector3.up);
+            Vector3 flatMove = new Vector3(move.x, 0f, move.z);
+
+            Quaternion targetRot =
+                Quaternion.LookRotation(flatMove.normalized, Vector3.up);
+
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
                 targetRot,
                 rotationSpeed * Time.deltaTime
             );
-
-            float speed = moveSpeed * (sprint ? sprintMultiplier : 1f);
-
-            characterController.Move(move * speed * Time.deltaTime);
         }
         else
         {
-            if (!IsLocked())
-                currentState = PlayerState.Idle;
+            currentState = PlayerState.Idle;
         }
+
+        float speed = moveSpeed * (sprint ? sprintMultiplier : 1f);
+
+        Vector3 finalMove =
+            new Vector3(move.x * speed, move.y, move.z * speed);
+
+        characterController.Move(finalMove * Time.deltaTime);
     }
 
     public void SetControlDirection(ControlDirection direction)
@@ -534,7 +559,25 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat(moveSpeedParam, animSpeed, 0.1f, Time.deltaTime);
     }
 
-    // optional debug gizmo
+    public void SetGameStarted(bool started)
+    {
+        gameStarted = started;
+    }
+
+    public void EnableGameplayInput(bool enable)
+    {
+        if (playerInput == null) return;
+
+        if (enable)
+        {
+            playerInput.ActivateInput();
+        }
+        else
+        {
+            playerInput.DeactivateInput();
+        }
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

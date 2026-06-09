@@ -4,30 +4,11 @@ using UnityEngine.SceneManagement;
 public class DoorSceneLoader : MonoBehaviour
 {
     [SerializeField] private string sceneName;
-
     private bool hasLoadedScene;
 
-    private void OnTriggerEnter(Collider other)
+    public void LoadNextMinigameScene()
     {
-        TryLoadScene(other);
-    }
-
-    public void TryLoadScene(Collider other)
-    {
-        if (hasLoadedScene)
-        {
-            return;
-        }
-
-        if (other.GetComponentInParent<PlayerController>() == null)
-        {
-            return;
-        }
-
-        if (EnemyController.IsAnyEnemyAware())
-        {
-            return;
-        }
+        if (hasLoadedScene) return;
 
         if (string.IsNullOrWhiteSpace(sceneName))
         {
@@ -36,7 +17,9 @@ public class DoorSceneLoader : MonoBehaviour
         }
 
         hasLoadedScene = true;
+
         Time.timeScale = 1f;
+
         SceneManager.LoadScene(sceneName);
         MainMenu.PauseGameAndShowDetailsPanel();
     }

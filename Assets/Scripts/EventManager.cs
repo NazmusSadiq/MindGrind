@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
@@ -31,7 +32,6 @@ public class MainMenu : MonoBehaviour
     public void QuitGame()
     {
         Debug.Log("Quit!");
-
         Application.Quit();
     }
 
@@ -51,9 +51,7 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-        SceneManager.LoadScene(
-            currentGame.sceneName
-        );
+        SceneManager.LoadScene(currentGame.sceneName);
     }
 
     public void RestartGame()
@@ -96,26 +94,43 @@ public class MainMenu : MonoBehaviour
 
     public static void PauseGameAndShowDetailsPanel()
     {
-        if (!isStoryMode)
-        {
-            return;
-        }
-
         SceneManager.sceneLoaded -= OnStoryModeSceneLoaded;
         SceneManager.sceneLoaded += OnStoryModeSceneLoaded;
+
+        MainMenu mainMenuInstance = Object.FindFirstObjectByType<MainMenu>();
+        if (mainMenuInstance != null)
+        {
+            mainMenuInstance.ShowDetailsPanelAndPauseGame();
+        }
     }
 
     public void HideDetailsPanelAndResumeGame()
     {
-        if (storyModeDetailsPanel == null)
-        {
-            Debug.LogWarning("Story mode details panel is not assigned.", this);
-            Time.timeScale = 1f;
-            return;
-        }
+        if (storyModeDetailsPanel == null) return;
 
         storyModeDetailsPanel.SetActive(false);
         Time.timeScale = 1f;
+
+        StartCoroutine(EnableInputAfterDelay());
+    }
+
+    private IEnumerator EnableInputAfterDelay()
+    {
+        yield return new WaitForSeconds(0.25f);
+
+        Level2_Manager level2 = Object.FindFirstObjectByType<Level2_Manager>();
+        if (level2 != null)
+        {
+            level2.StartCinematicReveal();
+            yield break;
+        }
+
+        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+        if (player != null)
+        {
+            player.SetGameStarted(true);
+            player.EnableGameplayInput(true);
+        }
     }
 
     private void ShowDetailsPanelAndPauseGame()
@@ -127,43 +142,52 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-        UpdateDescription(GetCurrentLevelId());
+        int correctLevelId = GetCurrentLevelId();
+        UpdateDescription(correctLevelId);
+
         storyModeDetailsPanel.SetActive(true);
         Time.timeScale = 0f;
+
+        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+        if (player != null)
+        {
+            player.SetGameStarted(false);
+            player.EnableGameplayInput(false);
+        }
     }
 
     public void UpdateDescription(int levelId)
     {
         MinigameDataStore.GameData gameData;
+
         if (!MinigameDataStore.TryGetGameData(levelId, out gameData)
             && !MinigameDataStore.TryGetGameDataBySceneName(SceneManager.GetActiveScene().name, out gameData))
         {
-            Debug.LogWarning($"Could not find minigame details for level id '{levelId}'.", this);
+            Debug.LogWarning($"Could not find minigame details.", this);
             return;
         }
 
         MinigameDataStore.SetCurrentGame(gameData);
         CacheStoryModeDetailsReferences();
 
-        if (storyModeTitleText != null)
-        {
-            storyModeTitleText.text = gameData.gameTitle;
-        }
-
-        if (storyModeDescriptionText != null)
-        {
-            storyModeDescriptionText.text = gameData.description;
-        }
-
-        if (storyModeAttributesText != null)
-        {
-            storyModeAttributesText.text = gameData.cognitiveSkills;
-        }
+        if (storyModeTitleText != null) storyModeTitleText.text = gameData.gameTitle;
+        if (storyModeDescriptionText != null) storyModeDescriptionText.text = gameData.description;
+        if (storyModeAttributesText != null) storyModeAttributesText.text = gameData.cognitiveSkills;
 
         if (storyModeHighestScoreText != null)
         {
-            int highestScore = MinigameBestScoreStore.GetBestScore(gameData.sceneName);
-            storyModeHighestScoreText.text = $"Highest Score: {highestScore}";
+            int highestScore = MinigameBestScoreStore.GetBestScore(gameData.id.ToString());
+
+            if (highestScore == 0)
+            {
+                storyModeHighestScoreText.text = "Highest Score: None";
+            }
+            else
+            {
+                storyModeHighestScoreText.text = gameData.id < 30 ?
+                    $"Highest Score: {highestScore}" :
+                    $"Best Time: {highestScore}s";
+            }
         }
     }
 
