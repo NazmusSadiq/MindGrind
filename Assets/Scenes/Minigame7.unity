@@ -9750,6 +9750,7 @@ MonoBehaviour:
   timeRemainingText: {fileID: 1922503369}
   messageText: {fileID: 1126155452}
   bestScoreStore: {fileID: 1515275007}
+  selectionDictionaryFile: {fileID: 4900000, guid: c911267ad4914a641911cfe30da6c463, type: 3}
   wordDictionaryFile: {fileID: 4900000, guid: 611f919338a5a3c4b98d93b6ebab842f, type: 3}
   gameDuration: 60
   startingColumnCount: 4

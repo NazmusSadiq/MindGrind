@@ -26,6 +26,7 @@ public class ColumnWordMinigame : MonoBehaviour
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
 
     [Header("Dictionary")]
+    [SerializeField] private TextAsset selectionDictionaryFile;
     [SerializeField] private TextAsset wordDictionaryFile;
 
     [Header("Gameplay")]
@@ -37,6 +38,7 @@ public class ColumnWordMinigame : MonoBehaviour
     [SerializeField] private Color activeSquareColor = new Color(1f, 0.9f, 0.35f);
 
     private readonly Dictionary<int, List<string>> wordsByLength = new Dictionary<int, List<string>>();
+    private readonly Dictionary<int, List<string>> selectionWordsByLength = new Dictionary<int, List<string>>();
     private readonly HashSet<string> allDictionaryWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> currentValidWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     private readonly List<char[]> currentColumnOptions = new List<char[]>();
@@ -214,7 +216,14 @@ public class ColumnWordMinigame : MonoBehaviour
     private void LoadDictionary()
     {
         wordsByLength.Clear();
+        selectionWordsByLength.Clear();
         allDictionaryWords.Clear();
+
+        if (selectionDictionaryFile == null)
+        {
+            Debug.LogError("ColumnWordMinigame is missing the selection dictionary file.", this);
+            return;
+        }
 
         if (wordDictionaryFile == null)
         {
@@ -222,28 +231,8 @@ public class ColumnWordMinigame : MonoBehaviour
             return;
         }
 
-        string[] lines = wordDictionaryFile.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        for (int i = 0; i < lines.Length; i++)
-        {
-            string word = NormalizeWord(lines[i]);
-            if (string.IsNullOrWhiteSpace(word))
-            {
-                continue;
-            }
-
-            if (!allDictionaryWords.Add(word))
-            {
-                continue;
-            }
-
-            if (!wordsByLength.TryGetValue(word.Length, out List<string> wordList))
-            {
-                wordList = new List<string>();
-                wordsByLength[word.Length] = wordList;
-            }
-
-            wordList.Add(word);
-        }
+        LoadWordsIntoDictionary(selectionDictionaryFile, selectionWordsByLength, null);
+        LoadWordsIntoDictionary(wordDictionaryFile, wordsByLength, allDictionaryWords);
     }
 
     private bool HasValidSetup()
@@ -255,6 +244,7 @@ public class ColumnWordMinigame : MonoBehaviour
             && scoreText != null
             && timeRemainingText != null
             && bestScoreStore != null
+            && selectionDictionaryFile != null
             && wordDictionaryFile != null;
 
         if (!hasReferences)
@@ -299,6 +289,12 @@ public class ColumnWordMinigame : MonoBehaviour
             return false;
         }
 
+        if (selectionWordsByLength.Count == 0)
+        {
+            Debug.LogError("ColumnWordMinigame selection dictionary is empty after loading.", this);
+            return false;
+        }
+
         topTexts = new TMP_Text[topBoxes.Length];
         topImages = new Image[topBoxes.Length];
         defaultTopColors = new Color[topBoxes.Length];
@@ -337,7 +333,7 @@ public class ColumnWordMinigame : MonoBehaviour
 
     private bool BuildRound(int columnCount)
     {
-        if (!wordsByLength.TryGetValue(columnCount, out List<string> possibleWords))
+        if (!selectionWordsByLength.TryGetValue(columnCount, out List<string> possibleWords))
         {
             return false;
         }
@@ -669,7 +665,7 @@ public class ColumnWordMinigame : MonoBehaviour
         int startCount = Mathf.Max(1, minimumColumnCount);
         for (int count = startCount; count <= runtimeMaxColumnCount; count++)
         {
-            if (wordsByLength.TryGetValue(count, out List<string> words) && words.Count > 0)
+            if (selectionWordsByLength.TryGetValue(count, out List<string> words) && words.Count > 0)
             {
                 return count;
             }
@@ -744,6 +740,32 @@ public class ColumnWordMinigame : MonoBehaviour
     private char GetRandomLetter()
     {
         return char.ToLowerInvariant(Alphabet[UnityEngine.Random.Range(0, Alphabet.Length)]);
+    }
+
+    private void LoadWordsIntoDictionary(TextAsset sourceFile, Dictionary<int, List<string>> targetDictionary, HashSet<string> uniqueWords)
+    {
+        string[] lines = sourceFile.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string word = NormalizeWord(lines[i]);
+            if (string.IsNullOrWhiteSpace(word))
+            {
+                continue;
+            }
+
+            if (uniqueWords != null && !uniqueWords.Add(word))
+            {
+                continue;
+            }
+
+            if (!targetDictionary.TryGetValue(word.Length, out List<string> wordList))
+            {
+                wordList = new List<string>();
+                targetDictionary[word.Length] = wordList;
+            }
+
+            wordList.Add(word);
+        }
     }
 
     private bool CacheRow(GameObject[] boxes, TMP_Text[] texts, Image[] images, Color[] defaultColors, string rowName)
