@@ -8,7 +8,7 @@ public class DoorSceneTrigger : MonoBehaviour
     [SerializeField] private GameObject successMenu;
     [SerializeField] private TMP_Text successCurrentScoreText;
     [SerializeField] private TMP_Text successBestScoreText;
-    [SerializeField] private bool canOpen;
+    [SerializeField] public bool canOpen;
 
     [Header("Score Settings (For IDs < 30)")]
     [SerializeField] private int currentScore;

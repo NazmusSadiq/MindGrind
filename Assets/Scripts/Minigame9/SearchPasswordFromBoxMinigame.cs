@@ -587,11 +587,17 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
         }
 
         string guess = passwordInputField.text.Trim().ToLowerInvariant();
+
         if (guess == currentPassword)
         {
+            score += 20;
+            UpdateScoreUI();
             EndGame();
             return;
         }
+
+        score -= 10;
+        UpdateScoreUI();
 
         attemptsRemaining--;
         UpdateAttemptsUI();

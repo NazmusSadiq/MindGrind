@@ -5,7 +5,7 @@ public class Level1_Manager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerController playerController;
-    [SerializeField] private TMP_Text timeRemainingText; 
+    [SerializeField] private TMP_Text timeRemainingText;
     [SerializeField] private GameObject gameOverMenu;
     [SerializeField] private GameObject upArrow;
     [SerializeField] private GameObject rightArrow;
@@ -31,7 +31,6 @@ public class Level1_Manager : MonoBehaviour
         {
             typeof(MainMenu).GetMethod("SetStoryMode", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)?
                 .Invoke(new GameObject("Temp_Menu_Initializer").AddComponent<MainMenu>(), new object[] { true });
-
         }
 
         if (playerController == null)
@@ -76,6 +75,16 @@ public class Level1_Manager : MonoBehaviour
 
         ChangeDirection();
         nextDirectionChangeTime += Mathf.Max(0.01f, directionChangeInterval);
+    }
+
+    // NEW: Public interface method to reduce time when an enemy is eliminated
+    public void ReduceElapsedTime(float amount)
+    {
+        if (isLevelOver) return;
+
+        elapsedTime = Mathf.Max(0f, elapsedTime - amount);
+        UpdateTimerUI();
+        Debug.Log($"[Time Bonus] Reduced elapsed match time by {amount} seconds.");
     }
 
     private void ChangeDirection()

@@ -65,6 +65,7 @@ public class EnemyController : MonoBehaviour
     private Coroutine hitCoroutine;
     private int currentHealth;
     private bool isAware;
+    private PlayerController player;
 
     private float forgetTimer;
     private Vector3 lastKnownPosition;
@@ -100,7 +101,7 @@ public class EnemyController : MonoBehaviour
     {
         if (playerTarget != null)
         {
-            PlayerController player = playerTarget.GetComponent<PlayerController>();
+            player = playerTarget.GetComponent<PlayerController>();
 
             if (player != null && player.IsDead)
             {
@@ -134,7 +135,6 @@ public class EnemyController : MonoBehaviour
             StopWaiting();
             HandleChase();
 
-            // New: Alert nearby teammates since we see the player
             AlertNearbyAllies();
         }
         else if (isAware)
@@ -148,7 +148,6 @@ public class EnemyController : MonoBehaviour
             else
             {
                 HandleChase();
-                // New: Keep updating nearby teammates during the chase grace-period
                 AlertNearbyAllies();
             }
         }
@@ -157,7 +156,6 @@ public class EnemyController : MonoBehaviour
             if (currentState == EnemyState.Investigate)
             {
                 HandleInvestigation();
-                // New: Still alert allies while navigating to the investigation point
                 AlertNearbyAllies();
             }
             else
@@ -208,7 +206,6 @@ public class EnemyController : MonoBehaviour
         return false;
     }
 
-    // New Method: Alerts unalerted enemies within half vision range
     private void AlertNearbyAllies()
     {
         float alertRadius = sightRange * 0.5f;
@@ -216,13 +213,11 @@ public class EnemyController : MonoBehaviour
 
         foreach (Collider col in nearbyColliders)
         {
-            // Make sure we don't accidentally check ourselves
             if (col.gameObject == this.gameObject)
                 continue;
 
             EnemyController ally = col.GetComponent<EnemyController>();
 
-            // If we found a valid ally who isn't dead and isn't currently tracking the player
             if (ally != null && !ally.IsDead && !ally.IsAware && ally.currentState != EnemyState.Investigate)
             {
                 ally.ReceiveExternalAlert(lastKnownPosition);
@@ -230,7 +225,6 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    // New Method: Called by other enemies to pass along target positions
     public void ReceiveExternalAlert(Vector3 targetPosition)
     {
         if (currentState == EnemyState.Dead || isAttacking || isTakingHit)
@@ -525,11 +519,31 @@ public class EnemyController : MonoBehaviour
 
         isTakingHit = false;
 
+        if (player != null)
+        {
+            player.Heal(10);
+        }
+
         if (animator != null)
         {
             animator.SetBool(hitBoolParam, false);
             animator.SetBool(deathBoolParam, true);
         }
+
+        Level1_Manager lvl1 = Object.FindFirstObjectByType<Level1_Manager>();
+        if (lvl1 != null)
+        {
+            lvl1.ReduceElapsedTime(15f);
+        }
+
+        Level2_Manager lvl2 = Object.FindFirstObjectByType<Level2_Manager>();
+        if (lvl2 != null)
+        {
+            lvl2.ReduceElapsedTime(15f);
+        }
+
+        // Note: When you create Level3_Manager, Level4_Manager, etc., 
+        // you can easily add identical check hooks here!
     }
 
     private void DetectPlayerHits()
@@ -579,7 +593,6 @@ public class EnemyController : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
 
-        // Draw Alert Range (Half of sight range)
         Gizmos.color = Color.orange;
         Gizmos.DrawWireSphere(transform.position, sightRange * 0.5f);
 

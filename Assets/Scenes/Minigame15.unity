@@ -3492,6 +3492,7 @@ MonoBehaviour:
   gameTitleText: {fileID: 403038766}
   currentScoreText: {fileID: 2143388843}
   bestScoreText: {fileID: 1865617550}
+  minigameId: 15
 --- !u!114 &1515275008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3504,7 +3505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac1aab37469900545b78cb68dcffd049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
-  storyModeNextSceneName: Level1
+  storyModeNextSceneName: MainMenu
   storyModeDetailsPanel: {fileID: 2028519228}
 --- !u!4 &1515275009
 Transform:

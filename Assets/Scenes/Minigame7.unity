@@ -2205,7 +2205,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Word Bubble
+  m_text: Wordify
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9659,7 +9659,7 @@ MonoBehaviour:
   gameTitleText: {fileID: 403038766}
   currentScoreText: {fileID: 2143388843}
   bestScoreText: {fileID: 1865617550}
-  minigameId: 
+  minigameId: 7
 --- !u!114 &1515275008
 MonoBehaviour:
   m_ObjectHideFlags: 0

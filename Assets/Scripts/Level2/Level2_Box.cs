@@ -1,22 +1,21 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class BoxController : MonoBehaviour
+public class BoxController : MonoBehaviour, IInteractable
 {
-    [Header("Interaction Settings")]
-    [SerializeField] private float interactRadius = 2.5f;
-    [SerializeField] private LayerMask playerLayer;
-
-    [Header("Visual Indicators")]
+    [Header("Visual Indicators (UI)")]
     [SerializeField] private GameObject promptCanvas;
-    [SerializeField] private GameObject powerSourceIndicator;
-    [SerializeField] private GameObject visualMeshObject;
+
+    [Header("Sprite Graphic Swaps")]
+    [SerializeField] private SpriteRenderer boxSpriteRenderer;
+    [SerializeField] private Sprite coveredSprite;
+    [SerializeField] private Sprite powerCellSprite;
+    [SerializeField] private Sprite emptySprite;
 
     private Level2_Manager levelManager;
     private bool isPowerSource;
     private bool isOpened;
-    private bool playerInRange;
-    private InputAction interactAction;
+    private bool isPlayerInRange; // Tracked locally to handle smooth UI handoffs
 
     public bool IsPowerSource => isPowerSource;
 
@@ -25,112 +24,104 @@ public class BoxController : MonoBehaviour
         isPowerSource = containsPower;
         levelManager = manager;
         isOpened = false;
+        isPlayerInRange = false;
 
-        // Force reset indicator objects instantly 
-        ToggleRevealIndicator(false);
+        SetBoxSprite(coveredSprite);
+
         if (promptCanvas != null) promptCanvas.SetActive(false);
+        Debug.Log($"[BoxController Log] {gameObject.name} initialized. PowerSource: {isPowerSource}");
     }
 
     private void Start()
     {
-        // Cache our input reference system bound inside your existing Player Input setup rules
-        PlayerInput playerInput = Object.FindFirstObjectByType<PlayerInput>();
-        if (playerInput != null)
+        if (promptCanvas != null) promptCanvas.SetActive(false);
+
+        if (boxSpriteRenderer == null)
         {
-            interactAction = playerInput.actions["Interact"];
+            boxSpriteRenderer = GetComponent<SpriteRenderer>();
         }
     }
 
-    private void Update()
+    public void Interact(GameObject interactor)
     {
-        if (isOpened) return;
-
-        // Perform spatial overlap operations to locate checking elements
-        bool checkRange = Physics.CheckSphere(transform.position, interactRadius, playerLayer);
-
-        if (checkRange && !playerInRange)
+        if (isOpened)
         {
-            playerInRange = true;
-            if (promptCanvas != null) promptCanvas.SetActive(true);
-        }
-        else if (!checkRange && playerInRange)
-        {
-            playerInRange = false;
-            CleanUpPrompt();
+            Debug.Log($"[BoxController Log] {gameObject.name} has already been opened! Ignoring interaction.");
+            return;
         }
 
-        // Process actual execution routines based on real-time hardware status values
-        if (playerInRange && interactAction != null && interactAction.WasPerformedThisFrame())
-        {
-            OpenBox();
-        }
+        Debug.Log($"[BoxController Log] Interact() successfully triggered on {gameObject.name} by {interactor.name}!");
+        OpenBox();
     }
 
     private void OpenBox()
     {
         isOpened = true;
-        playerInRange = false;
-        CleanUpPrompt();
+        HidePrompt();
+
+        SetBoxSprite(emptySprite);
 
         if (isPowerSource)
         {
-            ProcessPowerSourceDiscovery();
+            Debug.Log($"[BoxController Log] {gameObject.name} opened: Power Cell found!");
+            if (levelManager != null) levelManager.RegisterPowerSourceFound();
         }
         else
         {
-            ProcessExplosiveDetonation();
-        }
-
-        // Hide or destroy physical representation node asset structures out from view
-        if (visualMeshObject != null)
-        {
-            visualMeshObject.SetActive(false);
-        }
-
-        // Alternatively, use Destroy(gameObject) if you do not have persistent rendering requirements
-    }
-
-    private void ProcessPowerSourceDiscovery()
-    {
-        if (levelManager != null)
-        {
-            levelManager.RegisterPowerSourceFound();
-        }
-        // Place custom VFX instantiation hooks here
-    }
-
-    private void ProcessExplosiveDetonation()
-    {
-        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
-        if (player != null)
-        {
-            // Inflict health penalty down through damage routine pathways
-            player.TakeDamage(25);
-            Debug.LogWarning("Boom! Player triggered an explosive chest box hazard unit!");
-        }
-        // Place screenshake/particle ignition routines here
-    }
-
-    public void ToggleRevealIndicator(bool visible)
-    {
-        // Only allow visualization flags to process if object matches structural requirements
-        if (powerSourceIndicator != null && isPowerSource)
-        {
-            powerSourceIndicator.SetActive(visible);
+            Debug.LogWarning($"[BoxController Log] {gameObject.name} opened: Boom! Explosive chest triggered!");
+            PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+            if (player != null) player.TakeDamage(25);
         }
     }
 
-    private void CleanUpPrompt()
+    public void ShowPrompt()
     {
-        if (promptCanvas != null)
+        isPlayerInRange = true; // Player entered physically
+        if (isOpened) return;
+
+        Debug.Log($"[BoxController Log] Player inside trigger radius of {gameObject.name}. Showing prompt UI.");
+        if (promptCanvas != null) promptCanvas.SetActive(true);
+    }
+
+    public void HidePrompt()
+    {
+        isPlayerInRange = false; // Player walked away
+        if (promptCanvas != null) promptCanvas.SetActive(false);
+    }
+
+    public void ToggleRevealIndicator(bool showReveal)
+    {
+        if (isOpened) return;
+
+        if (showReveal)
         {
-            promptCanvas.SetActive(false);
+            // During cinematic: swap the sprite if it's a power source
+            if (isPowerSource)
+            {
+                SetBoxSprite(powerCellSprite);
+            }
+
+            // Always turn on the text prompt for all boxes during cinematic so players can track them
+            if (promptCanvas != null) promptCanvas.SetActive(true);
+        }
+        else
+        {
+            // Reset back to covered sprite if it was revealing a power cell
+            SetBoxSprite(coveredSprite);
+
+            // Clean up text prompts: only keep text visible if player is physically standing in range
+            if (promptCanvas != null)
+            {
+                promptCanvas.SetActive(isPlayerInRange);
+            }
         }
     }
 
-    private void OnDrawGizmosSelected()
+    private void SetBoxSprite(Sprite targetSprite)
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, interactRadius);
+        if (boxSpriteRenderer != null && targetSprite != null)
+        {
+            boxSpriteRenderer.sprite = targetSprite;
+        }
     }
 }

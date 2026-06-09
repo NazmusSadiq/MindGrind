@@ -64,7 +64,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 30,
             gameTitle = "Level 1",
-            description = "Your movement keys adapt to the orientation arrow, which always represents UP. (e.g., If the arrow points RIGHT, D moves you Up, and S moves you Right). Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail!",
+            description = "Your movement keys adapt to the orientation arrow, which always represents UP. (e.g., If the arrow points RIGHT, D moves you Up, and S moves you Right). Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Attention + Reflex",
             sceneName = "Level1"
         };
@@ -73,7 +73,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 31,
             gameTitle = "Level 2",
-            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay close attention at the start of the game when the safe boxes are revealed. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail!",
+            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay attention at the start of the game when the correct boxes are shown with blue glitter. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Memory + Attention",
             sceneName = "Level2"
         };
@@ -146,10 +146,19 @@ public class MinigameDataStore : MonoBehaviour
         minigames[6] = new GameData
         {
             id = 6,
-            gameTitle = "Column Word",
+            gameTitle = "Wordify",
             description = "Each round shows a set of columns with three letters in each column. Type one letter from each column to form a valid dictionary word. A correct word gives +10 points and advances to the next round with one more column, while an invalid word costs -5 points.",
-            cognitiveSkills = "Attention + Vocabulary",
+            cognitiveSkills = "Learning",
             sceneName = "Minigame7"
+        };
+
+        minigames[8] = new GameData
+        {
+            id = 8,
+            gameTitle = "Word Reveal",
+            description = "Tap on the target object before they disappear. Every correct tap reveals the next letter of a word in sequence, remember them. Once all letters have been revealed, reconstruct the word. Each correct tap gives +10, incorrect tap gives -10. Forming correct word gives +20, incorrect word gives -10",
+            cognitiveSkills = "Attention + Memory",
+            sceneName = "Minigame9"
         };
 
         minigames[13] = new GameData
@@ -164,7 +173,7 @@ public class MinigameDataStore : MonoBehaviour
         minigames[14] = new GameData
         {
             id = 14,
-            gameTitle = "Word Game",
+            gameTitle = "Word Bubble",
             description = "You are shown the first 3 letters of a word and must complete it using a valid dictionary word. Each correct word gives points equal to its full length (min 5 letters, max 10 letters), and no word can be repeated. A new random prefix appears immediately after every correct answer. You can also skip the current prefix to move to a new one, but doing so deducts 3 points.",
             cognitiveSkills = "Learning",
             sceneName = "Minigame15"

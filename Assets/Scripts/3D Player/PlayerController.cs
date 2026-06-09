@@ -51,6 +51,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float interactRange = 2f;
     [SerializeField] private LayerMask interactableLayer;
 
+    private IInteractable currentTargetInteractable;
+    private BoxController currentTargetBox; // Reference cached to manage UI visibility rules safely
+
     // ================= ATTACK =================
     [Header("Attack")]
     [SerializeField] private float attackDuration = 1f;
@@ -201,7 +204,6 @@ public class PlayerController : MonoBehaviour
 
     private bool CanAct()
     {
-        // CRITICAL CHECK: Block execution if the game has not safely unpaused
         if (!gameStarted) return false;
 
         return currentState == PlayerState.Idle || currentState == PlayerState.Move;
@@ -308,7 +310,6 @@ public class PlayerController : MonoBehaviour
         {
             int index = Random.Range(0, 2);
             animator.SetInteger("AttackIndex", index);
-
             animator.SetBool(attackBoolParam, true);
         }
 
@@ -510,34 +511,108 @@ public class PlayerController : MonoBehaviour
     }
 
     // =====================================================
-    // INTERACT
+    // TRIGGER DETECTION AND INTERACTION
     // =====================================================
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // Detects if the entered object itself or its direct parent is tagged "Interactable"
+        if (other.CompareTag("Interactable") || (other.transform.parent != null && other.transform.parent.CompareTag("Interactable")))
+        {
+            Debug.Log($"[PlayerController Log] Player entered trigger range of: {other.gameObject.name}");
+
+            IInteractable interactable = other.GetComponentInParent<IInteractable>();
+            if (interactable == null) interactable = other.GetComponent<IInteractable>();
+
+            if (interactable != null)
+            {
+                currentTargetInteractable = interactable;
+
+                // Fetch BoxController context specifically to trigger custom Canvas UI prompts
+                currentTargetBox = other.GetComponentInParent<BoxController>();
+                if (currentTargetBox == null) currentTargetBox = other.GetComponent<BoxController>();
+
+                if (currentTargetBox != null)
+                {
+                    currentTargetBox.ShowPrompt();
+                }
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Interactable") || (other.transform.parent != null && other.transform.parent.CompareTag("Interactable")))
+        {
+            Debug.Log($"[PlayerController Log] Player exited trigger range of: {other.gameObject.name}");
+
+            if (currentTargetBox != null)
+            {
+                currentTargetBox.HidePrompt();
+            }
+
+            currentTargetInteractable = null;
+            currentTargetBox = null;
+        }
+    }
 
     private void TryInteract()
     {
-        if (!CanAct()) return;
+        // DEBUG LOG 1: Did the hardware key registration fire into this function?
+        Debug.Log($"[Interact Input] Button pressed! currentState: {currentState} | gameStarted: {gameStarted}");
 
-        StartCoroutine(InteractRoutine());
+        if (!CanAct())
+        {
+            Debug.LogWarning($"[Interact Input] Interaction blocked! CanAct() returned false. Current state: {currentState}, gameStarted: {gameStarted}");
+            return;
+        }
+
+        // DEBUG LOG 2: Check tracked references
+        if (currentTargetInteractable != null)
+        {
+            Debug.Log($"[Interact Input] SUCCESS: Valid target found. Executing routine on: {((MonoBehaviour)currentTargetInteractable).gameObject.name}");
+            StartCoroutine(InteractRoutine());
+        }
+        else
+        {
+            Debug.LogWarning("[Interact Input] FAILED: Key pressed, but 'currentTargetInteractable' is currently NULL. The player is not registered as standing inside any trigger zone.");
+        }
     }
 
     private IEnumerator InteractRoutine()
     {
         currentState = PlayerState.Interact;
+        Debug.Log("[Interact Input] State set to 'Interact'. Playing animation trigger...");
 
         if (animator != null)
             animator.SetTrigger(interactTriggerParam);
 
-        Ray ray = new Ray(transform.position + Vector3.up, Vector3.down);
-
-        if (Physics.Raycast(ray, out RaycastHit hit, interactRange, interactableLayer))
+        if (currentTargetInteractable != null)
         {
-            hit.collider.GetComponent<IInteractable>()?.Interact(gameObject);
+            Debug.Log($"[Interact Input] Sending Interact() message directly to target script...");
+            currentTargetInteractable.Interact(gameObject);
+        }
+        else
+        {
+            Debug.LogError("[Interact Input] Critical error: Target reference vanished mid-coroutine frame context!");
         }
 
         yield return new WaitForSeconds(1f);
 
         if (currentState == PlayerState.Interact)
+        {
             currentState = PlayerState.Idle;
+            Debug.Log("[Interact Input] State returned to 'Idle'. Interaction loop finished.");
+        }
+    }
+
+    public void Heal(int amount)
+    {
+        if (currentState == PlayerState.Dead)
+            return;
+
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        Debug.Log($"Player healed by {amount}. Current health: {currentHealth}/{maxHealth}");
     }
 
     // =====================================================
@@ -583,9 +658,4 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
-}
-
-public interface IInteractable
-{
-    void Interact(GameObject interactor);
 }

@@ -1608,6 +1608,7 @@ MonoBehaviour:
   gameTitleText: {fileID: 1469673840}
   currentScoreText: {fileID: 1850200449}
   bestScoreText: {fileID: 2099036628}
+  minigameId: 3
 --- !u!114 &932507562
 MonoBehaviour:
   m_ObjectHideFlags: 0

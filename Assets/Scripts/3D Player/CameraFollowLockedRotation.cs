@@ -8,6 +8,8 @@ public class CameraFollowLockedRotation : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (!enabled) return;
+
         if (target == null)
         {
             return;
