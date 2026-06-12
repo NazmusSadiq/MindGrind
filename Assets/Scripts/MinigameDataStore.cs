@@ -205,6 +205,15 @@ public class MinigameDataStore : MonoBehaviour
             cognitiveSkills = "Memory",
             sceneName = "Minigame17"
         };
+
+        minigames[17] = new GameData
+        {
+            id = 17,
+            gameTitle = "Number Memory",
+            description = "Memorize the sequence of digits shown. You have 5 seconds before the number disappears, then re-enter the number in the input field. Success increases the number length by 1, and you have 3 lives.",
+            cognitiveSkills = "Memory",
+            sceneName = "Minigame18"
+        };
     }
 
     public static bool TryGetGameData(int id, out GameData gameData)
