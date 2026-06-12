@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -161,6 +161,15 @@ public class MinigameDataStore : MonoBehaviour
             sceneName = "Minigame9"
         };
 
+        minigames[12] = new GameData
+        {
+            id = 12,
+            gameTitle = "Odd One Out",
+            description = "Six boxes appear on screen: five share a common trait and one is the odd one out. Click the box that does not belong. A correct pick scores +10 and raises the difficulty — the differences become subtler as you progress. A wrong pick costs -5 and resets the round. Three wrong answers end the game.",
+            cognitiveSkills = "Attention + Perception",
+            sceneName = "Minigame13"
+        };
+
         minigames[13] = new GameData
         {
             id = 13,
@@ -186,6 +195,24 @@ public class MinigameDataStore : MonoBehaviour
             description = "A sequence of characters is shown briefly, then a shuffled target list appears. Enter the target characters in the order they appeared in the original sequence. For example: if sequence was 'friend' and target is 'def' then enter 'fed' as the letters d,e,f occured in that order. Correct answers add 10 points and increase the target count, while wrong answers deduct 10 points.",
             cognitiveSkills = "Memory",
             sceneName = "Minigame16"
+        };
+
+        minigames[16] = new GameData
+        {
+            id = 16,
+            gameTitle = "Verbal Memory",
+            description = "You are shown a word. Click 'New' if it is the first time the word is shown in this round, or 'Seen' if it has already appeared. You have 3 lives, and each correct answer gives 10 points.",
+            cognitiveSkills = "Memory",
+            sceneName = "Minigame17"
+        };
+
+        minigames[17] = new GameData
+        {
+            id = 17,
+            gameTitle = "Number Memory",
+            description = "Memorize the sequence of digits shown. You have 5 seconds before the number disappears, then re-enter the number in the input field. Success increases the number length by 1, and you have 3 lives.",
+            cognitiveSkills = "Memory",
+            sceneName = "Minigame18"
         };
     }
 
