@@ -3421,7 +3421,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -6479,7 +6479,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -7674,7 +7674,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -10554,7 +10554,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -11884,7 +11884,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -13984,7 +13984,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -19653,7 +19653,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -20577,7 +20577,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -26141,7 +26141,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -28442,7 +28442,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -29093,7 +29093,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -33085,7 +33085,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -34220,7 +34220,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -35796,7 +35796,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -37280,7 +37280,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -39055,7 +39055,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
   rotationSpeed: 10
@@ -41267,7 +41267,7 @@ MonoBehaviour:
   waitAtPointDuration: 3
   reachDistance: 0.15
   sightRange: 8
-  viewAngle: 75
+  viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 6
   rotationSpeed: 10

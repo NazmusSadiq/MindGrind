@@ -27,7 +27,7 @@ public class EnemyController : MonoBehaviour
 
     [Header("Detection")]
     [SerializeField] private float sightRange = 8f;
-    [SerializeField] private float viewAngle = 75f;
+    [SerializeField] private float viewAngle = 90f;
     [SerializeField] private float forgetDuration = 3f;
     [SerializeField] private float chaseSpeed = 4f;
     [SerializeField] private float rotationSpeed = 10f;
