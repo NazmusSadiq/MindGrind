@@ -4809,12 +4809,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 3
-  sprintMultiplier: 2
+  sprintMultiplier: 1.5
   rotationSpeed: 10
   controlDirection: 0
   gravity: -25
   groundedForce: -2
-  interactRange: 2
   interactableLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -9826,7 +9825,7 @@ MonoBehaviour:
   m_fontSizeMin: 10
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -44778,6 +44777,10 @@ PrefabInstance:
       value: Gate
       objectReference: {fileID: 0}
     - target: {fileID: 570353978655373604, guid: 554f95a89ea1a524d90aa1321913b334, type: 3}
+      propertyPath: canOpen
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 570353978655373604, guid: 554f95a89ea1a524d90aa1321913b334, type: 3}
       propertyPath: minigameId
       value: 30
       objectReference: {fileID: 0}
@@ -44785,6 +44788,14 @@ PrefabInstance:
       propertyPath: successMenu
       value: 
       objectReference: {fileID: 997777517}
+    - target: {fileID: 570353978655373604, guid: 554f95a89ea1a524d90aa1321913b334, type: 3}
+      propertyPath: successBestScoreText
+      value: 
+      objectReference: {fileID: 1361714463}
+    - target: {fileID: 570353978655373604, guid: 554f95a89ea1a524d90aa1321913b334, type: 3}
+      propertyPath: successCurrentScoreText
+      value: 
+      objectReference: {fileID: 294110792}
     - target: {fileID: 878041497054173689, guid: 554f95a89ea1a524d90aa1321913b334, type: 3}
       propertyPath: m_LocalPosition.x
       value: 84.626

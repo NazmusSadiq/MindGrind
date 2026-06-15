@@ -48,7 +48,6 @@ public class PlayerController : MonoBehaviour
 
     // ================= INTERACTION =================
     [Header("Interaction")]
-    [SerializeField] private float interactRange = 2f;
     [SerializeField] private LayerMask interactableLayer;
 
     private IInteractable currentTargetInteractable;
@@ -101,10 +100,19 @@ public class PlayerController : MonoBehaviour
     private Coroutine hitCoroutine;
     private bool inputCallbacksRegistered;
 
+    // ================= CHARACTER CONTROLLER ADJUSTMENTS =================
+    private float originalRadius;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
+
+        // Safely cache the baseline width from your CharacterController component
+        if (characterController != null)
+        {
+            originalRadius = characterController.radius;
+        }
 
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
@@ -424,6 +432,9 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool(hitBoolParam, true);
             }
 
+            // Instantly normalizes bounding box sizing if hit out of block stance
+            ResetControllerWidth();
+
             TakeHit();
         }
     }
@@ -455,6 +466,9 @@ public class PlayerController : MonoBehaviour
             animator.SetBool(hitBoolParam, false);
             animator.SetBool(deathBoolParam, true);
         }
+
+        // Guarantees bounding dimensions clean up properly upon death tracking
+        ResetControllerWidth();
 
         if (gameOverMenu != null)
             StartCoroutine(ShowGameOverMenuAfterDelay());
@@ -496,6 +510,12 @@ public class PlayerController : MonoBehaviour
 
         currentState = PlayerState.Block;
 
+        // Widens the CharacterController bounding radius to 1.25x for defensive stance
+        if (characterController != null)
+        {
+            characterController.radius = originalRadius * 1.25f;
+        }
+
         if (animator != null)
             animator.SetBool(isBlockingParam, true);
     }
@@ -506,8 +526,19 @@ public class PlayerController : MonoBehaviour
 
         currentState = PlayerState.Idle;
 
+        // Reverts layout bounds instantly
+        ResetControllerWidth();
+
         if (animator != null)
             animator.SetBool(isBlockingParam, false);
+    }
+
+    private void ResetControllerWidth()
+    {
+        if (characterController != null)
+        {
+            characterController.radius = originalRadius;
+        }
     }
 
     // =====================================================
@@ -516,7 +547,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Detects if the entered object itself or its direct parent is tagged "Interactable"
         if (other.CompareTag("Interactable") || (other.transform.parent != null && other.transform.parent.CompareTag("Interactable")))
         {
             Debug.Log($"[PlayerController Log] Player entered trigger range of: {other.gameObject.name}");
@@ -528,7 +558,6 @@ public class PlayerController : MonoBehaviour
             {
                 currentTargetInteractable = interactable;
 
-                // Fetch BoxController context specifically to trigger custom Canvas UI prompts
                 currentTargetBox = other.GetComponentInParent<BoxController>();
                 if (currentTargetBox == null) currentTargetBox = other.GetComponent<BoxController>();
 
@@ -558,7 +587,6 @@ public class PlayerController : MonoBehaviour
 
     private void TryInteract()
     {
-        // DEBUG LOG 1: Did the hardware key registration fire into this function?
         Debug.Log($"[Interact Input] Button pressed! currentState: {currentState} | gameStarted: {gameStarted}");
 
         if (!CanAct())
@@ -567,7 +595,6 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // DEBUG LOG 2: Check tracked references
         if (currentTargetInteractable != null)
         {
             Debug.Log($"[Interact Input] SUCCESS: Valid target found. Executing routine on: {((MonoBehaviour)currentTargetInteractable).gameObject.name}");
@@ -614,10 +641,6 @@ public class PlayerController : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         Debug.Log($"Player healed by {amount}. Current health: {currentHealth}/{maxHealth}");
     }
-
-    // =====================================================
-    // ANIMATION
-    // =====================================================
 
     private void UpdateAnimations()
     {
