@@ -46880,6 +46880,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1451315246912685930, guid: 554f95a89ea1a524d90aa1321913b334, type: 3}
+      propertyPath: sceneName
+      value: Minigame10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -51,7 +51,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask interactableLayer;
 
     private IInteractable currentTargetInteractable;
-    private BoxController currentTargetBox; // Reference cached to manage UI visibility rules safely
+    private BoxController currentTargetBox;
+    private RotatingJunction currentTargetJunction;
 
     // ================= ATTACK =================
     [Header("Attack")]
@@ -547,24 +548,23 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Check if this object or its parent has the Interactable tag
         if (other.CompareTag("Interactable") || (other.transform.parent != null && other.transform.parent.CompareTag("Interactable")))
         {
             Debug.Log($"[PlayerController Log] Player entered trigger range of: {other.gameObject.name}");
 
-            IInteractable interactable = other.GetComponentInParent<IInteractable>();
-            if (interactable == null) interactable = other.GetComponent<IInteractable>();
+            // 1. Find the interaction component anywhere on this object or its parent hierarchy
+            IInteractable interactable = other.GetComponentInParent<IInteractable>() ?? other.GetComponent<IInteractable>();
 
             if (interactable != null)
             {
                 currentTargetInteractable = interactable;
 
-                currentTargetBox = other.GetComponentInParent<BoxController>();
-                if (currentTargetBox == null) currentTargetBox = other.GetComponent<BoxController>();
-
-                if (currentTargetBox != null)
-                {
-                    currentTargetBox.ShowPrompt();
-                }
+                // 2. Safely trigger the UI prompt using C#'s pattern matching features
+                if (interactable is BoxController box) box.ShowPrompt();
+                else if (interactable is RotatingJunction junction) junction.ShowPrompt();
+                else if (interactable is PowerSource source) source.ShowPrompt();
+                else if (interactable is PowerDestination dest) dest.ShowPrompt();
             }
         }
     }
@@ -575,11 +575,16 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log($"[PlayerController Log] Player exited trigger range of: {other.gameObject.name}");
 
-            if (currentTargetBox != null)
+            // Clean up UI safely before clearing references
+            if (currentTargetInteractable != null)
             {
-                currentTargetBox.HidePrompt();
+                if (currentTargetInteractable is BoxController box) box.HidePrompt();
+                else if (currentTargetInteractable is RotatingJunction junction) junction.HidePrompt();
+                else if (currentTargetInteractable is PowerSource source) source.HidePrompt();
+                else if (currentTargetInteractable is PowerDestination dest) dest.HidePrompt();
             }
 
+            // Reset tracking variables
             currentTargetInteractable = null;
             currentTargetBox = null;
         }
@@ -624,7 +629,7 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("[Interact Input] Critical error: Target reference vanished mid-coroutine frame context!");
         }
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
 
         if (currentState == PlayerState.Interact)
         {

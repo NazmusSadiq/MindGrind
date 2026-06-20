@@ -91,17 +91,17 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 33,
             gameTitle = "Level 4",
-            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay close attention at the start of the game when the safe boxes are revealed. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail!",
+            description = "Level 4 description",
             cognitiveSkills = "Memory + Attention",
             sceneName = "Level4"
         };
 
         minigames[34] = new GameData
         {
-            id = 35,
+            id = 34,
             gameTitle = "Level 5",
-            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay close attention at the start of the game when the safe boxes are revealed. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail!",
-            cognitiveSkills = "Memory + Attention",
+            description = "Level 5 description",
+            cognitiveSkills = "Reasoning + Attention",
             sceneName = "Level5"
         };
 
