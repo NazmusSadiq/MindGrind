@@ -82,7 +82,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 32,
             gameTitle = "Level 3",
-            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay close attention at the start of the game when the safe boxes are revealed. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail!",
+            description = "Cryptic rhymes play on a continuous loop around you. To escape, you must decode the password hidden within its verses by extracting the fourth letter of every single word. You will need to give the password to go through each of the music doors to pass to its next region. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Memory + Attention",
             sceneName = "Level3"
         };
@@ -91,8 +91,8 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 33,
             gameTitle = "Level 4",
-            description = "Level 4 description",
-            cognitiveSkills = "Memory + Attention",
+            description = "Multiple cannons lie ahead, tracking your moves and firing from all sides. Raise your shield in time to block incoming fireballs, or use the environment strategically to let objects take the hit for you. Mistiming your guard or getting caught in the open will cost you precious health.",
+            cognitiveSkills = "Reflex + Attention",
             sceneName = "Level4"
         };
 
@@ -100,7 +100,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 34,
             gameTitle = "Level 5",
-            description = "Level 5 description",
+            description = "Five broken grid networks block your path to freedom. To escape, you must rotate and align the junctions of each power circuit to send power from source to destination. Solve the puzzles, restore the power flows, and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Reasoning + Attention",
             sceneName = "Level5"
         };
@@ -141,6 +141,15 @@ public class MinigameDataStore : MonoBehaviour
             description = "Some identical fishes swim around the tank and keep changing direction as they bounce off the boundaries. Click a fish to feed it: feeding an unfed fish gives +10 points, but feeding a fish that has already been fed costs -10 points. After each feeding, you must wait for some time before feeding another fish.",
             cognitiveSkills = "Memory + Attention",
             sceneName = "Minigame4"
+        };
+
+        minigames[4] = new GameData
+        {
+            id = 4,
+            gameTitle = "Train of Thoughts",
+            description = "Colored cars roll along the tracks and change direction as you toggle the junctions. Click a junction to switch its path: routing a car into a matching colored house gives +10 points, wrong house costs -5 points. Keep your eyes on the timer and guide as many cars home as you can before time runs out!",
+            cognitiveSkills = "Reflex + Attention",
+            sceneName = "Minigame5"
         };
 
         minigames[6] = new GameData
