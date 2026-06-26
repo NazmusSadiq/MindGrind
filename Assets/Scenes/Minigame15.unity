@@ -4548,7 +4548,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
   storyModeNextSceneName: MainMenu
   storyModeDetailsPanel: {fileID: 2028519228}
-  pauseMenuPanel: {fileID: 0}
+  pauseMenuPanel: {fileID: 523715403}
 --- !u!4 &1515275009
 Transform:
   m_ObjectHideFlags: 0

@@ -155,26 +155,66 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-    private void ShowDetailsPanelAndPauseGame()
+    public void ShowDetailsPanelAndPauseGame()
     {
-        if (storyModeDetailsPanel == null)
+        if (storyModeDetailsPanel != null)
         {
-            Debug.LogWarning("Story mode details panel is not assigned.", this);
-            Time.timeScale = 1f;
-            return;
+            storyModeDetailsPanel.SetActive(true);
         }
 
-        int correctLevelId = GetCurrentLevelId();
-        UpdateDescription(correctLevelId);
-
-        storyModeDetailsPanel.SetActive(true);
+        isGamePaused = true;
         Time.timeScale = 0f;
 
-        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
-        if (player != null)
+        string activeSceneName = SceneManager.GetActiveScene().name;
+        string targetLookupName = (activeSceneName == "MainMenu") ? storyModeNextSceneName : activeSceneName;
+
+        string displayTitle = targetLookupName;
+        string displayDescription = "";
+        string displaySkills = "";
+
+        string resolvedPrefsKey = targetLookupName;
+        bool isTimeBased = false;
+
+        if (MinigameDataStore.TryGetGameDataBySceneName(targetLookupName, out MinigameDataStore.GameData gameData))
         {
-            player.SetGameStarted(false);
-            player.EnableGameplayInput(false);
+            displayTitle = gameData.gameTitle;
+            displayDescription = gameData.description;
+            displaySkills = gameData.cognitiveSkills;
+
+            resolvedPrefsKey = gameData.id.ToString();
+            isTimeBased = gameData.id >= 30;
+        }
+
+        if (storyModeTitleText != null) storyModeTitleText.text = displayTitle;
+        if (storyModeDescriptionText != null) storyModeDescriptionText.text = displayDescription;
+        if (storyModeAttributesText != null) storyModeAttributesText.text = displaySkills;
+
+        int playCount = PlayerPrefs.GetInt($"PlayCount_{resolvedPrefsKey}", 0);
+
+        if (storyModeHighestScoreText != null)
+        {
+            if (playCount == 0)
+            {
+                storyModeHighestScoreText.text = isTimeBased ? "Best Time: None" : "Best Score: None";
+            }
+            else
+            {
+                int bestScore = MinigameBestScoreStore.GetBestScore(resolvedPrefsKey);
+                storyModeHighestScoreText.text = isTimeBased ? $"Best Time: {bestScore}s" : $"Best Score: {bestScore}";
+            }
+        }
+
+        if (storyModeAverageScoreText != null)
+        {
+            if (playCount == 0)
+            {
+                storyModeAverageScoreText.text = isTimeBased ? "Average Time: None" : "Average Score: None";
+            }
+            else
+            {
+                int averageScore = MinigameBestScoreStore.GetAverageScore(resolvedPrefsKey);
+                storyModeAverageScoreText.text = isTimeBased ? $"Average Time: {averageScore}s" : $"Average Score: {averageScore}";
+            }
         }
     }
 

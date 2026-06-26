@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using System.IO;
 
 public class MinigameBestScoreStore : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class MinigameBestScoreStore : MonoBehaviour
     [SerializeField] private TMP_Text gameTitleText;
     [SerializeField] private TMP_Text currentScoreText;
     [SerializeField] private TMP_Text bestScoreText;
-    [SerializeField] private TMP_Text averageScoreText; 
+    [SerializeField] private TMP_Text averageScoreText;
 
     public static int GetBestScore(string minigameId)
     {
@@ -54,7 +55,6 @@ public class MinigameBestScoreStore : MonoBehaviour
 
         PlayerPrefs.SetInt(totalScoreKey, currentTotalScore);
         PlayerPrefs.SetInt(playCountKey, currentPlayCount);
-        
 
         string key = GetKey(finalizedIdString);
         bool hasExistingScore = PlayerPrefs.HasKey(key);
@@ -82,9 +82,66 @@ public class MinigameBestScoreStore : MonoBehaviour
             PlayerPrefs.SetInt(key, bestScore);
         }
 
-        PlayerPrefs.Save(); 
+        PlayerPrefs.Save();
 
         Debug.Log($"[Backend Saved] Key: {key} updated. Best: {bestScore} | Avg: {Mathf.RoundToInt((float)currentTotalScore / currentPlayCount)}");
+
+        // --- FIXED CORE SYSTEM JSON SYNCHRONIZATION LINK ---
+        string saveFilePath = Path.Combine(Application.persistentDataPath, "player_analytics.json");
+
+        // Strategy A: If PersonalInfoChecker is present in the scene, use its running reference
+        PersonalInfoChecker infoChecker = Object.FindFirstObjectByType<PersonalInfoChecker>();
+        if (infoChecker != null)
+        {
+            infoChecker.SyncAllExistingScores();
+            infoChecker.SaveProfileToDisk();
+        }
+        else if (File.Exists(saveFilePath)) // Strategy B: Mid-level fallback write from file data
+        {
+            try
+            {
+                string rawJson = File.ReadAllText(saveFilePath);
+                PlayerProfile profile = JsonUtility.FromJson<PlayerProfile>(rawJson);
+
+                if (profile != null)
+                {
+                    if (profile.gameStats == null)
+                    {
+                        profile.gameStats = new System.Collections.Generic.List<GameStat>();
+                    }
+
+                    profile.gameStats.Clear();
+
+                    // Rebuild stats list directly from PlayerPrefs using your explicit PlayerDataModel structure
+                    for (int id = 0; id < 35; id++)
+                    {
+                        string idStr = id.ToString();
+                        string checkKey = $"{PlayCountKeyPrefix}{idStr}";
+
+                        if (PlayerPrefs.HasKey(checkKey))
+                        {
+                            GameStat stat = new GameStat
+                            {
+                                gameId = id,
+                                bestScore = PlayerPrefs.GetInt($"{BestScoreKeyPrefix}{idStr}", 0),
+                                playCount = PlayerPrefs.GetInt(checkKey, 0),
+                                averageScore = GetAverageScore(idStr)
+                            };
+                            profile.gameStats.Add(stat);
+                        }
+                    }
+
+                    string updatedJson = JsonUtility.ToJson(profile, true);
+                    File.WriteAllText(saveFilePath, updatedJson);
+                    Debug.Log("[JSON Update Success] Successfully synced data model statistics to file.");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Error syncing metrics to file layout path: {e.Message}");
+            }
+        }
+        // --------------------------------------------------
 
         return bestScore;
     }

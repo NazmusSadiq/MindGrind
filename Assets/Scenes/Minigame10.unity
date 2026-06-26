@@ -2039,7 +2039,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
   storyModeNextSceneName: Minigame2
   storyModeDetailsPanel: {fileID: 1978776224}
-  pauseMenuPanel: {fileID: 0}
+  pauseMenuPanel: {fileID: 1979922934}
 --- !u!114 &932507561
 MonoBehaviour:
   m_ObjectHideFlags: 0

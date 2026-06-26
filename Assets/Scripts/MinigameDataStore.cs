@@ -30,12 +30,13 @@ public class MinigameDataStore : MonoBehaviour
         public Sprite thumbnail;
     }
 
-    [Header("UI")]
+    [Header("UI Text References")]
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text skillsText;
     [SerializeField] private Image thumbnailImage;
-    [SerializeField] private TMP_Text averageScoreText; // <-- CHANGED: Reference added for Main Menu Display
+    [SerializeField] private TMP_Text bestScoreText;    // Reference for Best Score Display
+    [SerializeField] private TMP_Text averageScoreText; // Reference for Average Score Display
 
     private void Awake()
     {
@@ -46,21 +47,16 @@ public class MinigameDataStore : MonoBehaviour
         }
 
         instance = this;
-
         EnsureDataInitialized();
     }
 
     private static void EnsureDataInitialized()
     {
-        if (minigames != null && minigames.Length > 0)
-        {
-            return;
-        }
+        if (minigames != null && minigames.Length > 0) return;
 
         minigames = new GameData[35];
 
-        // these five are not minigames, but levels. Only using them for similar structure.
-
+        // Core Game Levels (id >= 30 are time-based)
         minigames[30] = new GameData
         {
             id = 30,
@@ -106,8 +102,7 @@ public class MinigameDataStore : MonoBehaviour
             sceneName = "Level5"
         };
 
-        // from here, actual minigame starts
-
+        // Minigames (id < 30 are point-based)
         minigames[0] = new GameData
         {
             id = 0,
@@ -229,7 +224,6 @@ public class MinigameDataStore : MonoBehaviour
     public static bool TryGetGameData(int id, out GameData gameData)
     {
         EnsureDataInitialized();
-
         for (int i = 0; i < minigames.Length; i++)
         {
             if (minigames[i].id == id && !string.IsNullOrWhiteSpace(minigames[i].sceneName))
@@ -238,7 +232,6 @@ public class MinigameDataStore : MonoBehaviour
                 return true;
             }
         }
-
         gameData = default;
         return false;
     }
@@ -246,13 +239,11 @@ public class MinigameDataStore : MonoBehaviour
     public static bool TryGetGameDataBySceneName(string sceneName, out GameData gameData)
     {
         EnsureDataInitialized();
-
         if (string.IsNullOrWhiteSpace(sceneName))
         {
             gameData = default;
             return false;
         }
-
         for (int i = 0; i < minigames.Length; i++)
         {
             if (minigames[i].sceneName == sceneName)
@@ -261,7 +252,6 @@ public class MinigameDataStore : MonoBehaviour
                 return true;
             }
         }
-
         gameData = default;
         return false;
     }
@@ -286,34 +276,42 @@ public class MinigameDataStore : MonoBehaviour
         if (thumbnailImage != null)
             thumbnailImage.sprite = currentGame.thumbnail;
 
-        // --- CHANGED: CALCULATE AND UPDATE THE AVERAGE UI OVERLAY FIELDS ---
-        if (averageScoreText != null)
-        {
-            int averageScore = MinigameBestScoreStore.GetAverageScore(currentGame.id.ToString());
-            int playCount = PlayerPrefs.GetInt($"PlayCount_{currentGame.id}", 0);
+        string idStr = currentGame.id.ToString();
+        int playCount = PlayerPrefs.GetInt($"PlayCount_{idStr}", 0);
+        bool isTimeBased = currentGame.id >= 30;
 
+        // --- CORE LIVE SCORE CALCULATIONS PRESERVED ---
+        if (bestScoreText != null)
+        {
             if (playCount == 0)
             {
-                averageScoreText.text = "Average Score: None";
+                bestScoreText.text = isTimeBased ? "Best Time: None" : "Best Score: None";
             }
             else
             {
-                averageScoreText.text = currentGame.id < 30 ?
-                    $"Average Score: {averageScore}" :
-                    $"Average Time: {averageScore}s";
+                int bestScore = MinigameBestScoreStore.GetBestScore(idStr);
+                bestScoreText.text = isTimeBased ? $"Best Time: {bestScore}s" : $"Best Score: {bestScore}";
             }
         }
-        // ------------------------------------------------------------------
 
-        return;
+        if (averageScoreText != null)
+        {
+            if (playCount == 0)
+            {
+                averageScoreText.text = isTimeBased ? "Average Time: None" : "Average Score: None";
+            }
+            else
+            {
+                int averageScore = MinigameBestScoreStore.GetAverageScore(idStr);
+                averageScoreText.text = isTimeBased ? $"Average Time: {averageScore}s" : $"Average Score: {averageScore}";
+            }
+        }
     }
 
     public static GameData GetCurrentGame()
     {
         EnsureDataInitialized();
-
         Debug.Log($"[MinigameDataStore] Current Game Info -> ID: {currentGame.id} | Title: {currentGame.gameTitle} | Scene: {currentGame.sceneName}");
-
         return currentGame;
     }
 }

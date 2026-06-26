@@ -1972,7 +1972,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
   storyModeNextSceneName: Level1
   storyModeDetailsPanel: {fileID: 1252519503}
-  pauseMenuPanel: {fileID: 0}
+  pauseMenuPanel: {fileID: 1279051303}
 --- !u!114 &932507561
 MonoBehaviour:
   m_ObjectHideFlags: 0
