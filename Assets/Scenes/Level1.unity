@@ -18690,7 +18690,7 @@ MonoBehaviour:
   rightArrow: {fileID: 1451386168}
   downArrow: {fileID: 1413552652}
   leftArrow: {fileID: 1235516329}
-  initialNormalDuration: 1000
+  initialNormalDuration: 10
   directionChangeInterval: 10
 --- !u!114 &919082311
 MonoBehaviour:

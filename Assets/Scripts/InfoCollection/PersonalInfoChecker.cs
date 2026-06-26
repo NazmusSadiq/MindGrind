@@ -34,7 +34,6 @@ public class PersonalInfoChecker : MonoBehaviour
     private void Start()
     {
         saveFilePath = Path.Combine(Application.persistentDataPath, "player_analytics.json");
-        Debug.Log($"EXACT JSON PATH: {saveFilePath}");
 
         if (submitButton != null)
         {
@@ -44,7 +43,6 @@ public class PersonalInfoChecker : MonoBehaviour
 
         if (errorText != null) errorText.text = "";
 
-        // Load country dataset from the Inspector assigned text file asset
         LoadCountryDatabase();
 
         if (countryInputField != null)
@@ -65,13 +63,11 @@ public class PersonalInfoChecker : MonoBehaviour
     {
         if (countriesTextFile != null)
         {
-            // Split by line breaks seamlessly across Windows, Unix, and Mac file variations
             string[] lines = countriesTextFile.text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
             {
                 allCountries.Add(line.Trim());
             }
-            Debug.Log($"Successfully loaded {allCountries.Count} countries from the assigned Inspector text asset.");
         }
         else
         {
@@ -265,6 +261,8 @@ public class PersonalInfoChecker : MonoBehaviour
         {
             string json = JsonUtility.ToJson(activeProfile, true);
             File.WriteAllText(saveFilePath, json);
+
+            SimpleDiskSyncManager.PushLocalJsonToServer();
         }
         catch (Exception e)
         {

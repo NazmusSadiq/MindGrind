@@ -280,7 +280,6 @@ public class MinigameDataStore : MonoBehaviour
         int playCount = PlayerPrefs.GetInt($"PlayCount_{idStr}", 0);
         bool isTimeBased = currentGame.id >= 30;
 
-        // --- CORE LIVE SCORE CALCULATIONS PRESERVED ---
         if (bestScoreText != null)
         {
             if (playCount == 0)
@@ -311,7 +310,7 @@ public class MinigameDataStore : MonoBehaviour
     public static GameData GetCurrentGame()
     {
         EnsureDataInitialized();
-        Debug.Log($"[MinigameDataStore] Current Game Info -> ID: {currentGame.id} | Title: {currentGame.gameTitle} | Scene: {currentGame.sceneName}");
+        //Debug.Log($"[MinigameDataStore] Current Game Info -> ID: {currentGame.id} | Title: {currentGame.gameTitle} | Scene: {currentGame.sceneName}");
         return currentGame;
     }
 }

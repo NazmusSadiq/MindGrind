@@ -84,19 +84,15 @@ public class MinigameBestScoreStore : MonoBehaviour
 
         PlayerPrefs.Save();
 
-        Debug.Log($"[Backend Saved] Key: {key} updated. Best: {bestScore} | Avg: {Mathf.RoundToInt((float)currentTotalScore / currentPlayCount)}");
-
-        // --- FIXED CORE SYSTEM JSON SYNCHRONIZATION LINK ---
         string saveFilePath = Path.Combine(Application.persistentDataPath, "player_analytics.json");
 
-        // Strategy A: If PersonalInfoChecker is present in the scene, use its running reference
         PersonalInfoChecker infoChecker = Object.FindFirstObjectByType<PersonalInfoChecker>();
         if (infoChecker != null)
         {
             infoChecker.SyncAllExistingScores();
             infoChecker.SaveProfileToDisk();
         }
-        else if (File.Exists(saveFilePath)) // Strategy B: Mid-level fallback write from file data
+        else if (File.Exists(saveFilePath)) 
         {
             try
             {
@@ -134,6 +130,8 @@ public class MinigameBestScoreStore : MonoBehaviour
                     string updatedJson = JsonUtility.ToJson(profile, true);
                     File.WriteAllText(saveFilePath, updatedJson);
                     Debug.Log("[JSON Update Success] Successfully synced data model statistics to file.");
+
+                    SimpleDiskSyncManager.PushLocalJsonToServer();
                 }
             }
             catch (System.Exception e)
