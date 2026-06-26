@@ -52,6 +52,7 @@ public class DoorSceneTrigger : MonoBehaviour
             }
 
             int updatedBestScore = MinigameBestScoreStore.UpdateBestScore(activeIdString, finalValueToSave);
+            int updatedAverageScore = MinigameBestScoreStore.GetAverageScore(activeIdString);
 
             if (successCurrentScoreText != null)
             {

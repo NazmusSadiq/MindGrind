@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.InputSystem; 
 
 public class MainMenu : MonoBehaviour
 {
@@ -13,20 +14,41 @@ public class MainMenu : MonoBehaviour
     private const string StoryModeDescriptionObjectName = "Description";
     private const string StoryModeAttributesObjectName = "Attributes";
     private const string StoryModeBestScoreObjectName = "BestScore";
+    private const string StoryModeAverageScoreObjectName = "AverageScore";
 
     [SerializeField] private string storyModeNextSceneName = "Level1";
     [SerializeField] private GameObject storyModeDetailsPanel;
+    [SerializeField] private GameObject pauseMenuPanel;
 
     private TMP_Text storyModeTitleText;
     private TMP_Text storyModeDescriptionText;
     private TMP_Text storyModeAttributesText;
     private TMP_Text storyModeHighestScoreText;
+    private TMP_Text storyModeAverageScoreText;
 
     private static bool isStoryMode;
+    private bool isGamePaused;
 
     private void Awake()
     {
         CacheStoryModeDetailsReferences();
+    }
+
+    private void Update()
+    {
+        if (SceneManager.GetActiveScene().name == MainMenuSceneName) return;
+
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            if (isGamePaused)
+            {
+                ResumeGame();
+            }
+            else if (Time.timeScale > 0f)
+            {
+                PauseGame();
+            }
+        }
     }
 
     public void QuitGame()
@@ -156,6 +178,43 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+    public void PauseGame()
+    {
+        if (pauseMenuPanel == null) return;
+
+        isGamePaused = true;
+        pauseMenuPanel.SetActive(true);
+        Time.timeScale = 0f;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+        if (player != null)
+        {
+            player.SetGameStarted(false);
+            player.EnableGameplayInput(false);
+        }
+    }
+
+    public void ResumeGame()
+    {
+        if (pauseMenuPanel == null) return;
+
+        isGamePaused = false;
+        pauseMenuPanel.SetActive(false);
+        Time.timeScale = 1f;
+
+        PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+        if (player != null)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            player.SetGameStarted(true);
+            player.EnableGameplayInput(true);
+        }
+    }
+
     public void UpdateDescription(int levelId)
     {
         MinigameDataStore.GameData gameData;
@@ -174,19 +233,42 @@ public class MainMenu : MonoBehaviour
         if (storyModeDescriptionText != null) storyModeDescriptionText.text = gameData.description;
         if (storyModeAttributesText != null) storyModeAttributesText.text = gameData.cognitiveSkills;
 
+        string stringId = gameData.id.ToString();
+        if (gameData.id >= 30 && !string.IsNullOrEmpty(gameData.sceneName))
+        {
+            stringId = gameData.sceneName;
+        }
+
         if (storyModeHighestScoreText != null)
         {
-            int highestScore = MinigameBestScoreStore.GetBestScore(gameData.id.ToString());
+            int highestScore = MinigameBestScoreStore.GetBestScore(stringId);
 
-            if (highestScore == 0)
+            if (highestScore == 0 && !PlayerPrefs.HasKey($"BestScore_{stringId}"))
             {
-                storyModeHighestScoreText.text = "Highest Score: None";
+                storyModeHighestScoreText.text = gameData.id < 30 ? "Highest Score: None" : "Best Time: None";
             }
             else
             {
                 storyModeHighestScoreText.text = gameData.id < 30 ?
                     $"Highest Score: {highestScore}" :
                     $"Best Time: {highestScore}s";
+            }
+        }
+
+        if (storyModeAverageScoreText != null)
+        {
+            int averageScore = MinigameBestScoreStore.GetAverageScore(stringId);
+            int playCount = PlayerPrefs.GetInt($"PlayCount_{stringId}", 0);
+
+            if (playCount == 0)
+            {
+                storyModeAverageScoreText.text = gameData.id < 30 ? "Average Score: None" : "Average Time: None";
+            }
+            else
+            {
+                storyModeAverageScoreText.text = gameData.id < 30 ?
+                    $"Average Score: {averageScore}" :
+                    $"Average Time: {averageScore}s";
             }
         }
     }
@@ -211,15 +293,13 @@ public class MainMenu : MonoBehaviour
 
     private void CacheStoryModeDetailsReferences()
     {
-        if (storyModeDetailsPanel == null)
-        {
-            return;
-        }
+        if (storyModeDetailsPanel == null) return;
 
         storyModeTitleText ??= GetStoryModeText(StoryModeTitleObjectName);
         storyModeDescriptionText ??= GetStoryModeText(StoryModeDescriptionObjectName);
         storyModeAttributesText ??= GetStoryModeText(StoryModeAttributesObjectName);
         storyModeHighestScoreText ??= GetStoryModeText(StoryModeBestScoreObjectName);
+        storyModeAverageScoreText ??= GetStoryModeText(StoryModeAverageScoreObjectName);
     }
 
     private TMP_Text GetStoryModeText(string childObjectName)

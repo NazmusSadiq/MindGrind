@@ -4,16 +4,27 @@ using UnityEngine;
 public class MinigameBestScoreStore : MonoBehaviour
 {
     private const string BestScoreKeyPrefix = "BestScore_";
+    private const string TotalScoreKeyPrefix = "TotalScore_";
+    private const string PlayCountKeyPrefix = "PlayCount_";
 
     [SerializeField] private GameObject gameOverMenu;
     [SerializeField] private TMP_Text gameTitleText;
     [SerializeField] private TMP_Text currentScoreText;
     [SerializeField] private TMP_Text bestScoreText;
-    [SerializeField] private string minigameId;
+    [SerializeField] private TMP_Text averageScoreText; 
 
     public static int GetBestScore(string minigameId)
     {
         return PlayerPrefs.GetInt(GetKey(minigameId), 0);
+    }
+
+    public static int GetAverageScore(string minigameId)
+    {
+        int totalScore = PlayerPrefs.GetInt($"{TotalScoreKeyPrefix}{minigameId}", 0);
+        int playCount = PlayerPrefs.GetInt($"{PlayCountKeyPrefix}{minigameId}", 0);
+
+        if (playCount == 0) return 0;
+        return Mathf.RoundToInt((float)totalScore / playCount);
     }
 
     public static int UpdateBestScore(string minigameIdOrSceneName, int score)
@@ -21,10 +32,8 @@ public class MinigameBestScoreStore : MonoBehaviour
         string finalizedIdString = minigameIdOrSceneName;
         int resolvedNumericId = 0;
 
-        // 1. Check if the string passed is a scene name or a numerical ID string
         if (!int.TryParse(minigameIdOrSceneName, out resolvedNumericId))
         {
-            // It's a text scene name (e.g., "Minigame1"). Let's find its true registered ID
             if (MinigameDataStore.TryGetGameDataBySceneName(minigameIdOrSceneName, out MinigameDataStore.GameData foundGame))
             {
                 resolvedNumericId = foundGame.id;
@@ -32,22 +41,28 @@ public class MinigameBestScoreStore : MonoBehaviour
             }
             else
             {
-                // Fallback: If not found in database registry, deduce type from scene name layout
-                // E.g., If name has "Level" or number >= 30, treat as time; otherwise points
                 resolvedNumericId = 0;
-                finalizedIdString = minigameIdOrSceneName; // Keep scene name string as the PlayerPrefs key
+                finalizedIdString = minigameIdOrSceneName;
             }
         }
+
+        string totalScoreKey = $"{TotalScoreKeyPrefix}{finalizedIdString}";
+        string playCountKey = $"{PlayCountKeyPrefix}{finalizedIdString}";
+
+        int currentTotalScore = PlayerPrefs.GetInt(totalScoreKey, 0) + score;
+        int currentPlayCount = PlayerPrefs.GetInt(playCountKey, 0) + 1;
+
+        PlayerPrefs.SetInt(totalScoreKey, currentTotalScore);
+        PlayerPrefs.SetInt(playCountKey, currentPlayCount);
+        
 
         string key = GetKey(finalizedIdString);
         bool hasExistingScore = PlayerPrefs.HasKey(key);
         int bestScore = PlayerPrefs.GetInt(key, 0);
         bool shouldUpdate = false;
 
-        // 2. Route score rules safely depending on the discovered numeric ID configuration map
         if (resolvedNumericId < 30)
         {
-            // HIGHER score is better (Points based)
             if (!hasExistingScore || score > bestScore)
             {
                 shouldUpdate = true;
@@ -55,7 +70,6 @@ public class MinigameBestScoreStore : MonoBehaviour
         }
         else
         {
-            // LOWER score is better (Time based)
             if (!hasExistingScore || score < bestScore)
             {
                 shouldUpdate = true;
@@ -66,9 +80,11 @@ public class MinigameBestScoreStore : MonoBehaviour
         {
             bestScore = score;
             PlayerPrefs.SetInt(key, bestScore);
-            PlayerPrefs.Save();
-            Debug.Log($"[Backend Saved] Key: {key} updated successfully to score target: {bestScore}");
         }
+
+        PlayerPrefs.Save(); 
+
+        Debug.Log($"[Backend Saved] Key: {key} updated. Best: {bestScore} | Avg: {Mathf.RoundToInt((float)currentTotalScore / currentPlayCount)}");
 
         return bestScore;
     }
@@ -76,6 +92,7 @@ public class MinigameBestScoreStore : MonoBehaviour
     public void DisplayUpdatedUI(int currentScoreValue, int idValue)
     {
         int currentBestValue = GetBestScore(idValue.ToString());
+        int currentAvgValue = GetAverageScore(idValue.ToString());
         bool isTimeBased = idValue >= 30;
 
         if (currentScoreText != null)
@@ -86,6 +103,11 @@ public class MinigameBestScoreStore : MonoBehaviour
         if (bestScoreText != null)
         {
             bestScoreText.text = isTimeBased ? $"Best Time: {currentBestValue}s" : $"Best Score: {currentBestValue}";
+        }
+
+        if (averageScoreText != null)
+        {
+            averageScoreText.text = isTimeBased ? $"Avg Time: {currentAvgValue}s" : $"Avg Score: {currentAvgValue}";
         }
 
         if (gameTitleText != null)
@@ -107,10 +129,8 @@ public class MinigameBestScoreStore : MonoBehaviour
 
         Time.timeScale = 0f;
 
-        // Extract active ID type cleanly to format end screen components dynamically
         MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
 
-        // If current game state hasn't initialized from menus, attempt active scene search matching
         if (string.IsNullOrEmpty(currentGame.sceneName))
         {
             string activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
@@ -129,14 +149,19 @@ public class MinigameBestScoreStore : MonoBehaviour
             currentScoreText.text = isTimeBased ? $"Current Time: {currentScore}s" : $"Current Score: {currentScore}";
         }
 
+        string resolvedLookupKey = currentGame.id != 0 || !string.IsNullOrEmpty(currentGame.gameTitle) ?
+            currentGame.id.ToString() : UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
         if (bestScoreText != null)
         {
-            // Pull matching best score records using the correct key lookup configuration matrix
-            string resolvedLookupKey = currentGame.id != 0 || !string.IsNullOrEmpty(currentGame.gameTitle) ?
-                currentGame.id.ToString() : UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-
             int liveBest = GetBestScore(resolvedLookupKey);
             bestScoreText.text = isTimeBased ? $"Best Time: {liveBest}s" : $"Best Score: {liveBest}";
+        }
+
+        if (averageScoreText != null)
+        {
+            int liveAvg = GetAverageScore(resolvedLookupKey);
+            averageScoreText.text = isTimeBased ? $"Avg Time: {liveAvg}s" : $"Avg Score: {liveAvg}";
         }
     }
 

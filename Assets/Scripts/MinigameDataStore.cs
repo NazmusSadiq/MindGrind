@@ -35,6 +35,7 @@ public class MinigameDataStore : MonoBehaviour
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text skillsText;
     [SerializeField] private Image thumbnailImage;
+    [SerializeField] private TMP_Text averageScoreText; // <-- CHANGED: Reference added for Main Menu Display
 
     private void Awake()
     {
@@ -284,6 +285,25 @@ public class MinigameDataStore : MonoBehaviour
 
         if (thumbnailImage != null)
             thumbnailImage.sprite = currentGame.thumbnail;
+
+        // --- CHANGED: CALCULATE AND UPDATE THE AVERAGE UI OVERLAY FIELDS ---
+        if (averageScoreText != null)
+        {
+            int averageScore = MinigameBestScoreStore.GetAverageScore(currentGame.id.ToString());
+            int playCount = PlayerPrefs.GetInt($"PlayCount_{currentGame.id}", 0);
+
+            if (playCount == 0)
+            {
+                averageScoreText.text = "Average Score: None";
+            }
+            else
+            {
+                averageScoreText.text = currentGame.id < 30 ?
+                    $"Average Score: {averageScore}" :
+                    $"Average Time: {averageScore}s";
+            }
+        }
+        // ------------------------------------------------------------------
 
         return;
     }
