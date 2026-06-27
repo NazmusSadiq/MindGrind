@@ -166,6 +166,15 @@ public class MinigameDataStore : MonoBehaviour
             sceneName = "Minigame9"
         };
 
+        minigames[11] = new GameData
+        {
+            id = 11,
+            gameTitle = "Audio Visual Match",
+            description = "A word is shown on screen, while the sound of another word is played. Click 'Match' if the spoken word was previously shown on screen, or 'No Match' if it was not. A correct answer adds 10 points; an incorrect answer deducts 10 points.",
+            cognitiveSkills = "Attention + Memory",
+            sceneName = "Minigame12"
+        };
+
         minigames[12] = new GameData
         {
             id = 12,
