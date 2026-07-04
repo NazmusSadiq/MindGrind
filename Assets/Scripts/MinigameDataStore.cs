@@ -166,6 +166,15 @@ public class MinigameDataStore : MonoBehaviour
             sceneName = "Minigame9"
         };
 
+        minigames[10] = new GameData
+        {
+            id = 10,
+            gameTitle = "Sequence Grid",
+            description = "A 4x4 grid will light up in a sequence. Recreate the sequence by clicking the cells in the correct order. Each success increases the sequence length by 1 and adds 10 points.",
+            cognitiveSkills = "Memory + Attention",
+            sceneName = "Minigame11"
+        };
+
         minigames[11] = new GameData
         {
             id = 11,
