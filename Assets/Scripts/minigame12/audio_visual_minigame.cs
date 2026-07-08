@@ -338,7 +338,7 @@ public class audio_visual_minigame : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = score.ToString();
+            scoreText.text = $"Score: {score}"; 
         }
     }
 

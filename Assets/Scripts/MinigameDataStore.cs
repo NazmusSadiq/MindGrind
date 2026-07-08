@@ -148,13 +148,31 @@ public class MinigameDataStore : MonoBehaviour
             sceneName = "Minigame5"
         };
 
+        minigames[5] = new GameData
+        {
+            id = 5,
+            gameTitle = "Match The Notes",
+            description = "Listen to the melody first to learn the sequence. You can replay the tune as often as you like to practice and identify the notes, then recreate the sequence by tapping the notes in the correct order. Each correct note gives +10, incorrect note gives -5",
+            cognitiveSkills = "Memory + Perception",
+            sceneName = "Minigame6"
+        };
+
         minigames[6] = new GameData
         {
             id = 6,
             gameTitle = "Wordify",
-            description = "Each round shows a set of columns with three letters in each column. Type one letter from each column to form a valid dictionary word. A correct word gives +10 points and advances to the next round with one more column, while an invalid word costs -5 points.",
+            description = "Each round shows a set of columns with three letters in each column. Type one letter from each column to form a valid dictionary word. A correct word gives +10 points and advances to the next round with one more column, while an invalid word gives -5 points.",
             cognitiveSkills = "Learning",
             sceneName = "Minigame7"
+        };
+
+        minigames[7] = new GameData
+        {
+            id = 6,
+            gameTitle = "Hidden Object",
+            description = "There will be a mixture of different types of objects shown in different regions. There will be a target Object and you need to click the target object within a certain time. Be fast, otherwise the layout will be changed after some time",
+            cognitiveSkills = "Attention + Perception",
+            sceneName = "Minigame8"
         };
 
         minigames[8] = new GameData
@@ -164,6 +182,15 @@ public class MinigameDataStore : MonoBehaviour
             description = "Tap on the target object before they disappear. Every correct tap reveals the next letter of a word in sequence, remember them. Once all letters have been revealed, reconstruct the word. Each correct tap gives +10, incorrect tap gives -10. Forming correct word gives +20, incorrect word gives -10",
             cognitiveSkills = "Attention + Memory",
             sceneName = "Minigame9"
+        };
+
+        minigames[9] = new GameData
+        {
+            id = 9,
+            gameTitle = "Precision Product",
+            description = "Monitor the left counter (1–100) and the right counter (100–1); press the corresponding side button whenever a counter displays a multiple of its respective target number. Correct press gives +10 points, incorrect press gives -5 points. Press the bonus button only when both counters simultaneously show multiples of the target number displayed within it.",
+            cognitiveSkills = "Reflex + Reasoning",
+            sceneName = "Minigame10"
         };
 
         minigames[10] = new GameData
@@ -178,9 +205,9 @@ public class MinigameDataStore : MonoBehaviour
         minigames[11] = new GameData
         {
             id = 11,
-            gameTitle = "Audio Visual Match",
-            description = "A word is shown on screen, while the sound of another word is played. Click 'Match' if the spoken word was previously shown on screen, or 'No Match' if it was not. A correct answer adds 10 points; an incorrect answer deducts 10 points.",
-            cognitiveSkills = "Attention + Memory",
+            gameTitle = "Perception Match",
+            description = "Watch the word on the screen and listen to the word being spoken. Visual word add to the storage of words, spoken one is the target word for only that round. Click 'Match' if you have seen the spoken word on screen at any point earlier in the game, otherwise click 'No Match'. A correct answer adds 10 points; an incorrect answer deducts 10 points.",
+            cognitiveSkills = "Perception + Memory",
             sceneName = "Minigame12"
         };
 
@@ -188,8 +215,8 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 12,
             gameTitle = "Odd One Out",
-            description = "Six boxes appear on screen: five share a common trait and one is the odd one out. Click the box that does not belong. A correct pick scores +10 and raises the difficulty — the differences become subtler as you progress. A wrong pick costs -5 and resets the round. Three wrong answers end the game.",
-            cognitiveSkills = "Attention + Perception",
+            description = "From a grid of squares, any one of them will be lit up. User needs to click that as fast as possible, the score will depend on the time required from lit up to clicked. Gradually the density of the lit up square increases",
+            cognitiveSkills = "Reflex",
             sceneName = "Minigame13"
         };
 

@@ -447,8 +447,8 @@ public class HiddenObjectGame : MonoBehaviour
         int columns = 10;
         int rows = 3;
 
-        float horizontalSpacing = 2f;
-        float verticalSpacing = 1.4f;
+        float horizontalSpacing = 1.5f;
+        float verticalSpacing = 1.5f;
 
         int row = slotIndex / columns;
         int column = slotIndex % columns;

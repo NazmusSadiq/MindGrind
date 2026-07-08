@@ -11,7 +11,6 @@ public class sequence_match_minigame : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private RectTransform gridContainer;
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
-    [SerializeField] private TMP_Text instructionText;
     [SerializeField] private AudioSource audioSource;
 
     [Header("Colors (Rich/Harmonious Slate/Cyan/Green/Red)")]
@@ -38,7 +37,6 @@ public class sequence_match_minigame : MonoBehaviour
         if (scoreText == null) scoreText = GameObject.Find("Score_Value")?.GetComponent<TMP_Text>();
         if (gridContainer == null) gridContainer = GameObject.Find("Container")?.GetComponent<RectTransform>();
         if (bestScoreStore == null) bestScoreStore = FindFirstObjectByType<MinigameBestScoreStore>();
-        if (instructionText == null) instructionText = GameObject.Find("Instruction_Text")?.GetComponent<TMP_Text>();
         if (audioSource == null) audioSource = GameObject.Find("Audio Source")?.GetComponent<AudioSource>();
 
         if (audioSource == null)
@@ -61,11 +59,6 @@ public class sequence_match_minigame : MonoBehaviour
         SetupGrid();
         GenerateAudioClips();
 
-        if (instructionText != null)
-        {
-            instructionText.gameObject.SetActive(true);
-        }
-
         StartNextRound();
     }
 
@@ -82,7 +75,7 @@ public class sequence_match_minigame : MonoBehaviour
         if (canvas != null)
         {
             gridContainer.SetParent(canvas.transform, false);
-            gridContainer.SetSiblingIndex(1);
+            gridContainer.SetSiblingIndex(0);
         }
         gridContainer.gameObject.layer = 5; // UI layer
 
@@ -201,11 +194,6 @@ public class sequence_match_minigame : MonoBehaviour
     {
         isInputEnabled = false;
 
-        if (instructionText != null)
-        {
-            instructionText.text = "Watch the sequence!";
-        }
-
         yield return new WaitForSeconds(0.6f);
 
         for (int i = 0; i < sequence.Count; i++)
@@ -222,11 +210,6 @@ public class sequence_match_minigame : MonoBehaviour
             StartCoroutine(FlashCellCoroutine(cellIndex, litColor, 0.4f));
 
             yield return new WaitForSeconds(0.45f);
-        }
-
-        if (instructionText != null)
-        {
-            instructionText.text = "Recreate the sequence!";
         }
 
         userStepIndex = 0;
@@ -284,11 +267,6 @@ public class sequence_match_minigame : MonoBehaviour
                 k++;
                 UpdateScoreUI();
 
-                if (instructionText != null)
-                {
-                    instructionText.text = "Perfect!";
-                }
-
                 // Advance to next level after brief delay
                 Invoke(nameof(StartNextRound), 0.8f);
             }
@@ -308,11 +286,6 @@ public class sequence_match_minigame : MonoBehaviour
             int expectedIndex = sequence[userStepIndex];
             StartCoroutine(FlashCellCoroutine(expectedIndex, correctColor, 0.6f));
 
-            if (instructionText != null)
-            {
-                instructionText.text = "Incorrect!";
-            }
-
             Invoke(nameof(GameOver), 0.8f);
         }
     }
@@ -321,7 +294,7 @@ public class sequence_match_minigame : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = score.ToString();
+            scoreText.text = $"Score: {score}";
         }
     }
 
@@ -345,11 +318,6 @@ public class sequence_match_minigame : MonoBehaviour
             }
         }
 
-        // Hide instruction text
-        if (instructionText != null)
-        {
-            instructionText.gameObject.SetActive(false);
-        }
 
         string minigameSceneName = SceneManager.GetActiveScene().name;
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameSceneName, score);

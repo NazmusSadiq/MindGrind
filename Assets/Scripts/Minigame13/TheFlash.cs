@@ -346,11 +346,17 @@ public class TheFlash : MonoBehaviour
         if (!isGameRunning)
             return;
 
+        if (statusHistory.Count > 0)
+        {
+            statusHistory.Clear();
+        }
+
         if (activeButton == null)
             return;
 
         if (activeButtonAlreadyScored)
             return;
+
 
         if (row != activeRow || column != activeColumn)
         {

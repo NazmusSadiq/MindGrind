@@ -157,11 +157,11 @@ public class CounterMultipleMinigame : MonoBehaviour
 
             if(changeLeft)
             {
-                leftTarget = Random.Range(1,11);
+                leftTarget = Random.Range(3,11);
             }
             else
             {
-                rightTarget = Random.Range(1,11);
+                rightTarget = Random.Range(3,11);
             }
 
 
@@ -335,7 +335,7 @@ public class CounterMultipleMinigame : MonoBehaviour
         bonusAppearCount++;
 
 
-        bonusTarget = Random.Range(2,11);
+        bonusTarget = Random.Range(3,9);
 
 
 
