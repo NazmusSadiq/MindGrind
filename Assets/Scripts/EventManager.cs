@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.InputSystem; 
+using UnityEngine.InputSystem;
 
 public class MainMenu : MonoBehaviour
 {
@@ -65,6 +65,7 @@ public class MainMenu : MonoBehaviour
     public void LoadMiniGame()
     {
         Time.timeScale = 1f;
+        AudioListener.pause = false; // Ensure audio is clean before loading a new minigame
 
         MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
         if (string.IsNullOrWhiteSpace(currentGame.sceneName))
@@ -79,12 +80,14 @@ public class MainMenu : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
+        AudioListener.pause = false; // Reset global audio pause state
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void StartGame()
     {
         Time.timeScale = 1f;
+        AudioListener.pause = false; // Reset global audio pause state
         SceneManager.LoadScene(StartSceneName);
     }
 
@@ -112,6 +115,7 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene(MainMenuSceneName);
         Time.timeScale = 1f;
+        AudioListener.pause = false; // Restore audio logic on menu fallback
     }
 
     public static void PauseGameAndShowDetailsPanel()
@@ -132,6 +136,7 @@ public class MainMenu : MonoBehaviour
 
         storyModeDetailsPanel.SetActive(false);
         Time.timeScale = 1f;
+        AudioListener.pause = false; // 🔥 RESUME GLOBAL AUDIO
 
         StartCoroutine(EnableInputAfterDelay());
     }
@@ -164,6 +169,7 @@ public class MainMenu : MonoBehaviour
 
         isGamePaused = true;
         Time.timeScale = 0f;
+        AudioListener.pause = true; // 🔥 PAUSE GLOBAL AUDIO
 
         string activeSceneName = SceneManager.GetActiveScene().name;
         string targetLookupName = (activeSceneName == "MainMenu") ? storyModeNextSceneName : activeSceneName;
@@ -225,6 +231,7 @@ public class MainMenu : MonoBehaviour
         isGamePaused = true;
         pauseMenuPanel.SetActive(true);
         Time.timeScale = 0f;
+        AudioListener.pause = true; 
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -244,6 +251,7 @@ public class MainMenu : MonoBehaviour
         isGamePaused = false;
         pauseMenuPanel.SetActive(false);
         Time.timeScale = 1f;
+        AudioListener.pause = false; 
 
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null)

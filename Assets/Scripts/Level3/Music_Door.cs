@@ -25,6 +25,7 @@ public class MusicDoor : MonoBehaviour, IInteractable
     private bool isCompleted;
     private bool isPanelOpen;
 
+    private Level3_Manager.RhymeData assignedData;
     private string password;
 
     private void Start()
@@ -39,11 +40,19 @@ public class MusicDoor : MonoBehaviour, IInteractable
 
         submitButton?.onClick.AddListener(CheckPassword);
         backButton?.onClick.AddListener(ClosePanel);
+
+        passwordInput?.onSubmit.AddListener((text) => CheckPassword());
     }
 
-    public void AssignData(string pwd)
+    public void AssignData(Level3_Manager.RhymeData data)
     {
-        password = pwd;
+        assignedData = data;
+        password = data.password;
+    }
+
+    public AudioClip GetDoorAudio()
+    {
+        return assignedData?.rhymeClip;
     }
 
     public void Interact(GameObject interactor)
@@ -61,10 +70,13 @@ public class MusicDoor : MonoBehaviour, IInteractable
 
         isPanelOpen = true;
 
-        // 🔥 SAME PATTERN AS LEVEL2 CINEMATIC
         currentPlayer.SetGameStarted(false);
 
         UpdatePromptState();
+
+        // 🔥 Tell manager to pause context music on UI focus
+        if (levelManager != null)
+            levelManager.PauseMusicForInteraction(true);
 
         passwordPanel.SetActive(true);
         passwordInput.text = "";
@@ -90,6 +102,10 @@ public class MusicDoor : MonoBehaviour, IInteractable
         Cursor.visible = false;
 
         UpdatePromptState();
+
+        // 🔥 Tell manager to unpause/resume context loops now that UI interaction is completed
+        if (levelManager != null && !isCompleted)
+            levelManager.PauseMusicForInteraction(false);
     }
 
     private void CheckPassword()
@@ -105,6 +121,9 @@ public class MusicDoor : MonoBehaviour, IInteractable
         else
         {
             feedbackText.text = "Incorrect Password";
+
+            passwordInput.Select();
+            passwordInput.ActivateInputField();
         }
     }
 

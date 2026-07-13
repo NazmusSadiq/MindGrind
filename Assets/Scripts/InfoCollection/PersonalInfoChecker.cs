@@ -12,10 +12,16 @@ public class PersonalInfoChecker : MonoBehaviour
     [SerializeField] private TMP_InputField ageInputField;
     [SerializeField] private TMP_Dropdown genderDropdown;
     [SerializeField] private TMP_InputField countryInputField;
+
+    [Header("New Analytics Fields")]
+    [SerializeField] private TMP_Dropdown favoriteGenreDropdown;      
+    [SerializeField] private TMP_InputField weeklyGamingHoursInput;
+    [SerializeField] private TMP_InputField sleepHoursInput;
+
     [SerializeField] private Button submitButton;
 
     [Header("Country Autocomplete Setup")]
-    [SerializeField] private TextAsset countriesTextFile;         // <-- Assign your countries.txt asset here!
+    [SerializeField] private TextAsset countriesTextFile;
     [SerializeField] private GameObject suggestionsContainerPanel;
     [SerializeField] private GameObject suggestionButtonPrefab;
     [SerializeField] private int maxSuggestionsToShow = 5;
@@ -26,7 +32,6 @@ public class PersonalInfoChecker : MonoBehaviour
     private PlayerProfile activeProfile;
     private string saveFilePath;
 
-    // Country Logic Variables
     private List<string> allCountries = new List<string>();
     private List<GameObject> activeSuggestionButtons = new List<GameObject>();
     private bool isCountrySelectedFromList = false;
@@ -172,7 +177,10 @@ public class PersonalInfoChecker : MonoBehaviour
             userId = Guid.NewGuid().ToString(),
             age = 0,
             gender = "Unknown",
-            country = "Unknown"
+            country = "Unknown",
+            favoriteGenre = "Unknown",
+            weeklyGamingHours = 0,
+            sleepHoursLastNight = 0
         };
 
         if (registrationCanvas != null) registrationCanvas.SetActive(true);
@@ -206,6 +214,27 @@ public class PersonalInfoChecker : MonoBehaviour
             return;
         }
 
+        // 4. Validate Favorite Genre Dropdown
+        if (favoriteGenreDropdown != null && favoriteGenreDropdown.value == 0 && favoriteGenreDropdown.options[0].text.Contains("Select"))
+        {
+            ShowValidationError("Please select your favorite game genre.");
+            return;
+        }
+
+        // 5. Validate Weekly Gaming Hours (Value cap set to 168 max hours in a week)
+        if (string.IsNullOrWhiteSpace(weeklyGamingHoursInput.text) || !int.TryParse(weeklyGamingHoursInput.text, out int resultGamingHours) || resultGamingHours < 0 || resultGamingHours > 168)
+        {
+            ShowValidationError("Please enter valid weekly gaming hours (0 to 168).");
+            return;
+        }
+
+        // 6. Validate Sleep Hours Last Night (Value cap set to 24 max hours)
+        if (string.IsNullOrWhiteSpace(sleepHoursInput.text) || !int.TryParse(sleepHoursInput.text, out int resultSleepHours) || resultSleepHours < 0 || resultSleepHours > 24)
+        {
+            ShowValidationError("Please enter valid sleep hours (0 to 24).");
+            return;
+        }
+
         // --- SUBMISSION LAYER ---
         if (errorText != null) errorText.text = "";
 
@@ -213,11 +242,18 @@ public class PersonalInfoChecker : MonoBehaviour
         activeProfile.gender = genderDropdown.options[genderDropdown.value].text;
         activeProfile.country = matchedExactCountry;
 
+        // Extract string data from dropdown list selections dynamically
+        if (favoriteGenreDropdown != null)
+            activeProfile.favoriteGenre = favoriteGenreDropdown.options[favoriteGenreDropdown.value].text;
+
+        activeProfile.weeklyGamingHours = resultGamingHours;
+        activeProfile.sleepHoursLastNight = resultSleepHours;
+
         SyncAllExistingScores();
         SaveProfileToDisk();
 
         if (registrationCanvas != null) registrationCanvas.SetActive(false);
-        Debug.Log("User profile validated and saved. Canvas closed.");
+        Debug.Log("User profile validated and saved successfully.");
     }
 
     private void ShowValidationError(string message)

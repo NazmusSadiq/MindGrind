@@ -27,13 +27,9 @@ public class OddOneOut : MonoBehaviour
     public struct OptionData
     {
         public ShapeType shape;
-
         public int backgroundIndex;
-
         public int objectColorIndex;
-
         public int count;
-
         public bool isCorrect;
     }
 
@@ -45,7 +41,6 @@ public class OddOneOut : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text statusText;
-
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
 
     #endregion
@@ -53,40 +48,30 @@ public class OddOneOut : MonoBehaviour
     #region Option Cards
 
     [Header("Option Cards")]
-    [SerializeField] private OptionCard[] optionCards = new OptionCard[4];
+    // Changed array allocation size from 4 to 6
+    [SerializeField] private OptionCard[] optionCards = new OptionCard[6];
 
     #endregion
 
     #region Gameplay
 
     [Header("Gameplay")]
-
-    [SerializeField]
-    private float gameDuration = 60f;
-
-    [SerializeField]
-    private int scorePerCorrect = 10;
-
-    [SerializeField]
-    private int scorePenalty = 10;
+    [SerializeField] private float gameDuration = 60f;
+    [SerializeField] private int scorePerCorrect = 10;
+    [SerializeField] private int scorePenalty = 10;
 
     private float timeRemaining;
-
     private bool gameRunning;
-
     private int score;
-
     private int roundNumber;
 
     #endregion
 
     #region Round Data
 
-    private OptionData[] currentOptions =
-        new OptionData[4];
-
+    // Changed array allocation size from 4 to 6
+    private OptionData[] currentOptions = new OptionData[6];
     private CriteriaType targetCriteria;
-
     private int correctOption;
 
     #endregion
@@ -102,23 +87,17 @@ public class OddOneOut : MonoBehaviour
         }
 
         Time.timeScale = 1f;
-
         score = 0;
-
         roundNumber = 1;
-
         timeRemaining = gameDuration;
-
         gameRunning = true;
 
         UpdateScoreUI();
-
         UpdateTimerUI();
 
         statusText.text = "Find & Click The Odd One Out.";
 
         RegisterOptionCallbacks();
-
         GenerateRound();
     }
 
@@ -128,7 +107,6 @@ public class OddOneOut : MonoBehaviour
             return;
 
         timeRemaining -= Time.deltaTime;
-
         UpdateTimerUI();
 
         if (timeRemaining <= 0f)
@@ -143,19 +121,16 @@ public class OddOneOut : MonoBehaviour
 
     private bool HasValidSetup()
     {
-        if (scoreText == null ||
-            timerText == null ||
-            statusText == null ||
-            bestScoreStore == null)
+        if (scoreText == null || timerText == null || statusText == null || bestScoreStore == null)
         {
             Debug.LogError("Missing UI references.");
             return false;
         }
 
-        if (optionCards == null ||
-            optionCards.Length != 4)
+        // Changed validation check from 4 to 6
+        if (optionCards == null || optionCards.Length != 6)
         {
-            Debug.LogError("Assign four option cards.");
+            Debug.LogError("Assign six option cards.");
             return false;
         }
 
@@ -176,10 +151,7 @@ public class OddOneOut : MonoBehaviour
         for (int i = 0; i < optionCards.Length; i++)
         {
             int index = i;
-
-            optionCards[index].Initialize(
-                index,
-                OnOptionSelected);
+            optionCards[index].Initialize(index, OnOptionSelected);
         }
     }
 
@@ -195,7 +167,6 @@ public class OddOneOut : MonoBehaviour
     private int RandomVariantExcept(int excluded)
     {
         int value;
-
         do
         {
             value = Random.Range(0, 4);
@@ -210,88 +181,61 @@ public class OddOneOut : MonoBehaviour
         for (int i = 0; i < array.Length; i++)
         {
             int j = Random.Range(i, array.Length);
-
             (array[i], array[j]) = (array[j], array[i]);
         }
     }
 
-
+    /// <summary>
+    /// Generates 6 values ensuring that no single variant appears exactly once.
+    /// This prevents accidental secondary "odd ones out" in non-target criteria.
+    /// </summary>
     private int[] GenerateBalancedValues()
     {
         int pattern = Random.Range(0, 3);
+        int[] result = new int[6];
 
-        int[] result = new int[4];
-
-        //------------------------------------------
-        // Pattern 0
-        // A A B B
-        //------------------------------------------
-
+        // Pattern 0: Three pairs (e.g., A A B B C C)
         if (pattern == 0)
         {
             int a = RandomVariant();
-
             int b = RandomVariantExcept(a);
-
-            result[0] = a;
-            result[1] = a;
-            result[2] = b;
-            result[3] = b;
-        }
-
-        //------------------------------------------
-        // Pattern 1
-        // A A B C
-        //------------------------------------------
-
-        else if (pattern == 1)
-        {
-            int a = RandomVariant();
-
-            int b = RandomVariantExcept(a);
-
             int c;
-
             do
             {
                 c = RandomVariant();
-            }
-            while (c == a || c == b);
+            } while (c == a || c == b);
 
-            result[0] = a;
-            result[1] = a;
-            result[2] = b;
-            result[3] = c;
+            result[0] = a; result[1] = a;
+            result[2] = b; result[3] = b;
+            result[4] = c; result[5] = c;
         }
+        // Pattern 1: Two triplets (e.g., A A A B B B)
+        else if (pattern == 1)
+        {
+            int a = RandomVariant();
+            int b = RandomVariantExcept(a);
 
-        //------------------------------------------
-        // Pattern 2
-        // A B C D
-        //------------------------------------------
-
+            result[0] = a; result[1] = a; result[2] = a;
+            result[3] = b; result[4] = b; result[5] = b;
+        }
+        // Pattern 2: Four of one, two of another (e.g., A A A A B B)
         else
         {
-            result[0] = 0;
-            result[1] = 1;
-            result[2] = 2;
-            result[3] = 3;
+            int a = RandomVariant();
+            int b = RandomVariantExcept(a);
+
+            result[0] = a; result[1] = a; result[2] = a; result[3] = a;
+            result[4] = b; result[5] = b;
         }
 
         Shuffle(result);
-
         return result;
     }
-
-
 
     #endregion
 
     #region Round
 
-    /// <summary>
-    /// Creates one complete round.
-    /// (Implemented in Part 2)
-    /// </summary>
     private void GenerateRound()
     {
         foreach (OptionCard card in optionCards)
@@ -299,111 +243,89 @@ public class OddOneOut : MonoBehaviour
             card.SetInteractable(true);
         }
 
-        targetCriteria =
-            (CriteriaType)Random.Range(0, 4);
+        targetCriteria = (CriteriaType)Random.Range(0, 4);
+        correctOption = Random.Range(0, 6); // Pick randomly from 6 choices now
 
-        correctOption =
-            Random.Range(0, 4);
-
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 6; i++)
         {
             currentOptions[i].isCorrect = false;
         }
-
         currentOptions[correctOption].isCorrect = true;
 
         //-----------------------------
         // SHAPE
         //-----------------------------
-
         if (targetCriteria == CriteriaType.Shape)
         {
             int common = RandomVariant();
-
             int odd = RandomVariantExcept(common);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 6; i++)
                 currentOptions[i].shape = (ShapeType)common;
 
-            currentOptions[correctOption].shape =
-                (ShapeType)odd;
+            currentOptions[correctOption].shape = (ShapeType)odd;
         }
         else
         {
             int[] values = GenerateBalancedValues();
-
-            for (int i = 0; i < 4; i++)
-                currentOptions[i].shape =
-                    (ShapeType)values[i];
+            for (int i = 0; i < 6; i++)
+                currentOptions[i].shape = (ShapeType)values[i];
         }
 
         //-----------------------------
         // BACKGROUND
         //-----------------------------
-
         if (targetCriteria == CriteriaType.Background)
         {
             int common = RandomVariant();
-
             int odd = RandomVariantExcept(common);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 6; i++)
                 currentOptions[i].backgroundIndex = common;
 
-            currentOptions[correctOption].backgroundIndex =
-                odd;
+            currentOptions[correctOption].backgroundIndex = odd;
         }
         else
         {
             int[] values = GenerateBalancedValues();
-
-            for (int i = 0; i < 4; i++)
-                currentOptions[i].backgroundIndex =
-                    values[i];
+            for (int i = 0; i < 6; i++)
+                currentOptions[i].backgroundIndex = values[i];
         }
 
         //-----------------------------
         // OBJECT COLOR
         //-----------------------------
-
         if (targetCriteria == CriteriaType.ObjectColor)
         {
             int common = RandomVariant();
-
             int odd = RandomVariantExcept(common);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 6; i++)
                 currentOptions[i].objectColorIndex = common;
 
-            currentOptions[correctOption].objectColorIndex =
-                odd;
+            currentOptions[correctOption].objectColorIndex = odd;
         }
         else
         {
             int[] values = GenerateBalancedValues();
-
-            for (int i = 0; i < 4; i++)
-                currentOptions[i].objectColorIndex =
-                    values[i];
+            for (int i = 0; i < 6; i++)
+                currentOptions[i].objectColorIndex = values[i];
         }
 
         //-----------------------------
         // COUNT
         //-----------------------------
-
         if (targetCriteria == CriteriaType.Count)
         {
             int common = Random.Range(1, 5);
-
             int odd;
-
             do
             {
                 odd = Random.Range(1, 5);
             }
             while (odd == common);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 6; i++)
                 currentOptions[i].count = common;
 
             currentOptions[correctOption].count = odd;
@@ -411,32 +333,22 @@ public class OddOneOut : MonoBehaviour
         else
         {
             int[] values = GenerateBalancedValues();
-
-            for (int i = 0; i < 4; i++)
-                currentOptions[i].count =
-                    values[i] + 1;
+            for (int i = 0; i < 6; i++)
+                currentOptions[i].count = values[i] + 1;
         }
 
         //-----------------------------
         // Send to Cards
         //-----------------------------
-
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 6; i++)
         {
             optionCards[i].SetData(currentOptions[i]);
-
             optionCards[i].SetInteractable(true);
         }
 
-        statusText.text =
-            $"Find & Click The Odd One Out.\n\n" +
-            $"Round {roundNumber}";
+        statusText.text = $"Find & Click The Odd One Out.\n\nRound {roundNumber}";
     }
 
-    /// <summary>
-    /// Called by OptionCard when clicked.
-    /// (Implemented in Part 3)
-    /// </summary>
     private void OnOptionSelected(int selectedIndex)
     {
         if (!gameRunning)
@@ -452,30 +364,18 @@ public class OddOneOut : MonoBehaviour
         if (isCorrect)
         {
             score += scorePerCorrect;
-
-            statusText.text =
-                $"Find & Click The Odd One Out.\n\n" +
-                $"Correct! (+{scorePerCorrect})";
+            statusText.text = $"Find & Click The Odd One Out.\n\nCorrect! (+{scorePerCorrect})";
         }
         else
         {
             score -= scorePenalty;
-
-            // if (score < 0)
-            //     score = 0;
-
-            statusText.text =
-                $"Find & Click The Odd One Out.\n\n" +
-                $"Wrong! Correct : Option {correctOption + 1}";
+            statusText.text = $"Find & Click The Odd One Out.\n\nWrong! Correct : Option {correctOption + 1}";
         }
 
         UpdateScoreUI();
-
         roundNumber++;
-
         StartCoroutine(StartNextRound());
     }
-
 
     private IEnumerator StartNextRound()
     {
@@ -491,29 +391,22 @@ public class OddOneOut : MonoBehaviour
 
     private void UpdateScoreUI()
     {
-        scoreText.text =
-            $"Score : {score}";
+        scoreText.text = $"Score : {score}";
     }
 
     private void UpdateTimerUI()
     {
-        int sec =
-            Mathf.CeilToInt(
-                Mathf.Max(0f, timeRemaining));
-
-        timerText.text =
-            $"Time : {sec}";
+        int sec = Mathf.CeilToInt(Mathf.Max(0f, timeRemaining));
+        timerText.text = $"Time : {sec}";
     }
 
     #endregion
-
 
     #region Gameplay Helpers
 
     private void AddScore(int amount)
     {
         score += amount;
-
         if (score < 0)
             score = 0;
 
@@ -527,7 +420,6 @@ public class OddOneOut : MonoBehaviour
 
     #endregion
 
-
     #region End Game
 
     private void EndGame()
@@ -536,9 +428,7 @@ public class OddOneOut : MonoBehaviour
             return;
 
         gameRunning = false;
-
         timeRemaining = 0f;
-
         UpdateTimerUI();
 
         foreach (OptionCard card in optionCards)
@@ -547,22 +437,12 @@ public class OddOneOut : MonoBehaviour
                 card.SetInteractable(false);
         }
 
-        string minigameId =
-            SceneManager.GetActiveScene().name;
+        string minigameId = SceneManager.GetActiveScene().name;
+        int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
-        int bestScore =
-            MinigameBestScoreStore.UpdateBestScore(
-                minigameId,
-                score);
+        bestScoreStore.ShowStats(score, bestScore);
 
-        bestScoreStore.ShowStats(
-            score,
-            bestScore);
-
-        Debug.Log(
-            $"Odd One Out Finished\n" +
-            $"Score : {score}\n" +
-            $"Best : {bestScore}");
+        Debug.Log($"Odd One Out Finished\nScore : {score}\nBest : {bestScore}");
     }
 
     #endregion

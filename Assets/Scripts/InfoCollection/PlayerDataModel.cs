@@ -17,5 +17,9 @@ public class PlayerProfile
     public int age;
     public string gender;
     public string country;
+    public string favoriteGenre;
+    public int weeklyGamingHours;
+    public int sleepHoursLastNight;
+
     public List<GameStat> gameStats = new List<GameStat>();
 }

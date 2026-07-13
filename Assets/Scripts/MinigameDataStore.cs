@@ -79,7 +79,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 32,
             gameTitle = "Level 3",
-            description = "Cryptic rhymes play on a continuous loop around you. To escape, you must decode the password hidden within its verses by extracting the fourth letter of every single word. You will need to give the password to go through each of the music doors to pass to its next region. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
+            description = "Cryptic rhymes play on a continuous loop around you. Each verse has 7 words, the 7 digit password consists of letter count of each of these words. You will need to give the password to go through each of the music doors to pass to its next region. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Memory + Attention",
             sceneName = "Level3"
         };
@@ -88,7 +88,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 33,
             gameTitle = "Level 4",
-            description = "Multiple cannons lie ahead, tracking your moves and firing from all sides. Raise your shield in time to block incoming fireballs, or use the environment strategically to let objects take the hit for you. Mistiming your guard or getting caught in the open will cost you precious health.",
+            description = "Multiple cannons lie ahead, tracking your moves and firing from all sides. Raise your shield in time to block incoming fireballs, or use the environment strategically to let objects take the hit for you. Mistiming your guard or getting caught in the open will cost you precious health. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Reflex + Attention",
             sceneName = "Level4"
         };
@@ -168,8 +168,8 @@ public class MinigameDataStore : MonoBehaviour
 
         minigames[7] = new GameData
         {
-            id = 6,
-            gameTitle = "Hidden Object",
+            id = 7,
+            gameTitle = "Find Me If You Can",
             description = "There will be a mixture of different types of objects shown in different regions. There will be a target Object and you need to click the target object within a certain time. Be fast, otherwise the layout will be changed after some time",
             cognitiveSkills = "Attention + Perception",
             sceneName = "Minigame8"
@@ -214,7 +214,7 @@ public class MinigameDataStore : MonoBehaviour
         minigames[12] = new GameData
         {
             id = 12,
-            gameTitle = "Odd One Out",
+            gameTitle = "Faster, Please",
             description = "From a grid of squares, any one of them will be lit up. User needs to click that as fast as possible, the score will depend on the time required from lit up to clicked. Gradually the density of the lit up square increases",
             cognitiveSkills = "Reflex",
             sceneName = "Minigame13"
@@ -251,7 +251,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 16,
             gameTitle = "Verbal Memory",
-            description = "You are shown a word. Click 'New' if it is the first time the word is shown in this round, or 'Seen' if it has already appeared. You have 3 lives, and each correct answer gives 10 points.",
+            description = "You are shown a word. Click 'New' if it is the first time the word is shown in this round, or 'Seen' if it has already appeared. You will have 3 lives. Each correct answer gives 10 points and each wrong anser reduces your lives by one.",
             cognitiveSkills = "Memory",
             sceneName = "Minigame17"
         };
@@ -260,10 +260,29 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 17,
             gameTitle = "Number Memory",
-            description = "Memorize the sequence of digits shown. You have 5 seconds before the number disappears, then re-enter the number in the input field. Success increases the number length by 1, and you have 3 lives.",
+            description = "Memorize the sequence of digits shown. You have 5 seconds before the number disappears, then re-enter the number in the input field. You will have three lives. Correct entry increases the number length by 1, and wrong entry reduces your lives by one.",
             cognitiveSkills = "Memory",
             sceneName = "Minigame18"
         };
+
+        minigames[18] = new GameData
+        {
+            id = 18,
+            gameTitle = "Stop The Clock",
+            description = "There will be 3 clocks, first one has all the 12 hour markers, second one has only 4 hour markers and the last one has no hour marker. Given a target time for each clock you have to stop the clock at that specific time. The closer you stop the hands to the target time, the more points you will get",
+            cognitiveSkills = "Reflex + Attention",
+            sceneName = "Minigame19"
+        };
+
+        minigames[19] = new GameData
+        {
+            id = 19,
+            gameTitle = "Odd One Out",
+            description = "There will be 4 boxes and 4 different criteria: shapes, color of the shapes, shape count and background color. There will always be a box different from others in any one of these criteria and you will have to pick that one. Correct option gives you +10 points and wrong option costs you 10 points",
+            cognitiveSkills = "Perception + Attention",
+            sceneName = "Minigame20"
+        };
+
     }
 
     public static bool TryGetGameData(int id, out GameData gameData)

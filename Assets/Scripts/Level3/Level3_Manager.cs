@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -28,6 +28,8 @@ public class Level3_Manager : MonoBehaviour
     private bool isLevelOver;
 
     private int currentDoorIndex = 0;
+    private Coroutine audioLoopCoroutine;
+    private bool isMusicPausedForInteraction = false;
 
     private void Start()
     {
@@ -76,29 +78,76 @@ public class Level3_Manager : MonoBehaviour
 
             used.Add(index);
 
-            doors[i].AssignData(rhymes[index].password);
+            doors[i].AssignData(rhymes[index]);
         }
     }
 
-    // ================= GLOBAL AUDIO CONTROL =================
 
     public void PlayDoorMusic(int doorIndex)
     {
-        if (doorIndex < 0 || doorIndex >= rhymes.Length)
+        if (doorIndex < 0 || doorIndex >= doors.Length)
             return;
 
         currentDoorIndex = doorIndex;
+        isMusicPausedForInteraction = false;
 
         if (globalAudioSource == null)
             return;
 
-        globalAudioSource.clip = rhymes[doorIndex].rhymeClip;
-        globalAudioSource.loop = true;
-        globalAudioSource.Play();
+        if (audioLoopCoroutine != null)
+            StopCoroutine(audioLoopCoroutine);
+
+        globalAudioSource.Stop();
+        globalAudioSource.clip = doors[doorIndex].GetDoorAudio();
+        globalAudioSource.loop = false; 
+
+        audioLoopCoroutine = StartCoroutine(TimedAudioLoopCoroutine());
+    }
+
+    private System.Collections.IEnumerator TimedAudioLoopCoroutine()
+    {
+        while (!isLevelOver)
+        {
+            if (globalAudioSource.clip != null && !isMusicPausedForInteraction)
+            {
+                globalAudioSource.Play();
+
+                yield return new WaitWhile(() => globalAudioSource.isPlaying || isMusicPausedForInteraction);
+            }
+
+            if (isMusicPausedForInteraction)
+            {
+                yield return null;
+                continue;
+            }
+
+            yield return new WaitForSeconds(10f);
+        }
+    }
+
+    public void PauseMusicForInteraction(bool pause)
+    {
+        if (globalAudioSource == null) return;
+
+        isMusicPausedForInteraction = pause;
+
+        if (pause)
+        {
+            if (globalAudioSource.isPlaying)
+                globalAudioSource.Pause();
+        }
+        else
+        {
+            if (!globalAudioSource.isPlaying && globalAudioSource.clip != null)
+                globalAudioSource.UnPause();
+        }
     }
 
     public void StopMusic()
     {
+        if (audioLoopCoroutine != null)
+            StopCoroutine(audioLoopCoroutine);
+
         if (globalAudioSource != null)
             globalAudioSource.Stop();
     }
@@ -139,12 +188,14 @@ public class Level3_Manager : MonoBehaviour
             return;
 
         isLevelOver = true;
+        StopMusic();
         Debug.Log($"Level 3 Completed in: {elapsedTime:F2}");
     }
 
     private void TriggerGameOver()
     {
         isLevelOver = true;
+        StopMusic();
         playerController.ShowGameOverMenu();
     }
 
