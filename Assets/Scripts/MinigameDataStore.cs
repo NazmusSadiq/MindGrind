@@ -223,8 +223,8 @@ public class MinigameDataStore : MonoBehaviour
         minigames[13] = new GameData
         {
             id = 13,
-            gameTitle = "Lucky Symbols",
-            description = "Each round, pick one of two symbols. One is 'weighted lucky' (rewards +10 most of the time, occasionally -5) and the other is weighted unlucky (mostly -5, occasionally +10). You aren't told which is which — you must learn it purely from outcomes over many rounds. Halfway through, the weightings silently swap.",
+            gameTitle = "Wordle",
+            description = "Each try, type a 5-letter word to guess the target word. Correctly positioned letters highlight green, valid letters in the wrong spots turn yellow, and incorrect choices turn red. You aren't told the target word — you must deduce it purely from tile colors across 6 attempts. Correct letters award points, and each fewer try grants a 20-point bonus.",
             cognitiveSkills = "Learning + Reasoning",
             sceneName = "Minigame14"
         };

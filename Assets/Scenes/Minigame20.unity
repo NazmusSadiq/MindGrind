@@ -143,8 +143,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 59048858}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 90}
-  m_LocalScale: {x: 0.027400622, y: 0.027400622, z: 0.027400622}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.233028, y: 1.233028, z: 1.233028}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 958323139}
@@ -154,11 +154,11 @@ RectTransform:
   - {fileID: 2071369805}
   - {fileID: 845856759}
   - {fileID: 1411014403}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1275083492}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 166.39816, y: -351.64636}
+  m_AnchoredPosition: {x: 7487.917, y: -15824.087}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &91900293
@@ -2260,6 +2260,7 @@ MonoBehaviour:
   storyModeNextSceneName: Minigame2
   storyModeDetailsPanel: {fileID: 1978776224}
   pauseMenuPanel: {fileID: 1979922934}
+  targetThumbnailField: {fileID: 0}
 --- !u!114 &932507561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2996,6 +2997,7 @@ RectTransform:
   - {fileID: 1575042758}
   - {fileID: 210473911}
   - {fileID: 2006701360}
+  - {fileID: 59048859}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3226,7 +3228,7 @@ MonoBehaviour:
   m_fontSizeMin: 10
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -5045,5 +5047,4 @@ SceneRoots:
   - {fileID: 1275083492}
   - {fileID: 1470419924}
   - {fileID: 932507559}
-  - {fileID: 59048859}
   - {fileID: 2059705108}

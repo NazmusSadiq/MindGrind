@@ -1980,6 +1980,7 @@ MonoBehaviour:
   storyModeNextSceneName: Level1
   storyModeDetailsPanel: {fileID: 1252519503}
   pauseMenuPanel: {fileID: 1279051303}
+  targetThumbnailField: {fileID: 0}
 --- !u!114 &932507561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3542,7 +3543,7 @@ MonoBehaviour:
   m_fontSizeMin: 10
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
