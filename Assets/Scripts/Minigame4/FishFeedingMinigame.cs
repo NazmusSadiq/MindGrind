@@ -113,7 +113,7 @@ public class FishFeedingMinigame : MonoBehaviour
             return;
         }
 
-        score += fishTarget.IsFed ? -10 : 10;
+        score += fishTarget.IsFed ? -5 : 10;
         fishTarget.MarkFed();
         UpdateScoreUI();
         Debug.Log($"Fed fish '{fishTarget.name}'.", fishTarget);

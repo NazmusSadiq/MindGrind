@@ -319,7 +319,7 @@ public class audio_visual_minigame : MonoBehaviour
         }
         else
         {
-            score = Mathf.Max(0, score - 10);
+            score = Mathf.Max(0, score - 5);
             lives--;
             UpdateScoreUI();
             UpdateLivesUI();

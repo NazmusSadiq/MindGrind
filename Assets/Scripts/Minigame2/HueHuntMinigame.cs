@@ -113,7 +113,7 @@ public class HueHuntMinigame : MonoBehaviour
             return;
         }
 
-        score += currentTargetIndex == BombTargetIndex ? -10 : mole.TypeIndex == currentTargetIndex ? 10 : -10;
+        score += currentTargetIndex == BombTargetIndex ? -5 : mole.TypeIndex == currentTargetIndex ? 10 : -10;
         UpdateScoreUI();
         mole.HideAfterHit();
     }

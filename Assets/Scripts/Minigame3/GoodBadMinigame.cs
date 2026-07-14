@@ -106,7 +106,11 @@ public class GoodBadMinigame : MonoBehaviour
             return;
         }
 
-        score += gridObject.IsGood ? -10 : 10;
+        score += gridObject.IsGood ? -5 : 10;
+        if(score < 0)
+        {
+            score = 0;
+        }
         UpdateScoreUI();
         gridObject.Clear();
     }
