@@ -41,10 +41,6 @@ public class Level5_Manager : MonoBehaviour
             return;
         }
 
-        // Auto-initialize game startup execution to ensure inputs unlock properly
-        playerController.SetGameStarted(true);
-        playerController.EnableGameplayInput(true);
-
         // Lock the exit gateway cleanly at layout initialization
         if (exitGate != null)
         {

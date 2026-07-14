@@ -2428,6 +2428,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac1aab37469900545b78cb68dcffd049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
+  overallText: {fileID: 0}
+  attentionText: {fileID: 0}
+  memoryText: {fileID: 0}
+  reflexText: {fileID: 0}
+  perceptionText: {fileID: 0}
+  learningText: {fileID: 0}
+  reasoningText: {fileID: 0}
   storyModeNextSceneName: Minigame2
   storyModeDetailsPanel: {fileID: 1978776224}
   pauseMenuPanel: {fileID: 1921256370}
@@ -4692,7 +4699,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 5651805591716599359, guid: 3e88622f12fcd6546870a9be9ddef6ce, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5352,7 +5359,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 3.080017, y: -25.46}
+  m_AnchoredPosition: {x: 3.080017, y: -25.460022}
   m_SizeDelta: {x: 6.15, y: 50.91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2024359952

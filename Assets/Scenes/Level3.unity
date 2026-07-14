@@ -3630,7 +3630,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -6059,14 +6059,14 @@ RectTransform:
   m_GameObject: {fileID: 277894111}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.25, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 25580561}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 105.40039, y: -83}
+  m_AnchoredPosition: {x: 130, y: -83}
   m_SizeDelta: {x: 209.0596, y: 163.8935}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &277894113
@@ -6089,7 +6089,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -6913997002221719111, guid: e1b776c253aba2d4aaf79ca64cc50d3f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6703,7 +6703,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -8354,7 +8354,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -11391,7 +11391,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -12768,7 +12768,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -14997,7 +14997,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -19798,6 +19798,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac1aab37469900545b78cb68dcffd049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
+  overallText: {fileID: 0}
+  attentionText: {fileID: 0}
+  memoryText: {fileID: 0}
+  reflexText: {fileID: 0}
+  perceptionText: {fileID: 0}
+  learningText: {fileID: 0}
+  reasoningText: {fileID: 0}
   storyModeNextSceneName: Level1
   storyModeDetailsPanel: {fileID: 25580560}
   pauseMenuPanel: {fileID: 2128982273}
@@ -20721,7 +20728,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -21584,7 +21591,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -27430,7 +27437,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -29807,7 +29814,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -30447,7 +30454,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -35099,7 +35106,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -36484,7 +36491,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -38121,7 +38128,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -40126,7 +40133,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -41760,7 +41767,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 4
@@ -43972,7 +43979,7 @@ MonoBehaviour:
   patrolSpeed: 2
   waitAtPointDuration: 3
   reachDistance: 0.15
-  sightRange: 8
+  sightRange: 10
   viewAngle: 90
   forgetDuration: 3
   chaseSpeed: 6

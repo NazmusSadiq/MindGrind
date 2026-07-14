@@ -31,8 +31,8 @@ public class Level4_Manager : MonoBehaviour
         }
 
         // Auto-initialize game startup execution to ensure inputs unlock properly
-        playerController.SetGameStarted(true);
-        playerController.EnableGameplayInput(true);
+        //playerController.SetGameStarted(true);
+        //playerController.EnableGameplayInput(true);
 
         elapsedTime = 0f;
         UpdateTimerUI();

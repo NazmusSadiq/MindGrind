@@ -1345,7 +1345,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 5083125610763190908, guid: 7b25960d33dd807448718876e594bd0c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2824,6 +2824,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac1aab37469900545b78cb68dcffd049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
+  overallText: {fileID: 0}
+  attentionText: {fileID: 0}
+  memoryText: {fileID: 0}
+  reflexText: {fileID: 0}
+  perceptionText: {fileID: 0}
+  learningText: {fileID: 0}
+  reasoningText: {fileID: 0}
   storyModeNextSceneName: Level1
   storyModeDetailsPanel: {fileID: 73303419}
   pauseMenuPanel: {fileID: 1765712424}
@@ -2857,7 +2864,6 @@ MonoBehaviour:
   scoreText: {fileID: 2035053574}
   gridContainer: {fileID: 1256172704}
   bestScoreStore: {fileID: 1515275007}
-  instructionText: {fileID: 0}
   audioSource: {fileID: 1077341930}
 --- !u!1 &1520006528
 GameObject:

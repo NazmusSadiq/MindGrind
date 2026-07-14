@@ -16,9 +16,23 @@ public class MainMenu : MonoBehaviour
     private const string StoryModeBestScoreObjectName = "BestScore";
     private const string StoryModeAverageScoreObjectName = "AverageScore";
 
+    [Header("Menu Stats Layout")]
+    [SerializeField] private TMP_Text overallText;
+    [SerializeField] private TMP_Text attentionText;
+    [SerializeField] private TMP_Text memoryText;
+    [SerializeField] private TMP_Text reflexText;
+    [SerializeField] private TMP_Text perceptionText;
+    [SerializeField] private TMP_Text learningText;
+    [SerializeField] private TMP_Text reasoningText;
+
+    [Header("Game Progression")]
     [SerializeField] private string storyModeNextSceneName = "Level1";
     [SerializeField] private GameObject storyModeDetailsPanel;
     [SerializeField] private GameObject pauseMenuPanel;
+
+    [Header("Thumbnail Target Settings")]
+    [Tooltip("Drag the UI Image component here that you want to be updated by the input image/sprite.")]
+    [SerializeField] private Image targetThumbnailField;
 
     private TMP_Text storyModeTitleText;
     private TMP_Text storyModeDescriptionText;
@@ -65,7 +79,7 @@ public class MainMenu : MonoBehaviour
     public void LoadMiniGame()
     {
         Time.timeScale = 1f;
-        AudioListener.pause = false; // Ensure audio is clean before loading a new minigame
+        AudioListener.pause = false;
 
         MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
         if (string.IsNullOrWhiteSpace(currentGame.sceneName))
@@ -80,14 +94,14 @@ public class MainMenu : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        AudioListener.pause = false; // Reset global audio pause state
+        AudioListener.pause = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void StartGame()
     {
         Time.timeScale = 1f;
-        AudioListener.pause = false; // Reset global audio pause state
+        AudioListener.pause = false;
         SceneManager.LoadScene(StartSceneName);
     }
 
@@ -115,7 +129,7 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene(MainMenuSceneName);
         Time.timeScale = 1f;
-        AudioListener.pause = false; // Restore audio logic on menu fallback
+        AudioListener.pause = false;
     }
 
     public static void PauseGameAndShowDetailsPanel()
@@ -136,7 +150,7 @@ public class MainMenu : MonoBehaviour
 
         storyModeDetailsPanel.SetActive(false);
         Time.timeScale = 1f;
-        AudioListener.pause = false; // 🔥 RESUME GLOBAL AUDIO
+        AudioListener.pause = false;
 
         StartCoroutine(EnableInputAfterDelay());
     }
@@ -169,7 +183,7 @@ public class MainMenu : MonoBehaviour
 
         isGamePaused = true;
         Time.timeScale = 0f;
-        AudioListener.pause = true; // 🔥 PAUSE GLOBAL AUDIO
+        AudioListener.pause = true;
 
         string activeSceneName = SceneManager.GetActiveScene().name;
         string targetLookupName = (activeSceneName == "MainMenu") ? storyModeNextSceneName : activeSceneName;
@@ -231,7 +245,7 @@ public class MainMenu : MonoBehaviour
         isGamePaused = true;
         pauseMenuPanel.SetActive(true);
         Time.timeScale = 0f;
-        AudioListener.pause = true; 
+        AudioListener.pause = true;
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -244,6 +258,36 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+    public void UpdateStatsForMenu()
+    {
+        float attention = PlayerPrefs.GetFloat(MinigameBestScoreStore.PrefAttention, 0f);
+        float memory = PlayerPrefs.GetFloat(MinigameBestScoreStore.PrefMemory, 0f);
+        float reasoning = PlayerPrefs.GetFloat(MinigameBestScoreStore.PrefReasoning, 0f);
+        float reflex = PlayerPrefs.GetFloat(MinigameBestScoreStore.PrefReflex, 0f);
+        float perception = PlayerPrefs.GetFloat(MinigameBestScoreStore.PrefPerception, 0f);
+        float learning = PlayerPrefs.GetFloat(MinigameBestScoreStore.PrefLearning, 0f);
+
+        float sumOfPlayedScores = 0f;
+        int activeCategoriesCount = 0;
+
+        if (attention > 0f) { sumOfPlayedScores += attention; activeCategoriesCount++; }
+        if (memory > 0f) { sumOfPlayedScores += memory; activeCategoriesCount++; }
+        if (reasoning > 0f) { sumOfPlayedScores += reasoning; activeCategoriesCount++; }
+        if (reflex > 0f) { sumOfPlayedScores += reflex; activeCategoriesCount++; }
+        if (perception > 0f) { sumOfPlayedScores += perception; activeCategoriesCount++; }
+        if (learning > 0f) { sumOfPlayedScores += learning; activeCategoriesCount++; }
+
+        float overall = activeCategoriesCount > 0 ? (sumOfPlayedScores / activeCategoriesCount) : 0f;
+
+        if (overallText != null) overallText.text = overall.ToString("F2");
+        if (attentionText != null) attentionText.text = attention.ToString("F2");
+        if (memoryText != null) memoryText.text = memory.ToString("F2");
+        if (reflexText != null) reflexText.text = reflex.ToString("F2");
+        if (perceptionText != null) perceptionText.text = perception.ToString("F2");
+        if (learningText != null) learningText.text = learning.ToString("F2");
+        if (reasoningText != null) reasoningText.text = reasoning.ToString("F2");
+    }
+
     public void ResumeGame()
     {
         if (pauseMenuPanel == null) return;
@@ -251,7 +295,7 @@ public class MainMenu : MonoBehaviour
         isGamePaused = false;
         pauseMenuPanel.SetActive(false);
         Time.timeScale = 1f;
-        AudioListener.pause = false; 
+        AudioListener.pause = false;
 
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null)
@@ -412,5 +456,45 @@ public class MainMenu : MonoBehaviour
         }
 
         miniGamesButton.onClick.Invoke();
+    }
+
+    /// <summary>
+    /// Updates the serialized 'targetThumbnailField' with the Sprite asset provided from the inspector event.
+    /// </summary>
+    public void UpdateThumbnail(Sprite newSprite)
+    {
+        if (targetThumbnailField == null)
+        {
+            Debug.LogWarning("Target Thumbnail Field is not assigned in the MainMenu inspector settings.", this);
+            return;
+        }
+
+        if (newSprite == null)
+        {
+            Debug.LogWarning("The provided input sprite asset is null.", this);
+            return;
+        }
+
+        targetThumbnailField.sprite = newSprite;
+    }
+
+    /// <summary>
+    /// Alternative: Copies the sprite out of a source Image component into the serialized target field.
+    /// </summary>
+    public void UpdateThumbnailFromImage(Image sourceImage)
+    {
+        if (targetThumbnailField == null)
+        {
+            Debug.LogWarning("Target Thumbnail Field is not assigned in the MainMenu inspector settings.", this);
+            return;
+        }
+
+        if (sourceImage == null)
+        {
+            Debug.LogWarning("The source image component provided is null.", this);
+            return;
+        }
+
+        targetThumbnailField.sprite = sourceImage.sprite;
     }
 }

@@ -108,7 +108,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 0,
             gameTitle = "Cipher Rush",
             description = "Falling symbols drop from above, and your task is to quickly react to the target symbol. If the target is white, click matching symbols for +10 points, while wrong clicks or missed matches cost -5. If the target turns red, do not click matching symbols; clicking them at this time costs -5, while letting them go gives +10. Clicking a matching symbol or letting it fall always updates the target symbol.",
-            cognitiveSkills = "Attention + Perception",
+            cognitiveSkills = "Attention + Reflex",
             sceneName = "Minigame1"
         };
 
@@ -126,7 +126,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 2,
             gameTitle = "Good Guy, Bad Guy",
             description = "Before each round, you see two rows showing good guys and bad guys for a short time. Then these 8 guys appear on a board. Your task is to click only on the bad guys before the timer expires; each correct click adds 10 points, and each wrong click deducts 10 points. The game ends after 5 rounds",
-            cognitiveSkills = "Memory + Attention",
+            cognitiveSkills = "Memory",
             sceneName = "Minigame3"
         };
 
@@ -144,7 +144,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 4,
             gameTitle = "Train of Thoughts",
             description = "Colored cars roll along the tracks and change direction as you toggle the junctions. Click a junction to switch its path: routing a car into a matching colored house gives +10 points, wrong house costs -5 points. Keep your eyes on the timer and guide as many cars home as you can before time runs out!",
-            cognitiveSkills = "Reflex + Attention",
+            cognitiveSkills = "Reflex + Reasoning",
             sceneName = "Minigame5"
         };
 
@@ -171,7 +171,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 7,
             gameTitle = "Find Me If You Can",
             description = "There will be a mixture of different types of objects shown in different regions. There will be a target Object and you need to click the target object within a certain time. Be fast, otherwise the layout will be changed after some time",
-            cognitiveSkills = "Attention + Perception",
+            cognitiveSkills = "Perception",
             sceneName = "Minigame8"
         };
 
@@ -189,7 +189,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 9,
             gameTitle = "Precision Product",
             description = "Monitor the left counter (1–100) and the right counter (100–1); press the corresponding side button whenever a counter displays a multiple of its respective target number. Correct press gives +10 points, incorrect press gives -5 points. Press the bonus button only when both counters simultaneously show multiples of the target number displayed within it.",
-            cognitiveSkills = "Reflex + Reasoning",
+            cognitiveSkills = "Reflex + Learning",
             sceneName = "Minigame10"
         };
 
@@ -198,7 +198,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 10,
             gameTitle = "Sequence Grid",
             description = "A 4x4 grid will light up in a sequence. Recreate the sequence by clicking the cells in the correct order. Each success increases the sequence length by 1 and adds 10 points.",
-            cognitiveSkills = "Memory + Attention",
+            cognitiveSkills = "Memory",
             sceneName = "Minigame11"
         };
 
@@ -270,7 +270,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 18,
             gameTitle = "Stop The Clock",
             description = "There will be 3 clocks, first one has all the 12 hour markers, second one has only 4 hour markers and the last one has no hour marker. Given a target time for each clock you have to stop the clock at that specific time. The closer you stop the hands to the target time, the more points you will get",
-            cognitiveSkills = "Reflex + Attention",
+            cognitiveSkills = "Reflex",
             sceneName = "Minigame19"
         };
 
@@ -279,7 +279,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 19,
             gameTitle = "Odd One Out",
             description = "There will be 4 boxes and 4 different criteria: shapes, color of the shapes, shape count and background color. There will always be a box different from others in any one of these criteria and you will have to pick that one. Correct option gives you +10 points and wrong option costs you 10 points",
-            cognitiveSkills = "Perception + Attention",
+            cognitiveSkills = "Reasoning",
             sceneName = "Minigame20"
         };
 

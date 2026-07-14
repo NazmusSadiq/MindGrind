@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using System.IO;
 
@@ -7,6 +7,14 @@ public class MinigameBestScoreStore : MonoBehaviour
     private const string BestScoreKeyPrefix = "BestScore_";
     private const string TotalScoreKeyPrefix = "TotalScore_";
     private const string PlayCountKeyPrefix = "PlayCount_";
+
+    // PlayerPrefs Keys for Cognitive Averages
+    public const string PrefAttention = "Cognitive_Attention";
+    public const string PrefMemory = "Cognitive_Memory";
+    public const string PrefReasoning = "Cognitive_Reasoning";
+    public const string PrefReflex = "Cognitive_Reflex";
+    public const string PrefPerception = "Cognitive_Perception";
+    public const string PrefLearning = "Cognitive_Learning";
 
     [SerializeField] private GameObject gameOverMenu;
     [SerializeField] private TMP_Text gameTitleText;
@@ -61,7 +69,9 @@ public class MinigameBestScoreStore : MonoBehaviour
         int bestScore = PlayerPrefs.GetInt(key, 0);
         bool shouldUpdate = false;
 
-        if (resolvedNumericId < 30)
+        bool isTimeBased = resolvedNumericId >= 30;
+
+        if (!isTimeBased)
         {
             if (!hasExistingScore || score > bestScore)
             {
@@ -82,17 +92,140 @@ public class MinigameBestScoreStore : MonoBehaviour
             PlayerPrefs.SetInt(key, bestScore);
         }
 
+        // Calculate cognitive averages and write to PlayerPrefs
+        CalculateAndSaveCognitiveAverages();
+
         PlayerPrefs.Save();
 
-        string saveFilePath = Path.Combine(Application.persistentDataPath, "player_analytics.json");
+        // Sync local analytics to Profile/JSON models
+        SyncToPlayerProfileFile();
 
+        return bestScore;
+    }
+
+    /// <summary>
+    /// Evaluates played games and updates running average attributes based on criteria configurations.
+    /// </summary>
+    public static void CalculateAndSaveCognitiveAverages()
+    {
+        float sumAttention = 0f, sumMemory = 0f, sumReasoning = 0f, sumReflex = 0f, sumPerception = 0f, sumLearning = 0f;
+        int countAttention = 0, countMemory = 0, countReasoning = 0, countReflex = 0, countPerception = 0, countLearning = 0;
+
+        for (int id = 0; id < 35; id++)
+        {
+            string idStr = id.ToString();
+            int playCount = PlayerPrefs.GetInt($"{PlayCountKeyPrefix}{idStr}", 0);
+
+            // Only process games with active play records
+            if (playCount == 0) continue;
+
+            if (MinigameDataStore.TryGetGameData(id, out MinigameDataStore.GameData gameData))
+            {
+                float avgScore = GetAverageScore(idStr);
+                float normalizedScore = 0f;
+
+                if (id >= 30) // Time-based game (id >= 30)
+                {
+                    float minTimeTarget = GetMinimumTimeTargetForGame(id);
+                    if (avgScore > 0f)
+                    {
+                        // Higher average time yields a lower fraction (e.g., Target 20s / Avg 40s = 0.5)
+                        normalizedScore = Mathf.Clamp01(minTimeTarget / avgScore);
+                    }
+                }
+                else // Score-based game (id < 30)
+                {
+                    float maxScoreLimit = GetMaxScoreLimitForGame(id);
+                    normalizedScore = Mathf.Clamp01(avgScore / maxScoreLimit);
+                }
+
+                string skills = gameData.cognitiveSkills.ToLower();
+
+                if (skills.Contains("attention"))
+                {
+                    sumAttention += normalizedScore;
+                    countAttention++;
+                }
+                if (skills.Contains("memory"))
+                {
+                    sumMemory += normalizedScore;
+                    countMemory++;
+                }
+                if (skills.Contains("reasoning"))
+                {
+                    sumReasoning += normalizedScore;
+                    countReasoning++;
+                }
+                if (skills.Contains("reflex"))
+                {
+                    sumReflex += normalizedScore;
+                    countReflex++;
+                }
+                if (skills.Contains("perception"))
+                {
+                    sumPerception += normalizedScore;
+                    countPerception++;
+                }
+                if (skills.Contains("learning"))
+                {
+                    sumLearning += normalizedScore;
+                    countLearning++;
+                }
+            }
+        }
+
+        // Apply averages, returning 0 if no games have been registered in a specific category
+        float avgAttention = countAttention > 0 ? sumAttention / countAttention : 0f;
+        float avgMemory = countMemory > 0 ? sumMemory / countMemory : 0f;
+        float avgReasoning = countReasoning > 0 ? sumReasoning / countReasoning : 0f;
+        float avgReflex = countReflex > 0 ? sumReflex / countReflex : 0f;
+        float avgPerception = countPerception > 0 ? sumPerception / countPerception : 0f;
+        float avgLearning = countLearning > 0 ? sumLearning / countLearning : 0f;
+
+        PlayerPrefs.SetFloat(PrefAttention, avgAttention);
+        PlayerPrefs.SetFloat(PrefMemory, avgMemory);
+        PlayerPrefs.SetFloat(PrefReasoning, avgReasoning);
+        PlayerPrefs.SetFloat(PrefReflex, avgReflex);
+        PlayerPrefs.SetFloat(PrefPerception, avgPerception);
+        PlayerPrefs.SetFloat(PrefLearning, avgLearning);
+    }
+
+    /// <summary>
+    /// Configurable target limit considered a '1.0' for Point-Based games (ID < 30).
+    /// </summary>
+    private static float GetMaxScoreLimitForGame(int gameId)
+    {
+        switch (gameId)
+        {
+            case 1: return 120f; // Customize different requirements per game ID
+            case 2: return 150f;
+            default: return 100f; // Default 100 points
+        }
+    }
+
+    /// <summary>
+    /// Configurable minimum target time considered a '1.0' for Time-Based games (ID >= 30).
+    /// </summary>
+    private static float GetMinimumTimeTargetForGame(int gameId)
+    {
+        switch (gameId)
+        {
+            case 30: return 15f; // Completion in <= 15s is perfect (1.0)
+            case 31: return 25f; // Completion in <= 25s is perfect (1.0)
+            default: return 20f; // Default 20 seconds minimum time target
+        }
+    }
+
+    private static void SyncToPlayerProfileFile()
+    {
+        string saveFilePath = Path.Combine(Application.persistentDataPath, "player_analytics.json");
         PersonalInfoChecker infoChecker = Object.FindFirstObjectByType<PersonalInfoChecker>();
         if (infoChecker != null)
         {
             infoChecker.SyncAllExistingScores();
             infoChecker.SaveProfileToDisk();
         }
-        else if (File.Exists(saveFilePath)) 
+        else if (File.Exists(saveFilePath))
         {
             try
             {
@@ -108,7 +241,6 @@ public class MinigameBestScoreStore : MonoBehaviour
 
                     profile.gameStats.Clear();
 
-                    // Rebuild stats list directly from PlayerPrefs using your explicit PlayerDataModel structure
                     for (int id = 0; id < 35; id++)
                     {
                         string idStr = id.ToString();
@@ -129,19 +261,62 @@ public class MinigameBestScoreStore : MonoBehaviour
 
                     string updatedJson = JsonUtility.ToJson(profile, true);
                     File.WriteAllText(saveFilePath, updatedJson);
-                    Debug.Log("[JSON Update Success] Successfully synced data model statistics to file.");
-
                     SimpleDiskSyncManager.PushLocalJsonToServer();
                 }
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Error syncing metrics to file layout path: {e.Message}");
+                Debug.LogError($"Error syncing metrics to player_analytics layout: {e.Message}");
             }
         }
-        // --------------------------------------------------
+    }
 
-        return bestScore;
+    private static string GetKey(string minigameId)
+    {
+        return $"{BestScoreKeyPrefix}{minigameId}";
+    }
+
+    public void SetupGameOverMenu(int currentScore)
+    {
+        if (gameOverMenu != null)
+        {
+            gameOverMenu.SetActive(true);
+        }
+
+        MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
+
+        if (string.IsNullOrEmpty(currentGame.sceneName))
+        {
+            string activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            MinigameDataStore.TryGetGameDataBySceneName(activeSceneName, out currentGame);
+        }
+
+        if (gameTitleText != null && !string.IsNullOrEmpty(currentGame.gameTitle))
+        {
+            gameTitleText.text = currentGame.gameTitle;
+        }
+
+        bool isTimeBased = currentGame.id >= 30;
+
+        if (currentScoreText != null)
+        {
+            currentScoreText.text = isTimeBased ? $"Current Time: {currentScore}s" : $"Current Score: {currentScore}";
+        }
+
+        string resolvedLookupKey = currentGame.id != 0 || !string.IsNullOrEmpty(currentGame.gameTitle) ?
+            currentGame.id.ToString() : UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+        if (bestScoreText != null)
+        {
+            int liveBest = GetBestScore(resolvedLookupKey);
+            bestScoreText.text = isTimeBased ? $"Best Time: {liveBest}s" : $"Best Score: {liveBest}";
+        }
+
+        if (averageScoreText != null)
+        {
+            int liveAvg = GetAverageScore(resolvedLookupKey);
+            averageScoreText.text = isTimeBased ? $"Avg Time: {liveAvg}s" : $"Avg Score: {liveAvg}";
+        }
     }
 
     public void DisplayUpdatedUI(int currentScoreValue, int idValue)
@@ -218,10 +393,5 @@ public class MinigameBestScoreStore : MonoBehaviour
             int liveAvg = GetAverageScore(resolvedLookupKey);
             averageScoreText.text = isTimeBased ? $"Avg Time: {liveAvg}s" : $"Avg Score: {liveAvg}";
         }
-    }
-
-    private static string GetKey(string minigameId)
-    {
-        return $"{BestScoreKeyPrefix}{minigameId}";
     }
 }
