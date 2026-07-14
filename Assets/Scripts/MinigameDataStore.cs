@@ -223,9 +223,9 @@ public class MinigameDataStore : MonoBehaviour
         minigames[13] = new GameData
         {
             id = 13,
-            gameTitle = "Shape Sync",
-            description = "Squares, triangles, and circles keep changing between green, blue, and pink. Watch the target shape at the top and press Enter only when every object of that shape has the same color. A correct answer adds 10 points and increases the number of objects, while a wrong answer deducts 10 points.",
-            cognitiveSkills = "Attention + Reflex",
+            gameTitle = "Lucky Symbols",
+            description = "Each round, pick one of two symbols. One is 'weighted lucky' (rewards +10 most of the time, occasionally -5) and the other is weighted unlucky (mostly -5, occasionally +10). You aren't told which is which — you must learn it purely from outcomes over many rounds. Halfway through, the weightings silently swap.",
+            cognitiveSkills = "Learning + Reasoning",
             sceneName = "Minigame14"
         };
 
