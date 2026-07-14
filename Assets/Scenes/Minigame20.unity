@@ -2294,6 +2294,7 @@ MonoBehaviour:
   timerText: {fileID: 1575042759}
   statusText: {fileID: 210473912}
   bestScoreStore: {fileID: 932507561}
+  gameOverMenu: {fileID: 59048858}
   optionCards:
   - {fileID: 91900295}
   - {fileID: 1171775704}
@@ -2303,7 +2304,7 @@ MonoBehaviour:
   - {fileID: 188009444}
   gameDuration: 60
   scorePerCorrect: 10
-  scorePenalty: 10
+  scorePenalty: 5
 --- !u!1 &958323138
 GameObject:
   m_ObjectHideFlags: 0

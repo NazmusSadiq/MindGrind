@@ -247,10 +247,10 @@ public class TheFlash : MonoBehaviour
         if (elapsedGameTime < 15f)
             return 3f;
 
-        if (elapsedGameTime < 35f)
+        if (elapsedGameTime < 30f)
             return 2f;
 
-        if (elapsedGameTime < 50f)
+        if (elapsedGameTime < 45f)
             return 1f;
 
         return 0.75f;
@@ -261,10 +261,10 @@ public class TheFlash : MonoBehaviour
         if (elapsedGameTime < 15f)
             return 5;
 
-        if (elapsedGameTime < 35f)
+        if (elapsedGameTime < 30f)
             return 10;
 
-        if (elapsedGameTime < 50f)
+        if (elapsedGameTime < 45f)
             return 20;
 
         return 50;
@@ -272,7 +272,7 @@ public class TheFlash : MonoBehaviour
 
     private int GetCurrentMinScore()
     {
-        if (elapsedGameTime >= 50f)
+        if (elapsedGameTime >= 45f)
             return 50;
 
         return 1;

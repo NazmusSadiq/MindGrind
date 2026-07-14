@@ -278,10 +278,7 @@ public class MinigameBestScoreStore : MonoBehaviour
 
     public void SetupGameOverMenu(int currentScore)
     {
-        if (gameOverMenu != null)
-        {
-            gameOverMenu.SetActive(true);
-        }
+        ShowGameOverMenu();
 
         MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
 
@@ -352,10 +349,7 @@ public class MinigameBestScoreStore : MonoBehaviour
 
     public void ShowStats(int currentScore, int bestScore)
     {
-        if (gameOverMenu != null)
-        {
-            gameOverMenu.SetActive(true);
-        }
+        ShowGameOverMenu();
 
         Time.timeScale = 0f;
 
@@ -392,6 +386,23 @@ public class MinigameBestScoreStore : MonoBehaviour
         {
             int liveAvg = GetAverageScore(resolvedLookupKey);
             averageScoreText.text = isTimeBased ? $"Avg Time: {liveAvg}s" : $"Avg Score: {liveAvg}";
+        }
+    }
+
+    private void ShowGameOverMenu()
+    {
+        if (gameOverMenu == null)
+            return;
+
+        gameOverMenu.SetActive(true);
+        gameOverMenu.transform.SetAsLastSibling();
+
+        CanvasGroup canvasGroup = gameOverMenu.GetComponent<CanvasGroup>();
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
         }
     }
 }

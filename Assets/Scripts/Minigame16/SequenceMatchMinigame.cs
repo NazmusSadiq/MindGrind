@@ -204,7 +204,7 @@ public class SequenceMatchMinigame : MonoBehaviour
         }
         else
         {
-            score -= 10;
+            score -= 5;
         }
 
         UpdateScoreUI();

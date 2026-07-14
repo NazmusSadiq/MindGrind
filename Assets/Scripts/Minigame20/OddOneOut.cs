@@ -43,6 +43,9 @@ public class OddOneOut : MonoBehaviour
     [SerializeField] private TMP_Text statusText;
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
 
+    [Header("Game Over")]
+    [SerializeField] private GameObject gameOverMenu;
+
     #endregion
 
     #region Option Cards
@@ -58,7 +61,7 @@ public class OddOneOut : MonoBehaviour
     [Header("Gameplay")]
     [SerializeField] private float gameDuration = 60f;
     [SerializeField] private int scorePerCorrect = 10;
-    [SerializeField] private int scorePenalty = 10;
+    [SerializeField] private int scorePenalty = 5;
 
     private float timeRemaining;
     private bool gameRunning;
@@ -85,6 +88,8 @@ public class OddOneOut : MonoBehaviour
             enabled = false;
             return;
         }
+
+        CacheGameOverMenu();
 
         Time.timeScale = 1f;
         score = 0;
@@ -431,18 +436,63 @@ public class OddOneOut : MonoBehaviour
         timeRemaining = 0f;
         UpdateTimerUI();
 
+        StopAllCoroutines();
+
         foreach (OptionCard card in optionCards)
         {
             if (card != null)
+            {
                 card.SetInteractable(false);
+                card.gameObject.SetActive(false);
+            }
+        }
+
+        if (gameOverMenu != null)
+        {
+            gameOverMenu.SetActive(true);
         }
 
         string minigameId = SceneManager.GetActiveScene().name;
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
-        bestScoreStore.ShowStats(score, bestScore);
+        if (bestScoreStore != null)
+        {
+            bestScoreStore.ShowStats(score, bestScore);
+        }
 
         Debug.Log($"Odd One Out Finished\nScore : {score}\nBest : {bestScore}");
+    }
+
+    private void CacheGameOverMenu()
+    {
+        if (gameOverMenu != null)
+            return;
+
+        GameObject[] rootObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+
+        foreach (GameObject rootObject in rootObjects)
+        {
+            gameOverMenu = FindChildByName(rootObject.transform, "GameOverMenu");
+
+            if (gameOverMenu != null)
+                return;
+        }
+    }
+
+    private GameObject FindChildByName(Transform parent, string targetName)
+    {
+        if (parent.name == targetName)
+            return parent.gameObject;
+
+        foreach (Transform child in parent)
+        {
+            GameObject found = FindChildByName(child, targetName);
+
+            if (found != null)
+                return found;
+        }
+
+        return null;
     }
 
     #endregion

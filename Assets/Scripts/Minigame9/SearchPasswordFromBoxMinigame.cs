@@ -596,7 +596,7 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
             return;
         }
 
-        score -= 10;
+        score = Mathf.Max(0, score - 5);
         UpdateScoreUI();
 
         attemptsRemaining--;
