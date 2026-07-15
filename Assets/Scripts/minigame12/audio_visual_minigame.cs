@@ -22,6 +22,13 @@ public class audio_visual_minigame : MonoBehaviour
     [SerializeField] private TextAsset wordDictionaryFile;
     [SerializeField] private AudioSource audioSource;
 
+    [Tooltip("The serialized AudioSource used to play success and failure sound effects.")]
+    [SerializeField] private AudioSource sfxAudioSource;
+
+    [Header("Audio Clips")]
+    [SerializeField] private AudioClip successClip;
+    [SerializeField] private AudioClip failureClip;
+
     [Header("Gameplay")]
     [SerializeField, Range(0f, 1f)] private float matchProbability = 0.5f;
 
@@ -39,7 +46,7 @@ public class audio_visual_minigame : MonoBehaviour
 
     private void Awake()
     {
-        // Dynamically find references if not assigned in Inspector
+        // Dynamically find general UI references if not assigned in Inspector
         if (wordText == null) wordText = GameObject.Find("Sequence_Text")?.GetComponent<TMP_Text>();
         if (scoreText == null) scoreText = GameObject.Find("Score_Value")?.GetComponent<TMP_Text>();
         if (livesText == null) livesText = GameObject.Find("Reamining_Lives_Value")?.GetComponent<TMP_Text>();
@@ -52,6 +59,12 @@ public class audio_visual_minigame : MonoBehaviour
         {
             audioSource.loop = false;
             audioSource.playOnAwake = false;
+        }
+
+        if (sfxAudioSource != null)
+        {
+            sfxAudioSource.loop = false;
+            sfxAudioSource.playOnAwake = false;
         }
 
         if (matchButton != null)
@@ -148,11 +161,12 @@ public class audio_visual_minigame : MonoBehaviour
             && noMatchButton != null
             && bestScoreStore != null
             && wordDictionaryFile != null
-            && audioSource != null;
+            && audioSource != null
+            && sfxAudioSource != null; // Ensure the serialized sfx source is assigned
 
         if (!hasReferences)
         {
-            Debug.LogError("audio_visual_minigame is missing required references.", this);
+            Debug.LogError("audio_visual_minigame is missing required references (ensure sfxAudioSource is assigned in the Inspector).", this);
             return false;
         }
 
@@ -316,6 +330,7 @@ public class audio_visual_minigame : MonoBehaviour
         {
             score += 10;
             UpdateScoreUI();
+            PlayFeedbackSFX(successClip);
         }
         else
         {
@@ -323,6 +338,7 @@ public class audio_visual_minigame : MonoBehaviour
             lives--;
             UpdateScoreUI();
             UpdateLivesUI();
+            PlayFeedbackSFX(failureClip);
 
             if (lives <= 0)
             {
@@ -334,11 +350,19 @@ public class audio_visual_minigame : MonoBehaviour
         ShowNextWordAndPlaySound();
     }
 
+    private void PlayFeedbackSFX(AudioClip clip)
+    {
+        if (sfxAudioSource != null && clip != null)
+        {
+            sfxAudioSource.PlayOneShot(clip);
+        }
+    }
+
     private void UpdateScoreUI()
     {
         if (scoreText != null)
         {
-            scoreText.text = $"Score: {score}"; 
+            scoreText.text = $"Score: {score}";
         }
     }
 

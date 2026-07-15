@@ -14,8 +14,14 @@ public class SequenceMatchMinigame : MonoBehaviour
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private TMP_Text timeRemainingText;
     [SerializeField] private TMP_InputField answerInputField;
-    // FIXED: Changed to SerializeField so it can be assigned via the Unity Inspector, matching File 1
-    [SerializeField] private MinigameBestScoreStore bestScoreStore; 
+    [SerializeField] private MinigameBestScoreStore bestScoreStore;
+
+    [Tooltip("The serialized AudioSource used to play success and failure sound effects.")]
+    [SerializeField] private AudioSource sfxAudioSource;
+
+    [Header("Audio Clips")]
+    [SerializeField] private AudioClip successClip;
+    [SerializeField] private AudioClip failureClip;
 
     [Header("Gameplay")]
     [SerializeField] private float gameDuration = 60f;
@@ -43,6 +49,18 @@ public class SequenceMatchMinigame : MonoBehaviour
             answerInputField.onSubmit.RemoveListener(SubmitAnswerFromInput);
             answerInputField.onSubmit.AddListener(SubmitAnswerFromInput);
         }
+
+        // Fallback to internal AudioSource component if one isn't explicitly assigned in the Inspector
+        if (sfxAudioSource == null)
+        {
+            sfxAudioSource = GetComponent<AudioSource>();
+        }
+
+        if (sfxAudioSource != null)
+        {
+            sfxAudioSource.loop = false;
+            sfxAudioSource.playOnAwake = false;
+        }
     }
 
     private void Start()
@@ -51,6 +69,20 @@ public class SequenceMatchMinigame : MonoBehaviour
         {
             enabled = false;
             return;
+        }
+
+        // Additional helpful Audio verification checks inside the console
+        if (sfxAudioSource == null)
+        {
+            Debug.LogError("SequenceMatchMinigame: sfxAudioSource is completely missing or unassigned!", this);
+        }
+        if (successClip == null)
+        {
+            Debug.LogWarning("SequenceMatchMinigame: successClip is not assigned in the inspector fields.", this);
+        }
+        if (failureClip == null)
+        {
+            Debug.LogWarning("SequenceMatchMinigame: failureClip is not assigned in the inspector fields.", this);
         }
 
         Time.timeScale = 1f;
@@ -84,7 +116,6 @@ public class SequenceMatchMinigame : MonoBehaviour
 
     private void OnDestroy()
     {
-
         if (answerInputField != null)
         {
             answerInputField.onSubmit.RemoveListener(SubmitAnswerFromInput);
@@ -93,14 +124,13 @@ public class SequenceMatchMinigame : MonoBehaviour
 
     private bool HasValidSetup()
     {
-        // FIXED: Added bestScoreStore verification to match File 1's safety check
         bool hasReferences = sequenceText != null
             && targetText != null
             && scoreText != null
             && timeRemainingText != null
             && answerInputField != null
             && bestScoreStore != null;
-            
+
         if (!hasReferences)
         {
             Debug.LogError("SequenceMatchMinigame is missing required references.", this);
@@ -201,10 +231,12 @@ public class SequenceMatchMinigame : MonoBehaviour
         {
             score += 10;
             targetCount = Mathf.Min(maxTargetCount, targetCount + 1);
+            PlayFeedbackSFX(successClip);
         }
         else
         {
             score -= 5;
+            PlayFeedbackSFX(failureClip);
         }
 
         UpdateScoreUI();
@@ -214,6 +246,14 @@ public class SequenceMatchMinigame : MonoBehaviour
     private void SubmitAnswerFromInput(string _)
     {
         SubmitAnswer();
+    }
+
+    private void PlayFeedbackSFX(AudioClip clip)
+    {
+        if (sfxAudioSource != null && clip != null)
+        {
+            sfxAudioSource.PlayOneShot(clip);
+        }
     }
 
     private void RestartRound()

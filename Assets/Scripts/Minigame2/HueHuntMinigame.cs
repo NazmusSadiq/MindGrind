@@ -206,6 +206,20 @@ public class HueHuntMinigame : MonoBehaviour
         return worldPoint;
     }
 
+    public void HandleMoleSkipped(HueHuntMole mole)
+    {
+        if (!isGameRunning || mole == null)
+        {
+            return;
+        }
+
+        if (currentTargetIndex == BombTargetIndex || mole.TypeIndex != currentTargetIndex)
+        {
+            score += 10; 
+            UpdateScoreUI();
+        }
+    }
+
     private void PickNextTargetType()
     {
         float randomValue = Random.value;

@@ -9,49 +9,49 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
 {
     private const float DefaultGameDuration = 60f;
     private static readonly string[] DefaultPasswordWords =
-    {
-        "backplane",
+{
+        "backplate",
         "landscape",
         "rainstorm",
         "moonlight",
         "blueprint",
-        "headphones",
-        "notebook",
+        "headphone",
+        "notebooks",
         "container",
         "pineapple",
         "firestone",
         "stargazer",
         "goldenrod",
         "storybook",
-        "stronghold",
+        "strongbox",
         "waterfall",
         "snowflake",
         "timetable",
         "sandstorm",
-        "lighthouse",
+        "lightwave",
         "starfield",
         "workbench",
         "breakfast",
-        "congratulation",
-        "infrastructure",
-        "communication",
-        "transportation",
-        "configuration",
-        "extraordinary",
-        "visualization",
-        "investigation",
-        "neighborhood",
-        "administrator",
-        "interpretation",
-        "manufacturing",
+        "checkmark",
+        "hurricane",
+        "cardboard",
+        "blacklist",
+        "jellyfish",
+        "sunflower",
+        "grapevine",
+        "dashboard",
+        "snowstorm",
+        "keyboards",
+        "clipboard",
+        "paperclip",
         "crossroad",
         "tightrope",
         "overdrive",
         "rainbowed",
         "northgate",
-        "sentinel",
+        "sandpaper",
         "mountains",
-        "transitway",
+        "transfers",
         "reference",
         "bluewater",
         "snowbound",
@@ -59,6 +59,7 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
         "quicksand",
         "paperwork"
     };
+
     [System.Serializable]
     public class ColorEntry
     {
@@ -94,13 +95,15 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float targetSpawnChance = 0.35f;
 
     [Header("Launch")]
-    [SerializeField] private LaunchOption[] leftLaunchOptions =
+    [SerializeField]
+    private LaunchOption[] leftLaunchOptions =
     {
         new LaunchOption { angleDegrees = 30f, launchSpeed = 4.5f },
         new LaunchOption { angleDegrees = 45f, launchSpeed = 5.5f },
         new LaunchOption { angleDegrees = 60f, launchSpeed = 6.5f }
     };
-    [SerializeField] private LaunchOption[] rightLaunchOptions =
+    [SerializeField]
+    private LaunchOption[] rightLaunchOptions =
     {
         new LaunchOption { angleDegrees = 150f, launchSpeed = 4.5f },
         new LaunchOption { angleDegrees = 135f, launchSpeed = 5.5f },
@@ -245,10 +248,9 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
             passwordWords = (string[])DefaultPasswordWords.Clone();
         }
 
-        bool hasPasswords = passwordWords != null && passwordWords.Length > 0;
         bool hasPasswordUi = passwordPanel != null && passwordInputField != null && submitPasswordButton != null;
 
-        if (!hasValidColors || !hasSpawnPoints || !hasReferences || !hasPasswords || !hasTimeValue || !hasPasswordUi || !hasLeftLaunchOptions || !hasRightLaunchOptions || !hasValidGravity)
+        if (!hasValidColors || !hasSpawnPoints || !hasReferences || !hasTimeValue || !hasPasswordUi || !hasLeftLaunchOptions || !hasRightLaunchOptions || !hasValidGravity)
         {
             Debug.LogError("SearchPasswordFromBoxMinigame is missing required references.", this);
             return false;
@@ -275,7 +277,7 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
             }
 
             string trimmed = word.Trim().ToLowerInvariant();
-            if (trimmed.Length < 8 || trimmed.Length > 15)
+            if (trimmed.Length != 9) 
             {
                 invalidCount++;
                 continue;
@@ -286,13 +288,7 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
 
         if (validWords.Count == 0)
         {
-            Debug.LogError("Password list has no valid words (8 to 15 letters).", this);
             return false;
-        }
-
-        if (invalidCount > 0)
-        {
-            Debug.LogWarning($"Removed {invalidCount} invalid password words. Use 8 to 15 letters.", this);
         }
 
         validPasswordWords = validWords.ToArray();
@@ -590,7 +586,11 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
 
         if (guess == currentPassword)
         {
-            score += 20;
+            // Calculate seconds remaining as an integer (using same ceiling/clamping rules as the UI timer)
+            int secondsRemainingValue = Mathf.CeilToInt(Mathf.Max(0f, timeRemaining));
+
+            // Add both flat solve bonus (20) and remaining time as score
+            score += 20 + secondsRemainingValue;
             UpdateScoreUI();
             EndGame();
             return;

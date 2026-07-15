@@ -21,12 +21,19 @@ public class FishFeedingMinigame : MonoBehaviour
     [SerializeField] private float minFishSpeed = 1.5f;
     [SerializeField] private float maxFishSpeed = 3f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip successClip;
+    [SerializeField] private AudioClip failureClip;
+    [SerializeField] private AudioClip rechargeClip;
+
     private int score;
     private float timeRemaining;
     private float nextFeedAllowedTime;
     private bool isGameRunning;
     private Color readyFoodColor;
     private Color cooldownFoodColor;
+    private bool wasCooldownActive; // Tracks when to fire the recharge sound clip
 
     public bool IsGameRunning => isGameRunning;
 
@@ -46,16 +53,20 @@ public class FishFeedingMinigame : MonoBehaviour
             fishTargets[i].Initialize(this, minBounds, maxBounds, minFishSpeed, maxFishSpeed);
         }
 
+        if (foodReadyImage != null)
+        {
+            readyFoodColor = foodReadyImage.color;
+            cooldownFoodColor = new Color(readyFoodColor.r, readyFoodColor.g, readyFoodColor.b, 0.3f);
+        }
+
         score = 0;
         timeRemaining = gameDuration;
         nextFeedAllowedTime = 0f;
         isGameRunning = true;
-        readyFoodColor = foodReadyImage.color;
-        cooldownFoodColor = new Color(0f, 0f, 0f, readyFoodColor.a);
+        wasCooldownActive = false;
 
         UpdateScoreUI();
         UpdateTimerUI();
-        UpdateFoodReadyUI();
     }
 
     private void Update()
@@ -67,6 +78,7 @@ public class FishFeedingMinigame : MonoBehaviour
 
         HandleMouseInput();
         UpdateFoodReadyUI();
+        HandleRechargeAudioCheck();
 
         timeRemaining -= Time.deltaTime;
         UpdateTimerUI();
@@ -84,6 +96,11 @@ public class FishFeedingMinigame : MonoBehaviour
             return;
         }
 
+        if (Time.time < nextFeedAllowedTime)
+        {
+            return;
+        }
+
         Camera activeCamera = Camera.main;
         if (activeCamera == null)
         {
@@ -93,59 +110,60 @@ public class FishFeedingMinigame : MonoBehaviour
         Physics2D.SyncTransforms();
 
         RaycastHit2D[] hits = Physics2D.GetRayIntersectionAll(activeCamera.ScreenPointToRay(Mouse.current.position.ReadValue()));
+
+        bool didFeedAttemptOccur = false;
+
         for (int i = 0; i < hits.Length; i++)
         {
-            FishFeedingTarget fishTarget = hits[i].collider.GetComponentInParent<FishFeedingTarget>();
-            if (fishTarget == null)
+            FishFeedingTarget fish = hits[i].collider.GetComponent<FishFeedingTarget>();
+            if (fish == null)
             {
                 continue;
             }
 
-            fishTarget.HandleClick();
-            return;
-        }
-    }
+            didFeedAttemptOccur = true;
 
-    public void HandleFishClicked(FishFeedingTarget fishTarget)
-    {
-        if (!isGameRunning || fishTarget == null || Time.time < nextFeedAllowedTime)
-        {
-            return;
-        }
-
-        score += fishTarget.IsFed ? -5 : 10;
-        fishTarget.MarkFed();
-        UpdateScoreUI();
-        Debug.Log($"Fed fish '{fishTarget.name}'.", fishTarget);
-
-        if (AreAllFishFed())
-        {
-            EndGame();
-            return;
-        }
-
-        nextFeedAllowedTime = Time.time + feedCooldown;
-        UpdateFoodReadyUI();
-    }
-
-    private bool AreAllFishFed()
-    {
-        for (int i = 0; i < fishTargets.Length; i++)
-        {
-            if (!fishTargets[i].IsFed)
+            if (!fish.IsFed)
             {
-                return false;
+                // Feeding an unfed fish (Success)
+                score += 10;
+                PlaySound(successClip);
+                fish.MarkAsFed();
             }
+            else
+            {
+                // Feeding an already fed fish (Failure)
+                score -= 5;
+                if (score < 0) score = 0;
+                PlaySound(failureClip);
+            }
+
+            break;
         }
 
-        return true;
+        if (didFeedAttemptOccur)
+        {
+            nextFeedAllowedTime = Time.time + feedCooldown;
+            wasCooldownActive = true; // Cooldown has officially begun tracking
+            UpdateScoreUI();
+        }
+    }
+
+    private void HandleRechargeAudioCheck()
+    {
+        // Check if the cooldown has completely run its course this frame
+        if (wasCooldownActive && Time.time >= nextFeedAllowedTime)
+        {
+            PlaySound(rechargeClip);
+            wasCooldownActive = false;
+        }
     }
 
     private bool HasValidSetup()
     {
-        bool hasFishTargets = fishTargets != null && fishTargets.Length > 1;
+        bool hasFishTargets = fishTargets != null && fishTargets.Length > 0;
         bool hasBoundaries = topLeftBoundary != null && bottomRightBoundary != null;
-        bool hasReferences = foodReadyImage != null && scoreText != null && bestScoreStore != null;
+        bool hasReferences = scoreText != null && bestScoreStore != null;
 
         if (!hasFishTargets || !hasBoundaries || !hasReferences)
         {
@@ -157,12 +175,12 @@ public class FishFeedingMinigame : MonoBehaviour
         {
             if (fishTargets[i] == null)
             {
-                Debug.LogError("All 10 fish targets must be assigned.", this);
+                Debug.LogError("Every fish target slot needs a valid FishFeedingTarget script assigned.", this);
                 return false;
             }
         }
 
-        if (topLeftBoundary.position.x >= bottomRightBoundary.position.x || topLeftBoundary.position.y <= bottomRightBoundary.position.y)
+        if (topLeftBoundary.position.x >= bottomRightBoundary.position.x || bottomRightBoundary.position.y >= topLeftBoundary.position.y)
         {
             Debug.LogError("FishFeedingMinigame boundaries are not configured correctly.", this);
             return false;
@@ -202,6 +220,14 @@ public class FishFeedingMinigame : MonoBehaviour
         {
             int secondsLeft = Mathf.CeilToInt(Mathf.Max(0f, timeRemaining));
             timeRemainingText.text = secondsLeft.ToString();
+        }
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 

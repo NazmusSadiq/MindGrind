@@ -20,6 +20,11 @@ public class verbal_memory_minigame : MonoBehaviour
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
     [SerializeField] private TextAsset wordDictionaryFile;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip successMusic;
+    [SerializeField] private AudioClip failureMusic;
+
     [Header("Gameplay")]
     [SerializeField, Range(0f, 1f)] private float seenProbability = 0.45f;
 
@@ -242,11 +247,13 @@ public class verbal_memory_minigame : MonoBehaviour
         {
             score += 10;
             UpdateScoreUI();
+            PlaySound(successMusic);
         }
         else
         {
             lives--;
             UpdateLivesUI();
+            PlaySound(failureMusic);
             if (lives <= 0)
             {
                 EndGame();
@@ -256,6 +263,14 @@ public class verbal_memory_minigame : MonoBehaviour
 
         seenWords.Add(currentWord);
         ShowNextWord();
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 
     private void UpdateScoreUI()

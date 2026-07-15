@@ -105,10 +105,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67bc07dc694f42548937b26a372df04e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HueHuntMole
+  moleRenderer: {fileID: 0}
   audioSource: {fileID: 0}
-  riseClip: {fileID: 0}
-  hitClip: {fileID: 0}
-  fallClip: {fileID: 0}
+  riseClip: {fileID: 8300000, guid: 8b4a189ffdf173b4599828834225055a, type: 3}
+  hitClip: {fileID: 8300000, guid: 802b3e1f603377541af7f1b0739a1299, type: 3}
+  fallClip: {fileID: 8300000, guid: 3c8e34147236e32498bb55139b8814a5, type: 3}
   hitFallDelay: 0.1
 --- !u!61 &349833391711711376
 BoxCollider2D:

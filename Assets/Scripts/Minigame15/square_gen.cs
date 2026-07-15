@@ -20,6 +20,13 @@ public class square_gen : MonoBehaviour
     [SerializeField] private TMP_Text timeRemainingText;
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
 
+    [Tooltip("The serialized AudioSource used to play success and failure sound effects.")]
+    [SerializeField] private AudioSource sfxAudioSource;
+
+    [Header("Audio Clips")]
+    [SerializeField] private AudioClip successClip;
+    [SerializeField] private AudioClip failureClip;
+
     [Header("Dictionary")]
     [SerializeField] private TextAsset wordDictionaryFile;
     private string currentPrefix;
@@ -80,6 +87,18 @@ public class square_gen : MonoBehaviour
         enabled = false;
         return;
 #endif
+        // Fallback to internal AudioSource component if one isn't explicitly assigned in the Inspector
+        if (sfxAudioSource == null)
+        {
+            sfxAudioSource = GetComponent<AudioSource>();
+        }
+
+        if (sfxAudioSource != null)
+        {
+            sfxAudioSource.loop = false;
+            sfxAudioSource.playOnAwake = false;
+        }
+
         LoadDictionary();
 
         if (!HasValidSetup())
@@ -439,6 +458,7 @@ public class square_gen : MonoBehaviour
         {
             ResetPlayerInput();
             ShowTemporaryMessage("Try again", Color.red);
+            PlayFeedbackSFX(failureClip);
             return;
         }
 
@@ -447,10 +467,19 @@ public class square_gen : MonoBehaviour
         UpdateScoreUI();
 
         ShowTemporaryMessage("Success", Color.green);
+        PlayFeedbackSFX(successClip);
 
         if (!LoadNextWord())
         {
             EndGame();
+        }
+    }
+
+    private void PlayFeedbackSFX(AudioClip clip)
+    {
+        if (sfxAudioSource != null && clip != null)
+        {
+            sfxAudioSource.PlayOneShot(clip);
         }
     }
 

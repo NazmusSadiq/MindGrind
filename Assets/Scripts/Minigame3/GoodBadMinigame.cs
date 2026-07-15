@@ -22,6 +22,11 @@ public class GoodBadMinigame : MonoBehaviour
     [SerializeField] private float previewDuration = 3f;
     [SerializeField] private float gridDuration = 5f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip successClip;
+    [SerializeField] private AudioClip failureClip;
+
     private int score;
     private int roundsCompleted;
     private bool isGameRunning;
@@ -106,11 +111,23 @@ public class GoodBadMinigame : MonoBehaviour
             return;
         }
 
-        score += gridObject.IsGood ? -5 : 10;
-        if(score < 0)
+        // If the clicked object is NOT good (i.e., bad), we correctly identified the bad object! (Success)
+        if (!gridObject.IsGood)
         {
-            score = 0;
+            score += 10;
+            PlaySound(successClip);
         }
+        else
+        {
+            // If the clicked object is Good, that's an incorrect penalty hit! (Failure)
+            score -= 5;
+            if (score < 0)
+            {
+                score = 0;
+            }
+            PlaySound(failureClip);
+        }
+
         UpdateScoreUI();
         gridObject.Clear();
     }
@@ -326,6 +343,14 @@ public class GoodBadMinigame : MonoBehaviour
     private void UpdateScoreUI()
     {
         scoreText.text = score.ToString();
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 
     private void EndGame()

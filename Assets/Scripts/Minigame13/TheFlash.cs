@@ -14,6 +14,13 @@ public class TheFlash : MonoBehaviour
     [SerializeField] private TMP_Text statusText;
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
 
+    [Tooltip("The serialized AudioSource used to play success and failure sound effects.")]
+    [SerializeField] private AudioSource sfxAudioSource;
+
+    [Header("Audio Clips")]
+    [SerializeField] private AudioClip successClip;
+    [SerializeField] private AudioClip failureClip;
+
     [Header("Button Rows")]
     [SerializeField] private Button[] topRow = new Button[13];
     [SerializeField] private Button[] secondRow = new Button[13];
@@ -78,6 +85,18 @@ public class TheFlash : MonoBehaviour
             fifthRow
         };
 
+        // Fallback to internal AudioSource component if one isn't explicitly assigned in the Inspector
+        if (sfxAudioSource == null)
+        {
+            sfxAudioSource = GetComponent<AudioSource>();
+        }
+
+        if (sfxAudioSource != null)
+        {
+            sfxAudioSource.loop = false;
+            sfxAudioSource.playOnAwake = false;
+        }
+
         RegisterButtonListeners();
     }
 
@@ -87,6 +106,20 @@ public class TheFlash : MonoBehaviour
         {
             enabled = false;
             return;
+        }
+
+        // Additional helpful Audio verification checks inside the console
+        if (sfxAudioSource == null)
+        {
+            Debug.LogError("TheFlash: sfxAudioSource is completely missing or unassigned!", this);
+        }
+        if (successClip == null)
+        {
+            Debug.LogWarning("TheFlash: successClip is not assigned in the inspector fields.", this);
+        }
+        if (failureClip == null)
+        {
+            Debug.LogWarning("TheFlash: failureClip is not assigned in the inspector fields.", this);
         }
 
         Time.timeScale = 1f;
@@ -278,7 +311,7 @@ public class TheFlash : MonoBehaviour
         return 1;
     }
 
-    
+
     private IEnumerator LightLoop(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -366,6 +399,8 @@ public class TheFlash : MonoBehaviour
 
             UpdateStatusText($"Wrong Button!          -{wrongClickPenalty}");
 
+            PlayFeedbackSFX(failureClip);
+
             return;
         }
 
@@ -382,19 +417,30 @@ public class TheFlash : MonoBehaviour
         UpdateStatusText(
             $"Correct :   {reactionTime:0.00}s      +{points}");
 
-        RestoreCurrentButton();
+        PlayFeedbackSFX(successClip);
 
+        RestoreCurrentButton();
+    }
+
+    private void PlayFeedbackSFX(AudioClip clip)
+    {
+        if (sfxAudioSource != null && clip != null)
+        {
+            sfxAudioSource.PlayOneShot(clip);
+        }
+        else
+        {
+            Debug.LogWarning($"PlayFeedbackSFX failed. sfxAudioSource is null? {sfxAudioSource == null}. clip is null? {clip == null}");
+        }
     }
 
     private int CalculateReactionScore(float reactionTime)
     {
-        // Final stage: fixed score
         if (elapsedGameTime >= 50f)
             return 50;
 
         float interval = GetCurrentInterval();
 
-        // Clamp reaction time so it never exceeds the interval
         reactionTime = Mathf.Clamp(reactionTime, 0f, interval);
 
         float percent = reactionTime / interval;
@@ -449,12 +495,8 @@ public class TheFlash : MonoBehaviour
     {
         if (timeRemainingText != null)
         {
-            int sec =
-                Mathf.CeilToInt(
-                    Mathf.Max(0f, timeRemaining));
-
-            timeRemainingText.text =
-                $"Time : {sec}";
+            int sec = Mathf.CeilToInt(Mathf.Max(0f, timeRemaining));
+            timeRemainingText.text = $"Time : {sec}";
         }
     }
 
@@ -484,11 +526,9 @@ public class TheFlash : MonoBehaviour
             return;
 
         isGameRunning = false;
-
         timeRemaining = 0f;
 
         UpdateTimerUI();
-
         SetAllButtonsInteractable(false);
 
         if (lightRoutine != null)
@@ -499,19 +539,11 @@ public class TheFlash : MonoBehaviour
 
         RestoreCurrentButton();
 
-        string minigameId =
-            SceneManager.GetActiveScene().name;
+        string minigameId = SceneManager.GetActiveScene().name;
+        int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
-        int bestScore =
-            MinigameBestScoreStore.UpdateBestScore(
-                minigameId,
-                score);
+        bestScoreStore.ShowStats(score, bestScore);
 
-        bestScoreStore.ShowStats(
-            score,
-            bestScore);
-
-        Debug.Log(
-            $"Minigame finished. Current score: {score}, Best score: {bestScore}");
+        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }

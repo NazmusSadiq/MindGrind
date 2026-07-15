@@ -111,14 +111,13 @@ public class HueHuntMole : MonoBehaviour
 
     private IEnumerator HideAfterHitRoutine()
     {
-        PlayClip(hitClip);
+        PlayClip(hitClip); 
 
         if (hitFallDelay > 0f)
         {
             yield return new WaitForSeconds(hitFallDelay);
         }
 
-        PlayClip(fallClip);
         CompleteHide();
     }
 
@@ -128,6 +127,11 @@ public class HueHuntMole : MonoBehaviour
         {
             activeRoutine = null;
             return;
+        }
+
+        if (gameManager != null && IsRaised && !isResolvingHit)
+        {
+            gameManager.HandleMoleSkipped(this);
         }
 
         PlayClip(fallClip);

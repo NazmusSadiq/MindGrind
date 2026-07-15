@@ -8,17 +8,22 @@ public class number_memory_minigame : MonoBehaviour
     [Header("References")]
     [SerializeField] private TMP_Text numberText;
     [SerializeField] private TMP_Text scoreText;
-    [SerializeField] private TMP_Text livesText;
+    [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text instructionText;
     [SerializeField] private TMP_InputField answerInputField;
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip successMusic;
+    [SerializeField] private AudioClip failureMusic;
+
     [Header("Gameplay Settings")]
-    [SerializeField] private float previewDuration = 5.0f;
+    [SerializeField] private float gameDuration = 60.0f;
 
     private int k = 1;
     private int score = 0;
-    private int lives = 3;
+    private float timeRemaining;
     private string currentNumber = string.Empty;
     private bool isGameRunning = false;
     private bool isShowingNumber = false;
@@ -43,7 +48,7 @@ public class number_memory_minigame : MonoBehaviour
 
         Time.timeScale = 1f;
         score = 0;
-        lives = 3;
+        timeRemaining = gameDuration;
         k = 1;
         isGameRunning = true;
 
@@ -53,9 +58,25 @@ public class number_memory_minigame : MonoBehaviour
         }
 
         UpdateScoreUI();
-        UpdateLivesUI();
+        UpdateTimerUI();
 
         StartNewRound();
+    }
+
+    private void Update()
+    {
+        if (!isGameRunning) return;
+
+        timeRemaining -= Time.deltaTime;
+        if (timeRemaining <= 0f)
+        {
+            timeRemaining = 0f;
+            UpdateTimerUI();
+            EndGame();
+            return;
+        }
+
+        UpdateTimerUI();
     }
 
     private void OnDestroy()
@@ -70,7 +91,7 @@ public class number_memory_minigame : MonoBehaviour
     {
         bool hasReferences = numberText != null
             && scoreText != null
-            && livesText != null
+            && timerText != null
             && instructionText != null
             && answerInputField != null
             && bestScoreStore != null;
@@ -94,6 +115,14 @@ public class number_memory_minigame : MonoBehaviour
         activeRoundRoutine = StartCoroutine(ShowNumberRoutine());
     }
 
+    private float GetPreviewDuration(int length)
+    {
+        if (length <= 3) return 2.0f;
+        if (length <= 7) return 3.0f;
+        if (length <= 12) return 4.0f;
+        return 5.0f;
+    }
+
     private IEnumerator ShowNumberRoutine()
     {
         isShowingNumber = true;
@@ -113,7 +142,8 @@ public class number_memory_minigame : MonoBehaviour
             numberText.gameObject.SetActive(true);
         }
 
-        // Timer countdown
+        // Timer countdown for preview (dynamic duration based on sequence length)
+        float previewDuration = GetPreviewDuration(k);
         float elapsed = 0f;
         while (elapsed < previewDuration)
         {
@@ -178,22 +208,24 @@ public class number_memory_minigame : MonoBehaviour
         {
             k++;
             score += 10;
-            UpdateScoreUI();
-            StartNewRound();
+            PlaySound(successMusic);
         }
         else
         {
-            lives--;
-            UpdateLivesUI();
-            if (lives <= 0)
-            {
-                EndGame();
-            }
-            else
-            {
-                // Retry with new number of the same length
-                StartNewRound();
-            }
+            // Subtract 5 points, clamped at 0 so score doesn't become negative
+            score = Mathf.Max(0, score - 5);
+            PlaySound(failureMusic);
+        }
+
+        UpdateScoreUI();
+        StartNewRound();
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 
@@ -205,11 +237,11 @@ public class number_memory_minigame : MonoBehaviour
         }
     }
 
-    private void UpdateLivesUI()
+    private void UpdateTimerUI()
     {
-        if (livesText != null)
+        if (timerText != null)
         {
-            livesText.text = lives.ToString();
+            timerText.text = $"Time: {Mathf.CeilToInt(timeRemaining)}s";
         }
     }
 

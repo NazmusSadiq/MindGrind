@@ -25,6 +25,11 @@ public class ColumnWordMinigame : MonoBehaviour
     [SerializeField] private TMP_Text messageText;
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip successSFX;
+    [SerializeField] private AudioClip failureSFX;
+
     [Header("Dictionary")]
     [SerializeField] private TextAsset selectionDictionaryFile;
     [SerializeField] private TextAsset wordDictionaryFile;
@@ -498,11 +503,21 @@ public class ColumnWordMinigame : MonoBehaviour
         string guessedWord = BuildEnteredWord();
         if (!allDictionaryWords.Contains(guessedWord))
         {
-            score -= 5;
+            if (audioSource != null && failureSFX != null)
+            {
+                audioSource.PlayOneShot(failureSFX);
+            }
+
+            score = Mathf.Max(0, score - 5);
             UpdateScoreUI();
             ShowTemporaryMessage("Try again", Color.red);
             ResetCurrentGuess();
             return;
+        }
+
+        if (audioSource != null && successSFX != null)
+        {
+            audioSource.PlayOneShot(successSFX);
         }
 
         score += 10;
@@ -834,6 +849,11 @@ public class ColumnWordMinigame : MonoBehaviour
         if (!isGameRunning)
         {
             return;
+        }
+
+        if (skipButton != null)
+        {
+            skipButton.gameObject.SetActive(false);
         }
 
         if (topBoxes != null)

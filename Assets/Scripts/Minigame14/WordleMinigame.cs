@@ -23,6 +23,13 @@ public class WordleMinigame : MonoBehaviour
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
     [SerializeField] private AudioSource audioSource;
 
+    [Tooltip("The serialized AudioSource used to play letter-reveal success and failure sound effects.")]
+    [SerializeField] private AudioSource sfxAudioSource;
+
+    [Header("Audio Clips")]
+    [SerializeField] private AudioClip successClip;
+    [SerializeField] private AudioClip failureClip;
+
     [Header("Colors")]
     private readonly Color emptyColor = Color.white;                              // Default White background
     private readonly Color wrongColor = new Color(0.9f, 0.22f, 0.27f, 1f);        // Red (Letter not in word)
@@ -49,6 +56,7 @@ public class WordleMinigame : MonoBehaviour
         if (instructionText == null) instructionText = GameObject.Find("Instruction_Text")?.GetComponent<TMP_Text>();
         if (bestScoreStore == null) bestScoreStore = FindFirstObjectByType<MinigameBestScoreStore>();
         if (audioSource == null) audioSource = GameObject.Find("Audio Source")?.GetComponent<AudioSource>();
+        if (sfxAudioSource == null) sfxAudioSource = GameObject.Find("SFX Audio Source")?.GetComponent<AudioSource>();
 
         if (audioSource == null)
         {
@@ -56,6 +64,17 @@ public class WordleMinigame : MonoBehaviour
         }
         audioSource.loop = false;
         audioSource.playOnAwake = false;
+
+        // Fallback SFX AudioSource to primary AudioSource if a dedicated one isn't assigned
+        if (sfxAudioSource == null)
+        {
+            sfxAudioSource = audioSource;
+        }
+        else
+        {
+            sfxAudioSource.loop = false;
+            sfxAudioSource.playOnAwake = false;
+        }
     }
 
     private void Start()
@@ -229,6 +248,22 @@ public class WordleMinigame : MonoBehaviour
             if (row.letterBackgrounds[i] != null)
             {
                 row.letterBackgrounds[i].color = results[i];
+            }
+
+            // Play corresponding sound effect based on match result
+            if (results[i] == greenColor || results[i] == yellowColor)
+            {
+                if (sfxAudioSource != null && successClip != null)
+                {
+                    sfxAudioSource.PlayOneShot(successClip);
+                }
+            }
+            else if (results[i] == wrongColor)
+            {
+                if (sfxAudioSource != null && failureClip != null)
+                {
+                    sfxAudioSource.PlayOneShot(failureClip);
+                }
             }
 
             // Strictly capped scoring evaluations:

@@ -23,6 +23,11 @@ public class TrafficRouterMinigame : MonoBehaviour
     [Header("Gameplay")]
     [SerializeField] private float gameDuration = 60f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip successClip;
+    [SerializeField] private AudioClip failureClip;
+
     private int score;
     private float timeRemaining;
     private bool isGameRunning;
@@ -47,7 +52,10 @@ public class TrafficRouterMinigame : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning) return;
+        if (!isGameRunning)
+        {
+            return;
+        }
 
         HandleMouseInput();
 
@@ -62,10 +70,16 @@ public class TrafficRouterMinigame : MonoBehaviour
 
     private void HandleMouseInput()
     {
-        if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame) return;
+        if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            return;
+        }
 
         Camera activeCamera = Camera.main;
-        if (activeCamera == null) return;
+        if (activeCamera == null)
+        {
+            return;
+        }
 
         Physics2D.SyncTransforms();
 
@@ -73,7 +87,10 @@ public class TrafficRouterMinigame : MonoBehaviour
         for (int i = 0; i < hits.Length; i++)
         {
             JunctionNode junction = hits[i].collider.GetComponent<JunctionNode>();
-            if (junction == null) continue;
+            if (junction == null)
+            {
+                continue;
+            }
 
             junction.HandleClick();
             return;
@@ -82,7 +99,16 @@ public class TrafficRouterMinigame : MonoBehaviour
 
     private bool HasValidSetup()
     {
-        return carPrefab != null && bestScoreStore != null && spawnPoint != null && firstTarget != null;
+        bool hasReferences = carPrefab != null && scoreText != null && bestScoreStore != null;
+        bool hasSpawn = spawnPoint != null && firstTarget != null;
+
+        if (!hasReferences || !hasSpawn)
+        {
+            Debug.LogError("TrafficRouterMinigame is missing required references.", this);
+            return false;
+        }
+
+        return true;
     }
 
     private IEnumerator SpawnLoop()
@@ -98,26 +124,31 @@ public class TrafficRouterMinigame : MonoBehaviour
 
     private void SpawnCar()
     {
-        int colorId = ColorPalette.GetRandomColorId();
-        CarMover car = Instantiate(carPrefab, spawnPoint.position, spawnPoint.rotation);
+        CarMover car = Instantiate(carPrefab, spawnPoint.position, Quaternion.identity);
 
-        // Pass the first target GameObject directly to the car
-        car.Initialize(this, colorId, carSpeed, firstTarget);
+        int randomColorId = Random.Range(0, ColorPalette.ColorCount);
+
+        car.Initialize(this, randomColorId, carSpeed, firstTarget);
     }
 
     public void HandleCarArrivedAtHouse(CarMover car, HouseNode house)
     {
-        if (!isGameRunning)
+        if (!isGameRunning || car == null || house == null)
         {
-            car.Remove();
             return;
         }
 
-        bool isMatch = car.ColorId == house.ColorId;
-        score += isMatch ? 10 : -5;
-
-        // Console logging as requested
-        Debug.Log($"[House Arrival] Car Color ID: {car.ColorId} | House Color ID: {house.ColorId} | Match: {isMatch} | Current Score: {score}");
+        if (car.ColorId == house.ColorId)
+        {
+            score += 10;
+            PlaySound(successClip);
+        }
+        else
+        {
+            score -= 5;
+            if (score < 0) score = 0;
+            PlaySound(failureClip);
+        }
 
         UpdateScoreUI();
         car.Remove();
@@ -125,14 +156,25 @@ public class TrafficRouterMinigame : MonoBehaviour
 
     public void HandleCarLost(CarMover car)
     {
-        if (isGameRunning)
+        if (!isGameRunning || car == null)
         {
-            score -= 5;
-            Debug.LogWarning($"[Car Lost] A car missed its tracks or target was missing. Penalty applied. Score: {score}");
-            UpdateScoreUI();
+            return;
         }
 
+        score -= 5;
+        if (score < 0) score = 0;
+        PlaySound(failureClip);
+
+        UpdateScoreUI();
         car.Remove();
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 
     private void UpdateScoreUI()
@@ -157,21 +199,18 @@ public class TrafficRouterMinigame : MonoBehaviour
 
         if (spawnRoutine != null) StopCoroutine(spawnRoutine);
 
-        // 1. Remove all active cars remaining on the screen
         CarMover[] remainingCars = FindObjectsOfType<CarMover>();
         for (int i = 0; i < remainingCars.Length; i++)
         {
             remainingCars[i].Remove();
         }
 
-        // 2. Hide all Junction Nodes
         JunctionNode[] junctions = FindObjectsOfType<JunctionNode>();
         for (int i = 0; i < junctions.Length; i++)
         {
             junctions[i].gameObject.SetActive(false);
         }
 
-        // 3. Hide all House Nodes
         HouseNode[] houses = FindObjectsOfType<HouseNode>();
         for (int i = 0; i < houses.Length; i++)
         {
@@ -180,6 +219,8 @@ public class TrafficRouterMinigame : MonoBehaviour
 
         string minigameId = SceneManager.GetActiveScene().name;
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
+
         bestScoreStore.ShowStats(score, bestScore);
+        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }

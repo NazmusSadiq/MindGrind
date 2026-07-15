@@ -13,6 +13,11 @@ public class sequence_match_minigame : MonoBehaviour
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
     [SerializeField] private AudioSource audioSource;
 
+    [Header("Additional Audio")]
+    [SerializeField] private AudioSource sfxAudioSource; // Serialized AudioSource for round results
+    [SerializeField] private AudioClip roundSuccessSFX;
+    [SerializeField] private AudioClip roundFailureSFX;
+
     [Header("Colors (Rich/Harmonious Slate/Cyan/Green/Red)")]
     private readonly Color normalColor = new Color(0.12f, 0.16f, 0.23f, 1f);      // Sleek Slate-800 (#1E293B)
     private readonly Color litColor = new Color(0.06f, 0.71f, 0.85f, 1f);         // Glow Cyan (#0EA5E9)
@@ -263,6 +268,13 @@ public class sequence_match_minigame : MonoBehaviour
             if (userStepIndex == sequence.Count)
             {
                 isInputEnabled = false;
+
+                // Play custom success sound clip via the serialized audio source
+                if (sfxAudioSource != null && roundSuccessSFX != null)
+                {
+                    sfxAudioSource.PlayOneShot(roundSuccessSFX);
+                }
+
                 score += 10;
                 k++;
                 UpdateScoreUI();
@@ -276,8 +288,14 @@ public class sequence_match_minigame : MonoBehaviour
             // Incorrect click - Game Over!
             isInputEnabled = false;
 
-            if (audioSource != null && errorBeep != null)
+            // Play custom failure sound clip via the serialized audio source
+            if (sfxAudioSource != null && roundFailureSFX != null)
             {
+                sfxAudioSource.PlayOneShot(roundFailureSFX);
+            }
+            else if (audioSource != null && errorBeep != null)
+            {
+                // Fallback to standard generated error buzz if serialized clip is missing
                 audioSource.PlayOneShot(errorBeep);
             }
 
@@ -317,7 +335,6 @@ public class sequence_match_minigame : MonoBehaviour
                 cellButtons[i] = null;
             }
         }
-
 
         string minigameSceneName = SceneManager.GetActiveScene().name;
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameSceneName, score);

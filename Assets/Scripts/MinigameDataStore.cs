@@ -116,7 +116,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 1,
             gameTitle = "Match-a-Mole",
-            description = "A single mole appears at one of nine possible locations. Before each rise, the target can be one of the two mole types or a bomb symbol. Click the mole for +10 points when its type matches the target image, lose -10 for clicking the wrong type, and if the target is a bomb, clicking any mole gives -10.",
+            description = "A single mole appears at one of nine possible locations. Before each rise, the target can be one of the two mole types or a bomb symbol. Click the mole for +10 points when its type matches the target image or skip it for mismatch or a bomb, lose -10 for clicking the wrong type, and if the target is a bomb, clicking any mole gives -10.",
             cognitiveSkills = "Reflex + Attention",
             sceneName = "Minigame2"
         };
@@ -224,7 +224,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 13,
             gameTitle = "Wordle",
-            description = "Each try, type a 5-letter word to guess the target word. Correctly positioned letters highlight green, valid letters in the wrong spots turn yellow, and incorrect choices turn red. You aren't told the target word — you must deduce it purely from tile colors across 6 attempts. Correct letters award points, and each fewer try grants a 20-point bonus.",
+            description = "Each try, type a 5-letter word to guess the target word(Letters may be repeated). Correctly positioned letters highlight green, valid letters in the wrong spots turn yellow, and incorrect choices turn red. You aren't told the target word — you must deduce it purely from tile colors across 6 attempts. Correct letters award points, and each fewer try grants a 20-point bonus.",
             cognitiveSkills = "Learning + Reasoning",
             sceneName = "Minigame14"
         };

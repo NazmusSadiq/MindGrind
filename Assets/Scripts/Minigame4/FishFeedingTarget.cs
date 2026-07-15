@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Collider2D), typeof(SpriteRenderer))]
 public class FishFeedingTarget : MonoBehaviour
@@ -45,26 +45,21 @@ public class FishFeedingTarget : MonoBehaviour
         transform.position = new Vector3(
             Random.Range(minBounds.x + boundaryPadding, maxBounds.x - boundaryPadding),
             Random.Range(minBounds.y + boundaryPadding, maxBounds.y - boundaryPadding),
-            transform.position.z);
-        UpdateRotation();
+            0f
+        );
     }
 
-    public void HandleClick()
-    {
-        if (gameManager != null)
-        {
-            gameManager.HandleFishClicked(this);
-        }
-    }
-
-    public void MarkFed()
+    public void MarkAsFed()
     {
         IsFed = true;
+        // Optional visual change: You can tint your fish here if needed, e.g.:
+        // if (fishRenderer != null) fishRenderer.color = Color.green;
     }
 
     private void Move()
     {
-        Vector3 nextPosition = transform.position + (Vector3)(moveDirection * (moveSpeed * Time.deltaTime));
+        Vector3 nextPosition = transform.position + (Vector3)(moveDirection * moveSpeed * Time.deltaTime);
+
         bool hitHorizontalBoundary = nextPosition.x <= minBounds.x + boundaryPadding || nextPosition.x >= maxBounds.x - boundaryPadding;
         bool hitVerticalBoundary = nextPosition.y <= minBounds.y + boundaryPadding || nextPosition.y >= maxBounds.y - boundaryPadding;
 
@@ -104,13 +99,11 @@ public class FishFeedingTarget : MonoBehaviour
             if (moveDirection.x < 0f)
             {
                 angle += 180f;
+                transform.localRotation = Quaternion.Euler(0f, 180f, -angle);
             }
-
-            transform.rotation = Quaternion.Euler(0f, 0f, angle);
-
-            if (fishRenderer != null)
+            else
             {
-                fishRenderer.flipX = moveDirection.x < 0f;
+                transform.localRotation = Quaternion.Euler(0f, 0f, angle);
             }
         }
     }

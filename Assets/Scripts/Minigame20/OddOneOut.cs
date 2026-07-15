@@ -56,6 +56,15 @@ public class OddOneOut : MonoBehaviour
 
     #endregion
 
+    #region Audio
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip successMusic;
+    [SerializeField] private AudioClip failureMusic;
+
+    #endregion
+
     #region Gameplay
 
     [Header("Gameplay")]
@@ -370,11 +379,13 @@ public class OddOneOut : MonoBehaviour
         {
             score += scorePerCorrect;
             statusText.text = $"Find & Click The Odd One Out.\n\nCorrect! (+{scorePerCorrect})";
+            PlaySound(successMusic);
         }
         else
         {
             score -= scorePenalty;
             statusText.text = $"Find & Click The Odd One Out.\n\nWrong! Correct : Option {correctOption + 1}";
+            PlaySound(failureMusic);
         }
 
         UpdateScoreUI();
@@ -388,6 +399,14 @@ public class OddOneOut : MonoBehaviour
 
         if (gameRunning)
             GenerateRound();
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 
     #endregion

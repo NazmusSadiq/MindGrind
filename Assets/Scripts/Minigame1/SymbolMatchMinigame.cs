@@ -35,6 +35,11 @@ public class SymbolMatchMinigame : MonoBehaviour
     [SerializeField] private Vector2 fallSpeedRange = new Vector2(3.5f, 5f);
     [SerializeField] private Vector2 spawnRotationRange = new Vector2(0f, 360f);
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip successClip;
+    [SerializeField] private AudioClip failureClip;
+
     private int currentTargetIndex;
     private int score;
     private float timeRemaining;
@@ -211,21 +216,23 @@ public class SymbolMatchMinigame : MonoBehaviour
             if (isCurrentTargetRed)
             {
                 score -= 5;
+                PlaySound(failureClip);
                 PickNextTarget();
             }
             else
             {
                 score += 10;
+                PlaySound(successClip);
                 PickNextTarget();
             }
         }
         else
         {
             score -= 5;
+            PlaySound(failureClip);
         }
 
         UpdateScoreUI();
-
         fallingObject.Remove();
     }
 
@@ -238,12 +245,30 @@ public class SymbolMatchMinigame : MonoBehaviour
 
         if (fallingObject.SymbolIndex == currentTargetIndex)
         {
-            score += isCurrentTargetRed ? 10 : -5;
-            UpdateScoreUI();
+            if (isCurrentTargetRed)
+            {
+                score += 10;
+                PlaySound(successClip);
+            }
+            else
+            {
+                score -= 5;
+                PlaySound(failureClip);
+            }
+
             PickNextTarget();
         }
 
+        UpdateScoreUI();
         fallingObject.Remove();
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 
     private void EndGame()

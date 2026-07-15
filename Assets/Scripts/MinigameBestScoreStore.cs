@@ -197,26 +197,31 @@ public class MinigameBestScoreStore : MonoBehaviour
     {
         switch (gameId)
         {
-            case 0: return 300f;
-            case 1: return 120f; // Customize different requirements per game ID
+            case 0: return 250f;
+            case 1: return 300f; 
             case 2: return 200f;
             case 3: return 90f;
-            case 4: return 180f;
+            case 4: return 200f;
             case 5: return 200f;
             case 6: return 70f;
-            case 7: return 350f;
+            case 7: return 275f;
             case 8: return 170f;
-            case 9: return 250f;
-            case 10: return 120f;
+            case 9: return 225f;
+            case 10: return 100f;
             case 11: return 250f;
-            case 12: return 400f;
+            case 12: return 200f;
             case 13: return 170f;
-            case 14: return 300f;
+            case 14: return 200f;
             case 15: return 80f;
             case 16: return 250f;
-            case 17: return 150f;
-            case 18: return 720f;
-            case 19: return 200f;
+            case 17: return 125f;
+            case 18: return 800f;
+            case 19: return 175f;
+            case 30: return 120f;
+            case 31: return 120f;
+            case 32: return 120f;
+            case 33: return 120f;
+            case 34: return 120f;
             default: return 100f; // Default 100 points
         }
     }

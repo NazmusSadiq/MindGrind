@@ -44,6 +44,11 @@ public class HiddenObjectGame : MonoBehaviour
     [SerializeField] private TMP_Text timeRemainingText;
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip successSFX;
+    [SerializeField] private AudioClip failureSFX;
+
     [Header("Gameplay")]
     [SerializeField] private int objectsPerShelf = 3;
     [SerializeField] private int floorObjectCount = 30;
@@ -135,7 +140,13 @@ public class HiddenObjectGame : MonoBehaviour
     {
         if (targetTimer >= targetChangeInterval)
         {
-            score -= missedTargetPenalty;
+            // Play Failure Audio (Target couldn't be found in time)
+            if (audioSource != null && failureSFX != null)
+            {
+                audioSource.PlayOneShot(failureSFX);
+            }
+
+            score = Mathf.Max(0, score - missedTargetPenalty);
             UpdateScoreUI();
             StartNewTargetRound();
             return true;
@@ -367,10 +378,6 @@ public class HiddenObjectGame : MonoBehaviour
 
         Vector3 position = GetShelfSlotPosition(data, area.areaCollider, slotIndex, slotCount);
 
-        // Debug.Log(
-        //     $"Shelf={area.areaName} Slot={slotIndex} Pos={position}"
-        // );
-
         HiddenObject obj = Instantiate(hiddenObjectPrefab, position, Quaternion.identity);
 
         obj.Initialize(
@@ -412,21 +419,7 @@ public class HiddenObjectGame : MonoBehaviour
     int slotCount)
     {
         Vector3 center = areaCollider.transform.position;
-
         float spacing = 2f;
-
-        // Debug.Log(
-        //     "Local Scale = " + areaCollider.transform.localScale +
-        //     " | Lossy Scale = " + areaCollider.transform.lossyScale
-        // );
-
-        // Debug.Log(
-        //     "Collider Size = " + areaCollider.size
-        // );
-
-        // Debug.Log(
-        //     "Bounds Size = " + areaCollider.bounds.size
-        // );
 
         return new Vector3(
             center.x + (slotIndex - 1) * spacing,
@@ -434,8 +427,6 @@ public class HiddenObjectGame : MonoBehaviour
             0
         );
     }
-
-
 
     private Vector3 GetFloorSlotPosition(
     BoxCollider2D areaCollider,
@@ -564,9 +555,21 @@ public class HiddenObjectGame : MonoBehaviour
 
         if (!obj.IsTarget)
         {
-            score -= wrongClickPenalty;
+            // Play Failure Audio (Clicked on wrong object)
+            if (audioSource != null && failureSFX != null)
+            {
+                audioSource.PlayOneShot(failureSFX);
+            }
+
+            score = Mathf.Max(0, score - wrongClickPenalty);
             UpdateScoreUI();
             return;
+        }
+
+        // Play Success Audio (Successfully clicked correct target object)
+        if (audioSource != null && successSFX != null)
+        {
+            audioSource.PlayOneShot(successSFX);
         }
 
         score += targetTimer <= layoutChangeInterval ? scorePerCorrectClick : scorePerLateCorrectClick;
@@ -607,5 +610,4 @@ public class HiddenObjectGame : MonoBehaviour
 
         spawnedObjects.Clear();
     }
-
 }
