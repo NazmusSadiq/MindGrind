@@ -87,6 +87,9 @@ public class MusicDoor : MonoBehaviour, IInteractable
 
         passwordInput.Select();
         passwordInput.ActivateInputField();
+
+        // 🛑 PAUSE THE GAME WORLD: This halts physics, enemy updates, and time-based movements
+        Time.timeScale = 0f;
     }
 
     private void ClosePanel()
@@ -106,6 +109,9 @@ public class MusicDoor : MonoBehaviour, IInteractable
         // 🔥 Tell manager to unpause/resume context loops now that UI interaction is completed
         if (levelManager != null && !isCompleted)
             levelManager.PauseMusicForInteraction(false);
+
+        // ▶️ RESUME THE GAME WORLD: Return the timescale back to active mode
+        Time.timeScale = 1f;
     }
 
     private void CheckPassword()

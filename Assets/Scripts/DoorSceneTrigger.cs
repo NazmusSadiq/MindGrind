@@ -23,7 +23,7 @@ public class DoorSceneTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponentInParent<PlayerController>() == null || !canOpen) return;
-        if (EnemyController.IsAnyEnemyAware()) return;
+        //if (EnemyController.IsAnyEnemyAware()) return;
 
         MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
 

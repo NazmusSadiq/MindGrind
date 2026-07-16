@@ -1,21 +1,36 @@
 using TMPro;
 using UnityEngine;
 
-public class Level4_Manager : MonoBehaviour
+public class Level1_Manager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerController playerController;
     [SerializeField] private TMP_Text timeRemainingText;
+    [SerializeField] private GameObject gameOverMenu;
+    [SerializeField] private GameObject upArrow;
+    [SerializeField] private GameObject rightArrow;
+    [SerializeField] private GameObject downArrow;
+    [SerializeField] private GameObject leftArrow;
+
+    [Header("Gameplay")]
+    [SerializeField] private float initialNormalDuration = 10f;
+    [SerializeField] private float directionChangeInterval = 10f;
 
     private float elapsedTime;
+    private float nextDirectionChangeTime;
     private bool isLevelOver;
 
     private void Start()
     {
-        MainMenu mainMenuFallback = Object.FindFirstObjectByType<MainMenu>();
-        if (mainMenuFallback != null)
+        bool storyModeActive = false;
+
+        // Retrieve the static 'isStoryMode' field via reflection from MainMenu
+        System.Reflection.FieldInfo storyModeField = typeof(MainMenu).GetField("isStoryMode",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        if (storyModeField != null)
         {
-            mainMenuFallback.SetStoryMode(true);
+            storyModeActive = (bool)storyModeField.GetValue(null);
         }
 
         if (playerController == null)
@@ -25,25 +40,33 @@ public class Level4_Manager : MonoBehaviour
 
         if (playerController == null)
         {
-            Debug.LogError("Level4_Manager could not find a PlayerController.", this);
+            Debug.LogError("Level1_Manager could not find a PlayerController.", this);
             enabled = false;
             return;
         }
 
-        // Auto-initialize game startup execution to ensure inputs unlock properly
-        //playerController.SetGameStarted(true);
-        //playerController.EnableGameplayInput(true);
+        playerController.SetControlDirection(PlayerController.ControlDirection.Up);
+        ShowArrow(PlayerController.ControlDirection.Up);
 
         elapsedTime = 0f;
         UpdateTimerUI();
+        nextDirectionChangeTime = Mathf.Max(0f, initialNormalDuration);
 
-        MainMenu.PauseGameAndShowDetailsPanel();
+        // Only pause and show details if story mode is already active
+        if (storyModeActive)
+        {
+            MainMenu.PauseGameAndShowDetailsPanel();
+        }
+        else
+        {
+            playerController.SetGameStarted(true);
+            playerController.EnableGameplayInput(true);
+        }
     }
 
     private void Update()
     {
-        if (isLevelOver)
-            return;
+        if (isLevelOver) return;
 
         if (playerController.IsDead)
         {
@@ -53,15 +76,42 @@ public class Level4_Manager : MonoBehaviour
 
         elapsedTime += Time.deltaTime;
         UpdateTimerUI();
+
+        if (elapsedTime < nextDirectionChangeTime)
+        {
+            return;
+        }
+
+        ChangeDirection();
+        nextDirectionChangeTime += Mathf.Max(0.01f, directionChangeInterval);
+    }
+
+    // NEW: Public interface method to reduce time when an enemy is eliminated
+    public void ReduceElapsedTime(float amount)
+    {
+        if (isLevelOver) return;
+
+        elapsedTime = Mathf.Max(0f, elapsedTime - amount);
+        UpdateTimerUI();
+        Debug.Log($"[Time Bonus] Reduced elapsed match time by {amount} seconds.");
+    }
+
+    private void ChangeDirection()
+    {
+        PlayerController.ControlDirection direction = (PlayerController.ControlDirection)Random.Range(0, 4);
+
+        playerController.SetControlDirection(direction);
+        ShowArrow(direction);
     }
 
     public void TriggerLevelComplete()
     {
-        if (isLevelOver)
-            return;
+        if (isLevelOver) return;
 
         isLevelOver = true;
-        Debug.Log($"Level 4 Completed in: {elapsedTime:F2} seconds!");
+        Debug.Log($"Level Completed in: {elapsedTime:F2} seconds!");
+
+        ShowArrow(null);
     }
 
     private void TriggerGameOver()
@@ -72,28 +122,43 @@ public class Level4_Manager : MonoBehaviour
         {
             playerController.ShowGameOverMenu();
         }
+        else if (gameOverMenu != null)
+        {
+            gameOverMenu.SetActive(true);
+        }
     }
 
     private void UpdateTimerUI()
     {
-        if (timeRemainingText == null)
-            return;
-
-        int minutes = Mathf.FloorToInt(elapsedTime / 60f);
-        int seconds = Mathf.FloorToInt(elapsedTime % 60f);
-
-        if (minutes > 0)
+        if (timeRemainingText != null)
         {
-            timeRemainingText.text = $"{minutes}:{seconds:00}";
-        }
-        else
-        {
-            timeRemainingText.text = seconds.ToString();
+            int minutes = Mathf.FloorToInt(elapsedTime / 60f);
+            int seconds = Mathf.FloorToInt(elapsedTime % 60f);
+
+            if (minutes > 0)
+            {
+                timeRemainingText.text = string.Format("{0}:{1:00}", minutes, seconds);
+            }
+            else
+            {
+                timeRemainingText.text = seconds.ToString();
+            }
         }
     }
 
-    public float GetElapsedTime()
+    private void ShowArrow(PlayerController.ControlDirection? direction)
     {
-        return elapsedTime;
+        SetArrowState(upArrow, direction == PlayerController.ControlDirection.Up);
+        SetArrowState(rightArrow, direction == PlayerController.ControlDirection.Right);
+        SetArrowState(downArrow, direction == PlayerController.ControlDirection.Down);
+        SetArrowState(leftArrow, direction == PlayerController.ControlDirection.Left);
+    }
+
+    private void SetArrowState(GameObject arrow, bool isActive)
+    {
+        if (arrow != null)
+        {
+            arrow.SetActive(isActive);
+        }
     }
 }

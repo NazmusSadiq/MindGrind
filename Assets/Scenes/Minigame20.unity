@@ -2390,7 +2390,7 @@ MonoBehaviour:
   perceptionText: {fileID: 0}
   learningText: {fileID: 0}
   reasoningText: {fileID: 0}
-  storyModeNextSceneName: Minigame2
+  storyModeNextSceneName: MainMenu
   storyModeDetailsPanel: {fileID: 1978776224}
   pauseMenuPanel: {fileID: 1979922934}
   targetThumbnailField: {fileID: 0}

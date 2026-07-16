@@ -21447,7 +21447,7 @@ MonoBehaviour:
   perceptionText: {fileID: 0}
   learningText: {fileID: 0}
   reasoningText: {fileID: 0}
-  storyModeNextSceneName: Level1
+  storyModeNextSceneName: Minigame18
   storyModeDetailsPanel: {fileID: 25580560}
   pauseMenuPanel: {fileID: 462149175}
   targetThumbnailField: {fileID: 0}
@@ -47331,8 +47331,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 99.04184, y: -56.699997}
-  m_SizeDelta: {x: 63.3137, y: 23.08}
+  m_AnchoredPosition: {x: 109.64642, y: -56.699997}
+  m_SizeDelta: {x: 84.5229, y: 23.08}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1976040910
 MonoBehaviour:

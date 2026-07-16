@@ -38,10 +38,14 @@ public class Level2_Manager : MonoBehaviour
 
     private void Start()
     {
-        MainMenu mainMenuFallback = Object.FindFirstObjectByType<MainMenu>();
-        if (mainMenuFallback != null)
+        bool storyModeActive = false;
+
+        System.Reflection.FieldInfo storyModeField = typeof(MainMenu).GetField("isStoryMode",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        if (storyModeField != null)
         {
-            mainMenuFallback.SetStoryMode(true);
+            storyModeActive = (bool)storyModeField.GetValue(null);
         }
 
         if (playerController == null)
@@ -72,7 +76,15 @@ public class Level2_Manager : MonoBehaviour
         UpdateTimerUI();
         UpdatePowerSourcesUI();
 
-        MainMenu.PauseGameAndShowDetailsPanel();
+        if (storyModeActive)
+        {
+            MainMenu.PauseGameAndShowDetailsPanel();
+        }
+        else
+        {
+            playerController.SetGameStarted(true);
+            playerController.EnableGameplayInput(true);
+        }
     }
 
     private void Update()
@@ -89,7 +101,11 @@ public class Level2_Manager : MonoBehaviour
         UpdateTimerUI();
     }
 
-    // NEW: Public interface method to reduce time when an enemy is eliminated
+    public float GetElapsedTime()
+    {
+        return elapsedTime;
+    }
+
     public void ReduceElapsedTime(float amount)
     {
         if (isLevelOver || cinematicActive) return;

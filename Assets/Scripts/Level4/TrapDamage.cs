@@ -4,12 +4,15 @@ using UnityEngine;
 public class TrapDamage : MonoBehaviour
 {
     [SerializeField] private int damageAmount = 10;
+    [SerializeField] private float damageCooldown = 2f; 
 
     private bool hasDamagedPlayer;
     private bool wasPlayerInside;
     private Collider trapCollider;
     private PlayerController playerController;
     private CharacterController playerCharacterController;
+
+    private float cooldownTimer; 
 
     private void Awake()
     {
@@ -31,13 +34,19 @@ public class TrapDamage : MonoBehaviour
             return;
         }
 
+        if (cooldownTimer > 0f)
+        {
+            cooldownTimer -= Time.deltaTime;
+        }
+
         bool isPlayerInside = trapCollider.bounds.Intersects(playerCharacterController.bounds);
 
-        if (isPlayerInside && !wasPlayerInside)
+        if (isPlayerInside)
         {
-            if (!hasDamagedPlayer)
+            if (cooldownTimer <= 0f)
             {
                 playerController.TakeDamage(damageAmount);
+                cooldownTimer = damageCooldown; 
                 hasDamagedPlayer = true;
             }
         }

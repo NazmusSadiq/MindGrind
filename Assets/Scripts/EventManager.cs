@@ -79,7 +79,6 @@ public class MainMenu : MonoBehaviour
     public void LoadMiniGame()
     {
         Time.timeScale = 1f;
-        AudioListener.pause = false;
 
         MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
         if (string.IsNullOrWhiteSpace(currentGame.sceneName))
@@ -94,14 +93,12 @@ public class MainMenu : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        AudioListener.pause = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void StartGame()
     {
         Time.timeScale = 1f;
-        AudioListener.pause = false;
         SceneManager.LoadScene(StartSceneName);
     }
 
@@ -129,7 +126,6 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene(MainMenuSceneName);
         Time.timeScale = 1f;
-        AudioListener.pause = false;
     }
 
     public static void PauseGameAndShowDetailsPanel()
@@ -150,7 +146,6 @@ public class MainMenu : MonoBehaviour
 
         storyModeDetailsPanel.SetActive(false);
         Time.timeScale = 1f;
-        AudioListener.pause = false;
 
         StartCoroutine(EnableInputAfterDelay());
     }
@@ -183,7 +178,6 @@ public class MainMenu : MonoBehaviour
 
         isGamePaused = true;
         Time.timeScale = 0f;
-        AudioListener.pause = true;
 
         string activeSceneName = SceneManager.GetActiveScene().name;
         string targetLookupName = (activeSceneName == "MainMenu") ? storyModeNextSceneName : activeSceneName;
@@ -245,7 +239,6 @@ public class MainMenu : MonoBehaviour
         isGamePaused = true;
         pauseMenuPanel.SetActive(true);
         Time.timeScale = 0f;
-        AudioListener.pause = true;
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -295,7 +288,6 @@ public class MainMenu : MonoBehaviour
         isGamePaused = false;
         pauseMenuPanel.SetActive(false);
         Time.timeScale = 1f;
-        AudioListener.pause = false;
 
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();
         if (player != null)

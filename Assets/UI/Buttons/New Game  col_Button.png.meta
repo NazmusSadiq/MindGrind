@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c47d11449881a2c4a95100c7756abc09
+guid: 460306403727b8b44a12d0f444b49f06
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4042827597099902303
-    second: C_1_0
+      213: 5850610436143502698
+    second: New Game  col_Button_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: C_1_0
+      name: New Game  col_Button_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1592
-        height: 895
+        width: 600
+        height: 200
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1aad6b268bdf4e7c0800000000000000
-      internalID: -4042827597099902303
+      spriteID: a65d68d913b813150800000000000000
+      internalID: 5850610436143502698
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      C_1_0: -4042827597099902303
+      New Game  col_Button_0: 5850610436143502698
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

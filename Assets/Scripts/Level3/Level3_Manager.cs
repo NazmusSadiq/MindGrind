@@ -33,9 +33,16 @@ public class Level3_Manager : MonoBehaviour
 
     private void Start()
     {
-        MainMenu mainMenuFallback = Object.FindFirstObjectByType<MainMenu>();
-        if (mainMenuFallback != null)
-            mainMenuFallback.SetStoryMode(true);
+        bool storyModeActive = false;
+
+        // Retrieve the static 'isStoryMode' field via reflection from MainMenu
+        System.Reflection.FieldInfo storyModeField = typeof(MainMenu).GetField("isStoryMode",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        if (storyModeField != null)
+        {
+            storyModeActive = (bool)storyModeField.GetValue(null);
+        }
 
         if (playerController == null)
             playerController = Object.FindFirstObjectByType<PlayerController>();
@@ -50,7 +57,16 @@ public class Level3_Manager : MonoBehaviour
         elapsedTime = 0f;
         UpdateTimerUI();
 
-        MainMenu.PauseGameAndShowDetailsPanel();
+        // Only pause and show details if story mode is already active
+        if (storyModeActive)
+        {
+            MainMenu.PauseGameAndShowDetailsPanel();
+        }
+        else
+        {
+            playerController.SetGameStarted(true);
+            playerController.EnableGameplayInput(true);
+        }
 
         AssignRhymesToDoors();
         PlayDoorMusic(0);
@@ -99,7 +115,7 @@ public class Level3_Manager : MonoBehaviour
 
         globalAudioSource.Stop();
         globalAudioSource.clip = doors[doorIndex].GetDoorAudio();
-        globalAudioSource.loop = false; 
+        globalAudioSource.loop = false;
 
         audioLoopCoroutine = StartCoroutine(TimedAudioLoopCoroutine());
     }

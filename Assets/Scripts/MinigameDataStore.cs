@@ -61,11 +61,11 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 30,
             gameTitle = "Level 1",
-            description = "Your movement keys adapt to the orientation arrow, which always represents UP. (e.g., If the arrow points RIGHT, D moves you Up, and S moves you Right). Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
-            cognitiveSkills = "Attention + Reflex",
+            description = "Multiple cannons lie ahead, tracking your moves and firing from all sides. Raise your shield in time to block incoming fireballs, or use the environment strategically to let objects take the hit for you. Mistiming your guard or getting caught in the open will cost you precious health. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
+            cognitiveSkills = "Reflex + Attention",
             sceneName = "Level1"
         };
-
+        
         minigames[31] = new GameData
         {
             id = 31,
@@ -80,7 +80,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 32,
             gameTitle = "Level 3",
             description = "Cryptic rhymes play on a continuous loop around you. Each verse has 7 words, the 7 digit password consists of letter count of each of these words. You will need to give the password to go through each of the music doors to pass to its next region. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
-            cognitiveSkills = "Memory + Attention",
+            cognitiveSkills = "Memory + Perception",
             sceneName = "Level3"
         };
 
@@ -88,8 +88,8 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 33,
             gameTitle = "Level 4",
-            description = "Multiple cannons lie ahead, tracking your moves and firing from all sides. Raise your shield in time to block incoming fireballs, or use the environment strategically to let objects take the hit for you. Mistiming your guard or getting caught in the open will cost you precious health. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
-            cognitiveSkills = "Reflex + Attention",
+            description = "Your movement keys adapt to the orientation arrow, which always represents UP. (e.g., If the arrow points RIGHT, D moves you Up, and S moves you Right). Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
+            cognitiveSkills = "Reasoning + Reflex",
             sceneName = "Level4"
         };
 
@@ -98,7 +98,7 @@ public class MinigameDataStore : MonoBehaviour
             id = 34,
             gameTitle = "Level 5",
             description = "Five broken grid networks block your path to freedom. To escape, you must rotate and align the junctions of each power circuit to send power from source to destination. Solve the puzzles, restore the power flows, and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
-            cognitiveSkills = "Reasoning + Attention",
+            cognitiveSkills = "Reasoning",
             sceneName = "Level5"
         };
 

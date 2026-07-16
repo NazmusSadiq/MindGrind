@@ -23,10 +23,15 @@ public class Level5_Manager : MonoBehaviour
 
     private void Start()
     {
-        MainMenu mainMenuFallback = Object.FindFirstObjectByType<MainMenu>();
-        if (mainMenuFallback != null)
+        bool storyModeActive = false;
+
+        // Retrieve the static 'isStoryMode' field via reflection from MainMenu
+        System.Reflection.FieldInfo storyModeField = typeof(MainMenu).GetField("isStoryMode",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        if (storyModeField != null)
         {
-            mainMenuFallback.SetStoryMode(true);
+            storyModeActive = (bool)storyModeField.GetValue(null);
         }
 
         if (playerController == null)
@@ -54,7 +59,16 @@ public class Level5_Manager : MonoBehaviour
         UpdateTimerUI();
         CheckPuzzleProgression(forceUpdateUI: true);
 
-        MainMenu.PauseGameAndShowDetailsPanel();
+        // Only pause and show details if story mode is already active
+        if (storyModeActive)
+        {
+            MainMenu.PauseGameAndShowDetailsPanel();
+        }
+        else
+        {
+            playerController.SetGameStarted(true);
+            playerController.EnableGameplayInput(true);
+        }
     }
 
     private void Update()
