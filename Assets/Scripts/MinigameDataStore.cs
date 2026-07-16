@@ -61,7 +61,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 30,
             gameTitle = "Level 1",
-            description = "Multiple cannons lie ahead, tracking your moves and firing from all sides. Raise your shield in time to block incoming fireballs, or use the environment strategically to let objects take the hit for you. Mistiming your guard or getting caught in the open will cost you precious health. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
+            description = "Multiple cannons lie ahead, tracking your moves and firing from all sides. Raise your shield in time to block incoming fireballs, or use the environment strategically to let objects take the hit for you. Mistiming your guard or getting caught in the open will cost you precious health. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Reflex + Attention",
             sceneName = "Level1"
         };
@@ -70,7 +70,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 31,
             gameTitle = "Level 2",
-            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay attention at the start of the game when the correct boxes are shown with blue glitter. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
+            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay attention at the start of the game when the correct boxes are shown with blue glitter. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Memory + Attention",
             sceneName = "Level2"
         };
@@ -79,7 +79,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 32,
             gameTitle = "Level 3",
-            description = "Cryptic rhymes play on a continuous loop around you. Each verse has 7 words, the 7 digit password consists of letter count of each of these words. You will need to give the password to go through each of the music doors to pass to its next region. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
+            description = "Cryptic rhymes play on a continuous loop around you. Each verse has 7 words, the 7 digit password consists of letter count of each of these words. You will need to give the password to go through each of the music doors to pass to its next region. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Memory + Perception",
             sceneName = "Level3"
         };
@@ -88,7 +88,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 33,
             gameTitle = "Level 4",
-            description = "Your movement keys adapt to the orientation arrow, which always represents UP. (e.g., If the arrow points RIGHT, D moves you Up, and S moves you Right). Avoid enemy traps and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
+            description = "Your movement keys adapt to the orientation arrow, which always represents UP. (e.g., If the arrow points RIGHT, D moves you Up, and S moves you Right). Avoid enemy traps and rush to the Portal Gate as fast as possible. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Reasoning + Reflex",
             sceneName = "Level4"
         };
@@ -97,7 +97,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 34,
             gameTitle = "Level 5",
-            description = "Five broken grid networks block your path to freedom. To escape, you must rotate and align the junctions of each power circuit to send power from source to destination. Solve the puzzles, restore the power flows, and rush to the Portal Gate as fast as possible. You cannot escape through the portal if an enemy is hot on your trail! Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
+            description = "Five broken grid networks block your path to freedom. To escape, you must rotate and align the junctions of each power circuit to send power from source to destination. Solve the puzzles, restore the power flows, and rush to the Portal Gate as fast as possible. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds.",
             cognitiveSkills = "Reasoning",
             sceneName = "Level5"
         };
@@ -116,7 +116,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 1,
             gameTitle = "Match-a-Mole",
-            description = "A single mole appears at one of nine possible locations. Before each rise, the target can be one of the two mole types or a bomb symbol. Click the mole for +10 points when its type matches the target image or skip it for mismatch or a bomb, lose -10 for clicking the wrong type, and if the target is a bomb, clicking any mole gives -10.",
+            description = "A single mole appears at one of nine possible locations. Before each rise, the target can be one of the two mole types or a bomb symbol. Click the mole for +10 points when its type matches the target image or skip it for mismatch or a bomb, lose -5 for clicking the wrong type, and if the target is a bomb, clicking any mole gives -10.",
             cognitiveSkills = "Reflex + Attention",
             sceneName = "Minigame2"
         };
@@ -125,7 +125,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 2,
             gameTitle = "Good Guy, Bad Guy",
-            description = "Before each round, you see two rows showing good guys and bad guys for a short time. Then these 8 guys appear on a board. Your task is to click only on the bad guys before the timer expires; each correct click adds 10 points, and each wrong click deducts 10 points. The game ends after 5 rounds",
+            description = "Before each round, you see two rows showing good guys and bad guys for a short time. Then these 8 guys appear on a board. Your task is to click only on the bad guys before the timer expires; each correct click adds 10 points, and each wrong click deducts 5 points. The game ends after 5 rounds",
             cognitiveSkills = "Memory",
             sceneName = "Minigame3"
         };
@@ -134,7 +134,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 3,
             gameTitle = "Feed The Fishes",
-            description = "Some identical fishes swim around the tank and keep changing direction as they bounce off the boundaries. Click a fish to feed it: feeding an unfed fish gives +10 points, but feeding a fish that has already been fed costs -10 points. After each feeding, you must wait for some time before feeding another fish.",
+            description = "Some identical fishes swim around the tank and keep changing direction as they bounce off the boundaries. Click a fish to feed it: feeding an unfed fish gives +10 points, but feeding a fish that has already been fed costs -5 points. After each feeding, you must wait for some time before feeding another fish.",
             cognitiveSkills = "Memory + Attention",
             sceneName = "Minigame4"
         };

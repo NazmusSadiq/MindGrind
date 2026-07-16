@@ -36,6 +36,10 @@ public class Level2_Manager : MonoBehaviour
     private bool cinematicActive;
     private int powerSourcesFound = 0;
 
+    private float cinematicDurationOffset = 0f;
+    private bool gameplayStarted = false;
+    private DoorSceneTrigger cachedTrigger;
+
     private void Start()
     {
         bool storyModeActive = false;
@@ -70,6 +74,8 @@ public class Level2_Manager : MonoBehaviour
             exitGate.canOpen = false;
         }
 
+        cachedTrigger = Object.FindFirstObjectByType<DoorSceneTrigger>();
+
         DistributeBoxContents();
 
         elapsedTime = 0f;
@@ -88,6 +94,22 @@ public class Level2_Manager : MonoBehaviour
 
     private void Update()
     {
+        if (!isLevelOver && cachedTrigger != null)
+        {
+            System.Reflection.FieldInfo successMenuField = typeof(DoorSceneTrigger).GetField("successMenu",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            if (successMenuField != null)
+            {
+                GameObject successMenu = successMenuField.GetValue(cachedTrigger) as GameObject;
+                if (successMenu != null && successMenu.activeSelf)
+                {
+                    CorrectEndGameTime();
+                    return;
+                }
+            }
+        }
+
         if (isLevelOver || cinematicActive) return;
 
         if (playerController.IsDead)
@@ -96,8 +118,57 @@ public class Level2_Manager : MonoBehaviour
             return;
         }
 
-        elapsedTime += Time.deltaTime;
+        if (!gameplayStarted)
+        {
+            gameplayStarted = true;
+            cinematicDurationOffset = Time.timeSinceLevelLoad;
+        }
+
+        elapsedTime = Time.timeSinceLevelLoad - cinematicDurationOffset;
         UpdateTimerUI();
+    }
+
+    private void CorrectEndGameTime()
+    {
+        isLevelOver = true; // Block double execution
+
+        int correctedTime = Mathf.RoundToInt(elapsedTime);
+        MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
+        string activeIdString = currentGame.id.ToString();
+
+        int updatedBestScore = MinigameBestScoreStore.UpdateBestScore(activeIdString, correctedTime);
+
+        System.Reflection.FieldInfo fieldCurrent = typeof(DoorSceneTrigger).GetField("successCurrentScoreText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        System.Reflection.FieldInfo fieldBest = typeof(DoorSceneTrigger).GetField("successBestScoreText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+        if (fieldCurrent != null)
+        {
+            TMP_Text currentText = fieldCurrent.GetValue(cachedTrigger) as TMP_Text;
+            if (currentText != null)
+            {
+                currentText.text = currentGame.id < 30 ? $"Score: {correctedTime}" : $"Time: {correctedTime}s";
+            }
+        }
+
+        if (fieldBest != null)
+        {
+            TMP_Text bestText = fieldBest.GetValue(cachedTrigger) as TMP_Text;
+            if (bestText != null)
+            {
+                bestText.text = currentGame.id < 30 ? $"Best Score: {updatedBestScore}" : $"Best Time: {updatedBestScore}s";
+            }
+        }
+
+        // 3. Update active UI Store instances
+        MinigameBestScoreStore uiStore = Object.FindFirstObjectByType<MinigameBestScoreStore>();
+        if (uiStore != null)
+        {
+            uiStore.DisplayUpdatedUI(correctedTime, currentGame.id);
+        }
+
+        Debug.Log($"[Time Correction] Intercepted DoorSceneTrigger! Subtracted camera cinematic duration of {cinematicDurationOffset:F2}s. Corrected score to: {correctedTime}s.");
     }
 
     public float GetElapsedTime()
@@ -109,7 +180,8 @@ public class Level2_Manager : MonoBehaviour
     {
         if (isLevelOver || cinematicActive) return;
 
-        elapsedTime = Mathf.Max(0f, elapsedTime - amount);
+        cinematicDurationOffset += amount;
+        elapsedTime = Mathf.Max(0f, Time.timeSinceLevelLoad - cinematicDurationOffset);
         UpdateTimerUI();
         Debug.Log($"[Time Bonus] Reduced elapsed match time by {amount} seconds.");
     }
@@ -245,7 +317,7 @@ public class Level2_Manager : MonoBehaviour
 
         cinematicActive = false;
         playerController.SetGameStarted(true);
-        playerController.EnableGameplayInput(true); 
+        playerController.EnableGameplayInput(true);
         Debug.Log("[Cinematic] Sequence complete. Control returned back to the player gameplay inputs.");
     }
 
