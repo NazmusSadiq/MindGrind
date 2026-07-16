@@ -82,8 +82,7 @@ public class Level2_Manager : MonoBehaviour
         }
         else
         {
-            playerController.SetGameStarted(true);
-            playerController.EnableGameplayInput(true);
+            StartCinematicReveal();
         }
     }
 
@@ -246,6 +245,7 @@ public class Level2_Manager : MonoBehaviour
 
         cinematicActive = false;
         playerController.SetGameStarted(true);
+        playerController.EnableGameplayInput(true); 
         Debug.Log("[Cinematic] Sequence complete. Control returned back to the player gameplay inputs.");
     }
 
