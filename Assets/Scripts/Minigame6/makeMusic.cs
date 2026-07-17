@@ -206,7 +206,7 @@ public class makeMusic : MonoBehaviour
 
         SetPreviewState(false);
         SetTimerPaused(false);
-        UpdateStatusText("Practice the notes, then press Start Music to answer.");
+        UpdateStatusText("Click on notes to play them for testing, press \"Replay\" to repeat the tone, press \"Play\" to answer.");
     }
 
     private void BuildRandomSequence()
@@ -286,7 +286,7 @@ public class makeMusic : MonoBehaviour
         }
 
         SetControlButtonsInteractable(true);
-        UpdateStatusText(isAnswerPhaseActive ? "Repeat the sequence now." : "Practice the notes, then press Start Music to answer.");
+        UpdateStatusText(isAnswerPhaseActive ? "Repeat the sequence now." : "Click on notes to play them for testing, press \"Replay\" to repeat the tone, press \"Play\" to answer.");
         replayRoutine = null;
     }
 
