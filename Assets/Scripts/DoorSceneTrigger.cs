@@ -48,7 +48,7 @@ public class DoorSceneTrigger : MonoBehaviour
             }
             else
             {
-                finalValueToSave = Mathf.RoundToInt(Time.timeSinceLevelLoad);
+                finalValueToSave = Mathf.RoundToInt(Time.timeSinceLevelLoad + MinigamePenaltyTracker.PenaltySeconds);
             }
 
             int updatedBestScore = MinigameBestScoreStore.UpdateBestScore(activeIdString, finalValueToSave);

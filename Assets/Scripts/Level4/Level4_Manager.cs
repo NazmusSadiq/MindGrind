@@ -12,6 +12,10 @@ public class Level1_Manager : MonoBehaviour
     [SerializeField] private GameObject downArrow;
     [SerializeField] private GameObject leftArrow;
 
+    // ================= AUDIO SFX =================
+    [Header("Audio Configurations")]
+    [SerializeField] private AudioClip directionChangeSound;
+
     [Header("Gameplay")]
     [SerializeField] private float initialNormalDuration = 10f;
     [SerializeField] private float directionChangeInterval = 10f;
@@ -20,11 +24,12 @@ public class Level1_Manager : MonoBehaviour
     private float nextDirectionChangeTime;
     private bool isLevelOver;
 
+    private PlayerController.ControlDirection lastDirection = PlayerController.ControlDirection.Up;
+
     private void Start()
     {
         bool storyModeActive = false;
 
-        // Retrieve the static 'isStoryMode' field via reflection from MainMenu
         System.Reflection.FieldInfo storyModeField = typeof(MainMenu).GetField("isStoryMode",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
 
@@ -47,6 +52,7 @@ public class Level1_Manager : MonoBehaviour
 
         playerController.SetControlDirection(PlayerController.ControlDirection.Up);
         ShowArrow(PlayerController.ControlDirection.Up);
+        lastDirection = PlayerController.ControlDirection.Up; // Initialize tracking
 
         elapsedTime = 0f;
         UpdateTimerUI();
@@ -98,10 +104,37 @@ public class Level1_Manager : MonoBehaviour
 
     private void ChangeDirection()
     {
-        PlayerController.ControlDirection direction = (PlayerController.ControlDirection)Random.Range(0, 4);
+        PlayerController.ControlDirection newDirection;
 
-        playerController.SetControlDirection(direction);
-        ShowArrow(direction);
+        // Loop until a different direction from the last one is chosen
+        do
+        {
+            newDirection = (PlayerController.ControlDirection)Random.Range(0, 4);
+        } while (newDirection == lastDirection);
+
+        // Update tracking variable
+        lastDirection = newDirection;
+
+        playerController.SetControlDirection(newDirection);
+        ShowArrow(newDirection);
+
+        // Play the direction shift notification sound in 2D
+        PlaySound2D(directionChangeSound);
+    }
+
+    // Explicit 2D Sound Spawner to play the notification clip cleanly at runtime
+    private void PlaySound2D(AudioClip clip)
+    {
+        if (clip != null)
+        {
+            GameObject sfxObj = new GameObject("Temp_DirectionChange_SFX");
+            AudioSource source = sfxObj.AddComponent<AudioSource>();
+            source.clip = clip;
+            source.spatialBlend = 0f; // Forces 2D Full Volume
+            source.volume = 1f;
+            source.Play();
+            Destroy(sfxObj, clip.length);
+        }
     }
 
     public void TriggerLevelComplete()

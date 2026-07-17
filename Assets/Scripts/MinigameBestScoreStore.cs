@@ -129,8 +129,11 @@ public class MinigameBestScoreStore : MonoBehaviour
                     float minTimeTarget = GetMinimumTimeTargetForGame(id);
                     if (avgScore > 0f)
                     {
-                        // Higher average time yields a lower fraction (e.g., Target 20s / Avg 40s = 0.5)
-                        normalizedScore = Mathf.Clamp01(minTimeTarget / avgScore);
+                        // Calculate how many seconds past the minimum time target the player took
+                        float secondsLate = Mathf.Max(0f, avgScore - minTimeTarget);
+
+                        // True exponential decay with lambda = 0.005
+                        normalizedScore = Mathf.Exp(-0.005f * secondsLate);
                     }
                 }
                 else // Score-based game (id < 30)
@@ -198,7 +201,7 @@ public class MinigameBestScoreStore : MonoBehaviour
         switch (gameId)
         {
             case 0: return 250f;
-            case 1: return 300f; 
+            case 1: return 300f;
             case 2: return 200f;
             case 3: return 90f;
             case 4: return 200f;
@@ -217,11 +220,6 @@ public class MinigameBestScoreStore : MonoBehaviour
             case 17: return 125f;
             case 18: return 800f;
             case 19: return 175f;
-            case 30: return 120f;
-            case 31: return 120f;
-            case 32: return 120f;
-            case 33: return 120f;
-            case 34: return 120f;
             default: return 100f; // Default 100 points
         }
     }
@@ -233,8 +231,11 @@ public class MinigameBestScoreStore : MonoBehaviour
     {
         switch (gameId)
         {
-            case 30: return 15f; // Completion in <= 15s is perfect (1.0)
-            case 31: return 25f; // Completion in <= 25s is perfect (1.0)
+            case 30: return 95f;
+            case 31: return 100f;
+            case 32: return 85f;
+            case 33: return 120f;
+            case 34: return 190f;
             default: return 20f; // Default 20 seconds minimum time target
         }
     }

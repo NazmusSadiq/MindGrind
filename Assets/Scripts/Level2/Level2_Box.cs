@@ -12,10 +12,14 @@ public class BoxController : MonoBehaviour, IInteractable
     [SerializeField] private Sprite powerCellSprite;
     [SerializeField] private Sprite emptySprite;
 
+    [Header("Audio SFX")]
+    [SerializeField] private AudioClip successSound;
+    [SerializeField] private AudioClip failureSound;
+
     private Level2_Manager levelManager;
     private bool isPowerSource;
     private bool isOpened;
-    private bool isPlayerInRange; // Tracked locally to handle smooth UI handoffs
+    private bool isPlayerInRange; 
 
     public bool IsPowerSource => isPowerSource;
 
@@ -64,19 +68,39 @@ public class BoxController : MonoBehaviour, IInteractable
         if (isPowerSource)
         {
             Debug.Log($"[BoxController Log] {gameObject.name} opened: Power Cell found!");
+
+            PlaySound2D(successSound);
+
             if (levelManager != null) levelManager.RegisterPowerSourceFound();
         }
         else
         {
             Debug.LogWarning($"[BoxController Log] {gameObject.name} opened: Boom! Explosive chest triggered!");
+
+            PlaySound2D(failureSound);
+
             PlayerController player = Object.FindFirstObjectByType<PlayerController>();
             if (player != null) player.TakeDamage(25);
         }
     }
 
+    private void PlaySound2D(AudioClip clip)
+    {
+        if (clip != null)
+        {
+            GameObject sfxObj = new GameObject("Temp_Box_SFX");
+            AudioSource source = sfxObj.AddComponent<AudioSource>();
+            source.clip = clip;
+            source.spatialBlend = 0f; // Forces 2D Full Volume
+            source.volume = 1f;
+            source.Play();
+            Destroy(sfxObj, clip.length);
+        }
+    }
+
     public void ShowPrompt()
     {
-        isPlayerInRange = true; // Player entered physically
+        isPlayerInRange = true;
         if (isOpened) return;
 
         Debug.Log($"[BoxController Log] Player inside trigger radius of {gameObject.name}. Showing prompt UI.");
@@ -85,7 +109,7 @@ public class BoxController : MonoBehaviour, IInteractable
 
     public void HidePrompt()
     {
-        isPlayerInRange = false; // Player walked away
+        isPlayerInRange = false; 
         if (promptCanvas != null) promptCanvas.SetActive(false);
     }
 
@@ -95,21 +119,17 @@ public class BoxController : MonoBehaviour, IInteractable
 
         if (showReveal)
         {
-            // During cinematic: swap the sprite if it's a power source
             if (isPowerSource)
             {
                 SetBoxSprite(powerCellSprite);
             }
 
-            // Always turn on the text prompt for all boxes during cinematic so players can track them
             if (promptCanvas != null) promptCanvas.SetActive(true);
         }
         else
         {
-            // Reset back to covered sprite if it was revealing a power cell
             SetBoxSprite(coveredSprite);
 
-            // Clean up text prompts: only keep text visible if player is physically standing in range
             if (promptCanvas != null)
             {
                 promptCanvas.SetActive(isPlayerInRange);

@@ -66,6 +66,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float blockFaceDuration = 0.2f;
     [SerializeField] private float attackFaceDuration = 0.2f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip[] hitSounds = new AudioClip[3];
+    [SerializeField] private AudioClip[] swingSounds = new AudioClip[3];
+    [SerializeField] private AudioClip blockSound;
+
     // ================= ANIMATION =================
     [Header("Animation")]
     [SerializeField] private Animator animator;
@@ -109,7 +114,6 @@ public class PlayerController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
 
-        // Safely cache the baseline width from your CharacterController component
         if (characterController != null)
         {
             originalRadius = characterController.radius;
@@ -322,7 +326,10 @@ public class PlayerController : MonoBehaviour
             animator.SetBool(attackBoolParam, true);
         }
 
-        yield return new WaitForSeconds(attackDuration);
+        yield return new WaitForSeconds(0.5f);
+        PlayRandomSound2D(swingSounds);
+
+        yield return new WaitForSeconds(Mathf.Max(0f, attackDuration - 0.5f));
 
         if (animator != null)
             animator.SetBool(attackBoolParam, false);
@@ -422,6 +429,8 @@ public class PlayerController : MonoBehaviour
         currentHealth -= amount;
         Debug.Log($"Player health after damage: {currentHealth}");
 
+        PlayRandomSound2D(hitSounds);
+
         if (currentHealth <= 0)
             Die();
         else
@@ -433,9 +442,7 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool(hitBoolParam, true);
             }
 
-            // Instantly normalizes bounding box sizing if hit out of block stance
             ResetControllerWidth();
-
             TakeHit();
         }
     }
@@ -446,6 +453,17 @@ public class PlayerController : MonoBehaviour
             return false;
 
         ForceFacePosition(attackerPosition, blockFaceDuration);
+
+        if (blockSound != null)
+        {
+            GameObject sfxObj = new GameObject("Temp_Block_SFX");
+            AudioSource source = sfxObj.AddComponent<AudioSource>();
+            source.clip = blockSound;
+            source.spatialBlend = 0f; // Pure 2D
+            source.volume = 1f;
+            source.Play();
+            Destroy(sfxObj, blockSound.length);
+        }
 
         return true;
     }
@@ -468,7 +486,6 @@ public class PlayerController : MonoBehaviour
             animator.SetBool(deathBoolParam, true);
         }
 
-        // Guarantees bounding dimensions clean up properly upon death tracking
         ResetControllerWidth();
 
         if (gameOverMenu != null)
@@ -511,7 +528,6 @@ public class PlayerController : MonoBehaviour
 
         currentState = PlayerState.Block;
 
-        // Widens the CharacterController bounding radius to 1.25x for defensive stance
         if (characterController != null)
         {
             characterController.radius = originalRadius * 1.25f;
@@ -527,7 +543,6 @@ public class PlayerController : MonoBehaviour
 
         currentState = PlayerState.Idle;
 
-        // Reverts layout bounds instantly
         ResetControllerWidth();
 
         if (animator != null)
@@ -542,25 +557,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // TRIGGER DETECTION AND INTERACTION
-    // =====================================================
-
     private void OnTriggerEnter(Collider other)
     {
-        // Check if this object or its parent has the Interactable tag
         if (other.CompareTag("Interactable") || (other.transform.parent != null && other.transform.parent.CompareTag("Interactable")))
         {
             Debug.Log($"[PlayerController Log] Player entered trigger range of: {other.gameObject.name}");
 
-            // 1. Find the interaction component anywhere on this object or its parent hierarchy
             IInteractable interactable = other.GetComponentInParent<IInteractable>() ?? other.GetComponent<IInteractable>();
 
             if (interactable != null)
             {
                 currentTargetInteractable = interactable;
 
-                // 2. Safely trigger the UI prompt using C#'s pattern matching features
                 if (interactable is BoxController box) box.ShowPrompt();
                 else if (interactable is RotatingJunction junction) junction.ShowPrompt();
                 else if (interactable is PowerSource source) source.ShowPrompt();
@@ -575,7 +583,6 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log($"[PlayerController Log] Player exited trigger range of: {other.gameObject.name}");
 
-            // Clean up UI safely before clearing references
             if (currentTargetInteractable != null)
             {
                 if (currentTargetInteractable is BoxController box) box.HidePrompt();
@@ -584,7 +591,6 @@ public class PlayerController : MonoBehaviour
                 else if (currentTargetInteractable is PowerDestination dest) dest.HidePrompt();
             }
 
-            // Reset tracking variables
             currentTargetInteractable = null;
             currentTargetBox = null;
         }
@@ -660,6 +666,26 @@ public class PlayerController : MonoBehaviour
         float animSpeed = moving ? (sprint ? 1f : 0.5f) : 0f;
 
         animator.SetFloat(moveSpeedParam, animSpeed, 0.1f, Time.deltaTime);
+    }
+
+    // Explicit 2D Sound Spawner to handle overlapping cleanly at full, original volume
+    private void PlayRandomSound2D(AudioClip[] clips)
+    {
+        if (clips != null && clips.Length > 0)
+        {
+            int index = Random.Range(0, clips.Length);
+            AudioClip clip = clips[index];
+            if (clip != null)
+            {
+                GameObject sfxObj = new GameObject("Temp_2D_SFX");
+                AudioSource source = sfxObj.AddComponent<AudioSource>();
+                source.clip = clip;
+                source.spatialBlend = 0f; // Forces 2D Full Volume
+                source.volume = 1f;
+                source.Play();
+                Destroy(sfxObj, clip.length);
+            }
+        }
     }
 
     public void SetGameStarted(bool started)

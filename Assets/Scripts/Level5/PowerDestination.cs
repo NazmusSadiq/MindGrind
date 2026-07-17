@@ -6,6 +6,7 @@ public class PowerDestination : MonoBehaviour, IInteractable, IPowerNode
 {
     [Header("Puzzle Assignment")]
     [SerializeField] private PowerGridManager puzzleManager;
+    [SerializeField] private AudioClip rotationSound;
 
     [Header("Placement")]
     public Vector2Int gridPosition;
@@ -37,6 +38,25 @@ public class PowerDestination : MonoBehaviour, IInteractable, IPowerNode
         transform.localRotation *= Quaternion.Euler(0, 0, 90f);
 
         puzzleManager?.Recompute();
+
+        if (IsPowered)
+        {
+            PlaySound2D(rotationSound);
+        }
+    }
+
+    private void PlaySound2D(AudioClip clip)
+    {
+        if (clip != null)
+        {
+            GameObject sfxObj = new GameObject("Temp_Box_SFX");
+            AudioSource source = sfxObj.AddComponent<AudioSource>();
+            source.clip = clip;
+            source.spatialBlend = 0f; // Forces 2D Full Volume
+            source.volume = 1f;
+            source.Play();
+            Destroy(sfxObj, clip.length);
+        }
     }
 
     public Vector2Int GridPosition => gridPosition;

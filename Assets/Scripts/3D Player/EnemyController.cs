@@ -41,6 +41,10 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private int maxHealth = 50;
     [SerializeField] private int damageAmount = 10;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip[] hitSounds = new AudioClip[3];
+    [SerializeField] private AudioClip[] swingSounds = new AudioClip[3];
+
     [Header("Animation")]
     [SerializeField] private Animator animator;
     [SerializeField] private string moveSpeedParam = "MoveSpeed";
@@ -379,7 +383,10 @@ public class EnemyController : MonoBehaviour
             animator.SetBool(attackBoolParam, true);
         }
 
-        yield return new WaitForSeconds(attackDuration);
+        yield return new WaitForSeconds(0.5f);
+        PlayRandomSound2D(swingSounds);
+
+        yield return new WaitForSeconds(Mathf.Max(0f, attackDuration - 0.5f));
 
         if (animator != null)
             animator.SetBool(attackBoolParam, false);
@@ -416,6 +423,8 @@ public class EnemyController : MonoBehaviour
         Debug.Log($"Enemy taking damage: {amount}. Health before: {currentHealth}");
         currentHealth -= amount;
         Debug.Log($"Enemy health after damage: {currentHealth}");
+
+        PlayRandomSound2D(hitSounds);
 
         if (currentHealth <= 0)
         {
@@ -541,9 +550,6 @@ public class EnemyController : MonoBehaviour
         {
             lvl2.ReduceElapsedTime(15f);
         }
-
-        // Note: When you create Level3_Manager, Level4_Manager, etc., 
-        // you can easily add identical check hooks here!
     }
 
     private void DetectPlayerHits()
@@ -586,6 +592,26 @@ public class EnemyController : MonoBehaviour
         animator.SetBool(isMovingParam, moving);
         animator.SetBool(isRunningParam, running);
         animator.SetFloat(moveSpeedParam, animSpeed, 0.1f, Time.deltaTime);
+    }
+
+    // Explicit 2D Sound Spawner to handle overlapping cleanly at full, original volume
+    private void PlayRandomSound2D(AudioClip[] clips)
+    {
+        if (clips != null && clips.Length > 0)
+        {
+            int index = Random.Range(0, clips.Length);
+            AudioClip clip = clips[index];
+            if (clip != null)
+            {
+                GameObject sfxObj = new GameObject("Temp_2D_SFX");
+                AudioSource source = sfxObj.AddComponent<AudioSource>();
+                source.clip = clip;
+                source.spatialBlend = 0f; // Forces 2D Full Volume
+                source.volume = 1f;
+                source.Play();
+                Destroy(sfxObj, clip.length);
+            }
+        }
     }
 
     private void OnDrawGizmosSelected()

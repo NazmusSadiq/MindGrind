@@ -64,6 +64,8 @@ public class Level2_Manager : MonoBehaviour
             return;
         }
 
+        playerController.enabled = false;
+
         if (mainCamera == null)
         {
             mainCamera = Camera.main;
@@ -112,10 +114,13 @@ public class Level2_Manager : MonoBehaviour
 
         if (isLevelOver || cinematicActive) return;
 
-        if (playerController.IsDead)
+        if (playerController != null && playerController.gameObject.activeInHierarchy)
         {
-            TriggerGameOver();
-            return;
+            if (playerController.IsDead)
+            {
+                TriggerGameOver();
+                return;
+            }
         }
 
         if (!gameplayStarted)
@@ -130,7 +135,7 @@ public class Level2_Manager : MonoBehaviour
 
     private void CorrectEndGameTime()
     {
-        isLevelOver = true; // Block double execution
+        isLevelOver = true;
 
         int correctedTime = Mathf.RoundToInt(elapsedTime);
         MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
@@ -161,7 +166,6 @@ public class Level2_Manager : MonoBehaviour
             }
         }
 
-        // 3. Update active UI Store instances
         MinigameBestScoreStore uiStore = Object.FindFirstObjectByType<MinigameBestScoreStore>();
         if (uiStore != null)
         {
@@ -221,6 +225,8 @@ public class Level2_Manager : MonoBehaviour
         if (cameraTimeline == null || cameraTimeline.Count == 0)
         {
             Debug.LogError("[Cinematic] Cannot start reveal sequence because no Camera Keyframes are configured in the Inspector!", this);
+
+            playerController.enabled = true;
             return;
         }
         StartCoroutine(TimelineCinematicRoutine());
@@ -229,7 +235,9 @@ public class Level2_Manager : MonoBehaviour
     private IEnumerator TimelineCinematicRoutine()
     {
         cinematicActive = true;
-        playerController.SetGameStarted(false);
+
+        playerController.enabled = false;
+
         Debug.Log("[Cinematic] Sequence started. Player tracking frozen. Revealing all valid Power Cells and text prompts.");
 
         CameraFollowLockedRotation followScript = mainCamera.GetComponent<CameraFollowLockedRotation>();
@@ -316,8 +324,12 @@ public class Level2_Manager : MonoBehaviour
         }
 
         cinematicActive = false;
+
+        playerController.enabled = true;
+
         playerController.SetGameStarted(true);
         playerController.EnableGameplayInput(true);
+
         Debug.Log("[Cinematic] Sequence complete. Control returned back to the player gameplay inputs.");
     }
 

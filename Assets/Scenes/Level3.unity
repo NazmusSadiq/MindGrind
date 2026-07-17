@@ -3563,13 +3563,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 137742589}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -5046,6 +5054,15 @@ MonoBehaviour:
   hitDuration: 0.4
   blockFaceDuration: 0.2
   attackFaceDuration: 0.2
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
+  blockSound: {fileID: 8300000, guid: f2a125387db5eeb4cacf07ef4935ba81, type: 3}
   animator: {fileID: 216103854}
   gameOverMenu: {fileID: 1419463919}
   deathMenuDelay: 3
@@ -6636,13 +6653,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 309643573}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -8147,13 +8172,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 368811552}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -11114,13 +11147,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 481307769}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -12482,13 +12523,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 552366058}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -14641,13 +14690,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 703083044}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -19509,7 +19566,7 @@ MonoBehaviour:
   - rhymeClip: {fileID: 8300000, guid: 920ece5b747be484abbcb1f95da79870, type: 3}
     password: 6547457
   - rhymeClip: {fileID: 8300000, guid: bdae24fef4a1d89428a287bc3d9804af, type: 3}
-    password: 5746765
+    password: 5746565
   - rhymeClip: {fileID: 8300000, guid: e8d0743e01d1594488410997c903887c, type: 3}
     password: 7554965
   - rhymeClip: {fileID: 8300000, guid: b91e4867f4fecb54ba07f13e6570b0f1, type: 3}
@@ -20373,13 +20430,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 962302672}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -21166,13 +21231,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 1010610976}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -26942,13 +27015,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 1254411562}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -29319,13 +29400,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 1363858409}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -29959,13 +30048,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 1380020676}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -34611,13 +34708,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 1552028028}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -35996,13 +36101,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 1616102378}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -37563,13 +37676,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 1705640202}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -39568,13 +39689,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 1790956482}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -40637,7 +40766,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 400754026152532268, guid: 7d8cbfca02b21554986bcaab18365df8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -42.5
+      value: -47.85
       objectReference: {fileID: 0}
     - target: {fileID: 400754026152532268, guid: 7d8cbfca02b21554986bcaab18365df8, type: 3}
       propertyPath: m_LocalPosition.y
@@ -41202,13 +41331,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 4
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 1891486127}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving
@@ -43414,13 +43551,21 @@ MonoBehaviour:
   sightRange: 10
   viewAngle: 90
   forgetDuration: 3
-  chaseSpeed: 6
+  chaseSpeed: 5
   rotationSpeed: 10
   attackDuration: 2
   attackRange: 1.25
   hitDuration: 0.4
   maxHealth: 50
   damageAmount: 10
+  hitSounds:
+  - {fileID: 8300000, guid: f2b1e17ef37bc9f4888a8cab3783c44b, type: 3}
+  - {fileID: 8300000, guid: da6bf83f5d9cfe145a8d0b997f1acb05, type: 3}
+  - {fileID: 8300000, guid: 05e4cf91a149eae41b43536abb4d8750, type: 3}
+  swingSounds:
+  - {fileID: 8300000, guid: 2c310f0f24d51c64f99ff7675d021ac9, type: 3}
+  - {fileID: 8300000, guid: 230de3676505f2e49be4cdcae9b0fc42, type: 3}
+  - {fileID: 8300000, guid: edb2a3c0ce613b049abeebbffe69a90b, type: 3}
   animator: {fileID: 1993394736}
   moveSpeedParam: MoveSpeed
   isMovingParam: IsMoving

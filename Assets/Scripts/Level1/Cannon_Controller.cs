@@ -9,23 +9,25 @@ public class CannonController3D : MonoBehaviour
 
     [Header("Targeting Settings")]
     [SerializeField] private float rotationSpeed = 5f;
-    [SerializeField] private float detectionRange = 15f; // Added: Cannon will only track and shoot within this radius
+    [SerializeField] private float detectionRange = 15f; 
 
     [Header("Art Alignment")]
     [Tooltip("Base alignment offset to make the right-pointing sprite barrel track forward dynamically.")]
-    [SerializeField] private float artZOffset = 0f; // Adjusted to match your working editor setting!
+    [SerializeField] private float artZOffset = 0f; 
 
     [Header("Timing Ranges (Reflex Windows)")]
     [SerializeField] private float minFireInterval = 2.5f;
     [SerializeField] private float maxFireInterval = 5f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip fireSound;
+
     private Transform playerTransform;
     private PlayerController playerController;
-    private Collider cannonCollider; // Changed from Collider2D to 3D Collider
+    private Collider cannonCollider; 
 
     private void Start()
     {
-        // Cache the 3D collider on this object or its children
         cannonCollider = GetComponent<Collider>() ?? GetComponentInChildren<Collider>();
 
         PlayerController targetPlayer = Object.FindFirstObjectByType<PlayerController>();
@@ -42,24 +44,19 @@ public class CannonController3D : MonoBehaviour
         if (playerTransform == null || playerController.IsDead)
             return;
 
-        // Calculate direction to the player on the flat ground plane
         Vector3 targetDirection = playerTransform.position - transform.position;
         targetDirection.y = 0f;
 
-        // Added: Check if the player is outside the fixed detection range
         if (targetDirection.magnitude > detectionRange)
-            return; // Stop tracking and do not rotate if the player is too far
+            return; 
 
         if (targetDirection.sqrMagnitude > 0.001f)
         {
-            // Formulate 3D plane look matrix tracking the player target
             Quaternion lookRotation = Quaternion.LookRotation(targetDirection, Vector3.up);
 
-            // Keep the sprite laying flat (90 on X) and apply your working visual offset on Z
             Quaternion combinedCorrection = Quaternion.Euler(90f, 0f, artZOffset);
             Quaternion targetRotation = lookRotation * combinedCorrection;
 
-            // Smoothly blend transform orientation
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
     }
@@ -73,7 +70,6 @@ public class CannonController3D : MonoBehaviour
             float randomWait = Random.Range(minFireInterval, maxFireInterval);
             yield return new WaitForSeconds(randomWait);
 
-            // Added: Double-check that the player is actually within range before firing a fireball
             if (!playerController.IsDead && IsPlayerInRange())
             {
                 FireCannon();
@@ -102,6 +98,22 @@ public class CannonController3D : MonoBehaviour
             {
                 projectileScript.Initialize(cannonCollider, transform);
             }
+
+            PlayFireSound2D();
+        }
+    }
+
+    private void PlayFireSound2D()
+    {
+        if (fireSound != null)
+        {
+            GameObject sfxObj = new GameObject("Temp_CannonFire_SFX");
+            AudioSource source = sfxObj.AddComponent<AudioSource>();
+            source.clip = fireSound;
+            source.spatialBlend = 0f; // Forces 2D Full Volume
+            source.volume = 1f;
+            source.Play();
+            Destroy(sfxObj, fireSound.length);
         }
     }
 

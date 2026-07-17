@@ -55,6 +55,7 @@ public class Level3_Manager : MonoBehaviour
         }
 
         elapsedTime = 0f;
+        MinigamePenaltyTracker.ResetPenalty();
         UpdateTimerUI();
 
         // Only pause and show details if story mode is already active
@@ -227,4 +228,23 @@ public class Level3_Manager : MonoBehaviour
     }
 
     public float GetElapsedTime() => elapsedTime;
+
+    /// <summary>
+    /// Adds a time penalty (e.g. wrong password on a door) to the elapsed
+    /// time used by the on-screen timer, and mirrors it into
+    /// MinigamePenaltyTracker so DoorSceneTrigger's final score calculation
+    /// picks it up too.
+    /// </summary>
+    public void AddTimePenalty(float seconds)
+    {
+        if (seconds <= 0f)
+            return;
+
+        elapsedTime += seconds;
+        MinigamePenaltyTracker.AddPenalty(seconds);
+
+        UpdateTimerUI();
+
+        Debug.Log($"Penalty applied: +{seconds:F2}s (elapsed now {elapsedTime:F2})");
+    }
 }

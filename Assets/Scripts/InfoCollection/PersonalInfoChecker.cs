@@ -13,8 +13,11 @@ public class PersonalInfoChecker : MonoBehaviour
     [SerializeField] private TMP_Dropdown genderDropdown;
     [SerializeField] private TMP_InputField countryInputField;
 
+    [Header("New UI Target Panels")]
+    [SerializeField] private GameObject welcomeScreen; // Added welcome screen slot
+
     [Header("New Analytics Fields")]
-    [SerializeField] private TMP_Dropdown favoriteGenreDropdown;      
+    [SerializeField] private TMP_Dropdown favoriteGenreDropdown;
     [SerializeField] private TMP_InputField weeklyGamingHoursInput;
     [SerializeField] private TMP_InputField sleepHoursInput;
 
@@ -157,6 +160,9 @@ public class PersonalInfoChecker : MonoBehaviour
                 string json = File.ReadAllText(saveFilePath);
                 activeProfile = JsonUtility.FromJson<PlayerProfile>(json);
                 if (registrationCanvas != null) registrationCanvas.SetActive(false);
+
+                // If profile already exists, ensure the welcome screen goes active directly
+                if (welcomeScreen != null) welcomeScreen.SetActive(true);
             }
             catch (Exception e)
             {
@@ -184,6 +190,7 @@ public class PersonalInfoChecker : MonoBehaviour
         };
 
         if (registrationCanvas != null) registrationCanvas.SetActive(true);
+        if (welcomeScreen != null) welcomeScreen.SetActive(false);
     }
 
     public void SubmitPersonalInfo()
@@ -242,7 +249,6 @@ public class PersonalInfoChecker : MonoBehaviour
         activeProfile.gender = genderDropdown.options[genderDropdown.value].text;
         activeProfile.country = matchedExactCountry;
 
-        // Extract string data from dropdown list selections dynamically
         if (favoriteGenreDropdown != null)
             activeProfile.favoriteGenre = favoriteGenreDropdown.options[favoriteGenreDropdown.value].text;
 
@@ -252,7 +258,10 @@ public class PersonalInfoChecker : MonoBehaviour
         SyncAllExistingScores();
         SaveProfileToDisk();
 
+        // UI Panel Adjustments
         if (registrationCanvas != null) registrationCanvas.SetActive(false);
+        if (welcomeScreen != null) welcomeScreen.SetActive(true); // Activating the welcome screen on submission success
+
         Debug.Log("User profile validated and saved successfully.");
     }
 

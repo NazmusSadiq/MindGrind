@@ -6,6 +6,7 @@ public class RotatingJunction : MonoBehaviour, IInteractable, IPowerNode
 
     [Header("Puzzle Assignment")]
     [SerializeField] private PowerGridManager puzzleManager;
+    [SerializeField] private AudioClip rotationSound;
 
     [Header("Piece Definition (Direct Inspector Tracking)")]
     public PieceType pieceType = PieceType.Straight;
@@ -43,6 +44,24 @@ public class RotatingJunction : MonoBehaviour, IInteractable, IPowerNode
     public void Interact(GameObject interactor)
     {
         Rotate90Clockwise(triggerRecompute: true);
+        if(interactor != null)
+        {
+            PlaySound2D(rotationSound);
+        }
+    }
+
+    private void PlaySound2D(AudioClip clip)
+    {
+        if (clip != null)
+        {
+            GameObject sfxObj = new GameObject("Temp_Box_SFX");
+            AudioSource source = sfxObj.AddComponent<AudioSource>();
+            source.clip = clip;
+            source.spatialBlend = 0f; // Forces 2D Full Volume
+            source.volume = 1f;
+            source.Play();
+            Destroy(sfxObj, clip.length);
+        }
     }
 
     public void Rotate90Clockwise(bool triggerRecompute = true)

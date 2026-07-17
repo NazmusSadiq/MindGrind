@@ -8,6 +8,9 @@ public class MusicDoor : MonoBehaviour, IInteractable
     [SerializeField] private int doorIndex;
     [SerializeField] private Transform teleportLocation;
 
+    [Header("Penalty")]
+    [SerializeField] private float wrongPasswordPenaltySeconds = 5f;
+
     [Header("UI")]
     [SerializeField] private GameObject passwordPanel;
     [SerializeField] private TMP_InputField passwordInput;
@@ -28,6 +31,13 @@ public class MusicDoor : MonoBehaviour, IInteractable
     private Level3_Manager.RhymeData assignedData;
     private string password;
 
+    // Guards against a single submit (Enter key) firing CheckPassword more
+    // than once, since both passwordInput.onSubmit AND submitButton.onClick
+    // can trigger for the same keypress depending on UI focus/navigation.
+    // Time.timeScale is 0 while the panel is open, so we use unscaled time.
+    private float lastCheckPasswordTime = -1f;
+    private const float CheckPasswordDebounce = 0.15f;
+
     private void Start()
     {
         levelManager = Object.FindFirstObjectByType<Level3_Manager>();
@@ -38,10 +48,11 @@ public class MusicDoor : MonoBehaviour, IInteractable
         if (promptCanvas != null)
             promptCanvas.SetActive(false);
 
-        submitButton?.onClick.AddListener(CheckPassword);
-        backButton?.onClick.AddListener(ClosePanel);
-
-        passwordInput?.onSubmit.AddListener((text) => CheckPassword());
+        // NOTE: listeners for submitButton / backButton / passwordInput are
+        // (re)bound in OpenPanel() instead of here. These UI elements are
+        // shared across all MusicDoor instances, so wiring them once per
+        // door in Start() caused every door's CheckPassword to fire on a
+        // single submit (each applying its own penalty).
     }
 
     public void AssignData(Level3_Manager.RhymeData data)
@@ -77,6 +88,19 @@ public class MusicDoor : MonoBehaviour, IInteractable
         // 🔥 Tell manager to pause context music on UI focus
         if (levelManager != null)
             levelManager.PauseMusicForInteraction(true);
+
+        // Rebind the shared panel's listeners to THIS door. These UI
+        // elements are reused across all doors, so we clear any previous
+        // door's listeners first to make sure only one CheckPassword/
+        // ClosePanel call fires per submit/click.
+        submitButton?.onClick.RemoveAllListeners();
+        submitButton?.onClick.AddListener(CheckPassword);
+
+        backButton?.onClick.RemoveAllListeners();
+        backButton?.onClick.AddListener(ClosePanel);
+
+        passwordInput?.onSubmit.RemoveAllListeners();
+        passwordInput?.onSubmit.AddListener((text) => CheckPassword());
 
         passwordPanel.SetActive(true);
         passwordInput.text = "";
@@ -118,6 +142,11 @@ public class MusicDoor : MonoBehaviour, IInteractable
     {
         if (isCompleted) return;
 
+        if (Time.unscaledTime - lastCheckPasswordTime < CheckPasswordDebounce)
+            return;
+
+        lastCheckPasswordTime = Time.unscaledTime;
+
         if (passwordInput.text.Trim()
             .Equals(password, System.StringComparison.OrdinalIgnoreCase))
         {
@@ -126,6 +155,9 @@ public class MusicDoor : MonoBehaviour, IInteractable
         }
         else
         {
+            if (levelManager != null)
+                levelManager.AddTimePenalty(wrongPasswordPenaltySeconds);
+
             feedbackText.text = "Incorrect Password";
 
             passwordInput.Select();
