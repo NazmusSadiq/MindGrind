@@ -40,6 +40,9 @@ public class Level2_Manager : MonoBehaviour
     private bool gameplayStarted = false;
     private DoorSceneTrigger cachedTrigger;
 
+    // Tracks if the cinematic sequence has already successfully executed once
+    private bool cinematicHasPlayed = false;
+
     private void Start()
     {
         bool storyModeActive = false;
@@ -222,6 +225,18 @@ public class Level2_Manager : MonoBehaviour
 
     public void StartCinematicReveal()
     {
+        // Safe bypass to prevent re-triggering the cutscene layout upon unpausing
+        if (cinematicHasPlayed)
+        {
+            if (playerController != null)
+            {
+                playerController.enabled = true;
+                playerController.SetGameStarted(true);
+                playerController.EnableGameplayInput(true);
+            }
+            return;
+        }
+
         if (cameraTimeline == null || cameraTimeline.Count == 0)
         {
             Debug.LogError("[Cinematic] Cannot start reveal sequence because no Camera Keyframes are configured in the Inspector!", this);
@@ -230,6 +245,7 @@ public class Level2_Manager : MonoBehaviour
             return;
         }
         StartCoroutine(TimelineCinematicRoutine());
+        cinematicHasPlayed = true;
     }
 
     private IEnumerator TimelineCinematicRoutine()

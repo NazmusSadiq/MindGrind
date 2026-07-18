@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Open
+  m_text: 'E-Open
 
 '
   m_isRightToLeft: 0
@@ -94,7 +94,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 4
+  m_fontSize: 2.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -312,6 +312,8 @@ MonoBehaviour:
   coveredSprite: {fileID: 860857286171050234, guid: cb273785ba48c254ca96c10cf024af8d, type: 3}
   powerCellSprite: {fileID: -5968758057725113622, guid: 67eb3c88ca1579346a01a03bf31cd9fe, type: 3}
   emptySprite: {fileID: -4768172585154994272, guid: 9e7070624a5e2f448a5b79487f8f3a52, type: 3}
+  successSound: {fileID: 0}
+  failureSound: {fileID: 0}
 --- !u!1001 &839313762674163218
 PrefabInstance:
   m_ObjectHideFlags: 0

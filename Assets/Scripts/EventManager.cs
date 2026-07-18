@@ -161,7 +161,7 @@ public class MainMenu : MonoBehaviour
         if (level2 != null)
         {
             level2.StartCinematicReveal();
-            yield break;
+            //yield break;
         }
 
         PlayerController player = Object.FindFirstObjectByType<PlayerController>();

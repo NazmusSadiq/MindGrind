@@ -96,7 +96,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Open
+  m_text: 'E-Open
 
 '
   m_isRightToLeft: 0
@@ -125,7 +125,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 4
+  m_fontSize: 2.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -338,9 +338,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7950fba56a25c6345a380dc1ad4693af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicDoor
-  nextDoor: {fileID: 0}
-  audioSource: {fileID: 0}
+  doorIndex: 0
   teleportLocation: {fileID: 4265807959265303040}
+  wrongPasswordPenaltySeconds: 5
   passwordPanel: {fileID: 0}
   passwordInput: {fileID: 0}
   submitButton: {fileID: 0}

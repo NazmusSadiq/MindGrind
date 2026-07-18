@@ -61,7 +61,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 30,
             gameTitle = "Level 1",
-            description = "Multiple cannons lie ahead, tracking your moves and firing from all sides. Raise your shield in time to block incoming fireballs, or use the environment strategically to let objects take the hit for you. Mistiming your guard or getting caught in the open will cost you precious health. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds. Use W,A,S,D for movement, LSHIFT for sprint, LMB for attack, Q for blocking attacks",
+            description = "Multiple cannons lie ahead, tracking your moves and firing from all sides. Raise your shield in time to block incoming fireballs, or use the environment strategically to let objects take the hit for you. Mistiming your guard or getting caught in the open will cost you precious health. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds and restores 10% of your health. Use W,A,S,D for movement, LSHIFT for sprint, LMB for attack, RMB for blocking attacks",
             cognitiveSkills = "Reflex + Attention",
             sceneName = "Level1"
         };
@@ -70,7 +70,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 31,
             gameTitle = "Level 2",
-            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay attention at the start of the game when the correct boxes are shown with blue glitter. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds. Use W,A,S,D for movement, LSHIFT for sprint, LMB for attack, Q for blocking attacks",
+            description = "Ten boxes lie ahead: 5 hold the power sources required to escape, and 5 contain hidden explosives. Pay attention at the start of the game when the correct boxes are shown with blue glitter. Opening a box containing explosive will cost you health. Avoid enemy traps and rush to the Portal Gate as fast as possible. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds and restores 10% of your health. Use W,A,S,D for movement, LSHIFT for sprint, LMB for attack, RMB for blocking attacks",
             cognitiveSkills = "Memory + Attention",
             sceneName = "Level2"
         };
@@ -79,7 +79,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 32,
             gameTitle = "Level 3",
-            description = "Cryptic rhymes play on a continuous loop around you. Each verse has 7 words, the 7 digit password consists of letter count of each of these words. You will need to give the password to go through each of the music doors to pass to its next region. Giving wrong password adds 10 seconds to your total time taken. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds. Use W,A,S,D for movement, LSHIFT for sprint, LMB for attack, Q for blocking attacks",
+            description = "Cryptic rhymes play on a continuous loop around you. Each verse has 7 words, the 7 digit password consists of letter count of each of these words. You will need to give the password to go through each of the music doors to pass to its next region. Giving wrong password adds 10 seconds to your total time taken. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds and restores 10% of your health. Use W,A,S,D for movement, LSHIFT for sprint, LMB for attack, RMB for blocking attacks",
             cognitiveSkills = "Memory + Perception",
             sceneName = "Level3"
         };
@@ -88,7 +88,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 33,
             gameTitle = "Level 4",
-            description = "Your movement keys adapt to the orientation arrow, which always represents UP. (e.g., If the arrow points RIGHT, D moves you Up, and S moves you Right). Avoid enemy traps and rush to the Portal Gate as fast as possible. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds. Use W,A,S,D for movement, LSHIFT for sprint, LMB for attack, Q for blocking attacks",
+            description = "Your movement keys adapt to the orientation arrow, which always represents UP. (e.g., If the arrow points RIGHT, D moves you Up, and S moves you Right). Avoid enemy traps and rush to the Portal Gate as fast as possible. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds and restores 10% of your health. Use W,A,S,D for movement, LSHIFT for sprint, LMB for attack, RMB for blocking attacks",
             cognitiveSkills = "Reasoning + Reflex",
             sceneName = "Level4"
         };
@@ -97,7 +97,7 @@ public class MinigameDataStore : MonoBehaviour
         {
             id = 34,
             gameTitle = "Level 5",
-            description = "Five broken grid networks block your path to freedom. To escape, you must rotate and align the junctions of each power circuit to send power from source to destination. Solve the puzzles, restore the power flows, and rush to the Portal Gate as fast as possible. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds. Use W,A,S,D for movement, LSHIFT for sprint, LMB for attack, Q for blocking attacks",
+            description = "Five broken grid networks block your path to freedom. To escape, you must rotate and align the junctions of each power circuit to send power from source to destination. Solve the puzzles, restore the power flows, and rush to the Portal Gate as fast as possible. Defeating enemies is optional, but doing so reduces your time taken by 15 seconds and restores 10% of your health. Use W,A,S,D for movement, LSHIFT for sprint, LMB for attack, RMB for blocking attacks",
             cognitiveSkills = "Reasoning",
             sceneName = "Level5"
         };
