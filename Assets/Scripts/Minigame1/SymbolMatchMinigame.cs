@@ -121,7 +121,6 @@ public class SymbolMatchMinigame : MonoBehaviour
 
         if (!hasValidSymbols || !hasSpawnPoints || !hasReferences)
         {
-            Debug.LogError("SymbolMatchMinigame is missing required references.", this);
             return false;
         }
 
@@ -129,7 +128,6 @@ public class SymbolMatchMinigame : MonoBehaviour
         {
             if (symbols[i] == null || symbols[i].sprite == null)
             {
-                Debug.LogError("Every symbol entry needs a sprite assigned.", this);
                 return false;
             }
         }
@@ -293,6 +291,5 @@ public class SymbolMatchMinigame : MonoBehaviour
 
         bestScoreStore.ShowStats(score, bestScore);
 
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }

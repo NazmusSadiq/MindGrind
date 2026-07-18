@@ -2786,6 +2786,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee7ca9c2186909499b71f078837d27e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinigameBestScoreStore
+  explicitGameId: 18
   gameOverMenu: {fileID: 59048858}
   gameTitleText: {fileID: 1469673840}
   currentScoreText: {fileID: 1850200449}
@@ -3135,6 +3136,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: HideDetailsPanelAndResumeGame
         m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1978776224}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3878,12 +3891,12 @@ RectTransform:
   - {fileID: 2024359951}
   - {fileID: 1582815233}
   - {fileID: 1274638235}
-  - {fileID: 1978776225}
   - {fileID: 1575042758}
   - {fileID: 210473911}
   - {fileID: 920815397}
   - {fileID: 1032725876}
   - {fileID: 869401123}
+  - {fileID: 1978776225}
   - {fileID: 59048859}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

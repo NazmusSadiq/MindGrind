@@ -14,7 +14,7 @@ public class PersonalInfoChecker : MonoBehaviour
     [SerializeField] private TMP_InputField countryInputField;
 
     [Header("New UI Target Panels")]
-    [SerializeField] private GameObject welcomeScreen; // Added welcome screen slot
+    [SerializeField] private GameObject welcomeScreen; 
 
     [Header("New Analytics Fields")]
     [SerializeField] private TMP_Dropdown favoriteGenreDropdown;
@@ -160,9 +160,6 @@ public class PersonalInfoChecker : MonoBehaviour
                 string json = File.ReadAllText(saveFilePath);
                 activeProfile = JsonUtility.FromJson<PlayerProfile>(json);
                 if (registrationCanvas != null) registrationCanvas.SetActive(false);
-
-                // If profile already exists, ensure the welcome screen goes active directly
-                if (welcomeScreen != null) welcomeScreen.SetActive(true);
             }
             catch (Exception e)
             {
@@ -190,7 +187,6 @@ public class PersonalInfoChecker : MonoBehaviour
         };
 
         if (registrationCanvas != null) registrationCanvas.SetActive(true);
-        if (welcomeScreen != null) welcomeScreen.SetActive(false);
     }
 
     public void SubmitPersonalInfo()
@@ -262,12 +258,10 @@ public class PersonalInfoChecker : MonoBehaviour
         if (registrationCanvas != null) registrationCanvas.SetActive(false);
         if (welcomeScreen != null) welcomeScreen.SetActive(true); // Activating the welcome screen on submission success
 
-        Debug.Log("User profile validated and saved successfully.");
     }
 
     private void ShowValidationError(string message)
     {
-        Debug.LogWarning($"Profile Validation Failed: {message}");
         if (errorText != null)
         {
             errorText.text = message;
@@ -311,7 +305,7 @@ public class PersonalInfoChecker : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to write data file to disk: {e.Message}");
+            //Debug.LogError($"Failed to write data file to disk: {e.Message}");
         }
     }
 }

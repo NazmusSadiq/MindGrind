@@ -10631,7 +10631,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Level 4 Completed
+  m_text: Level 1 Completed
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -19310,6 +19310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee7ca9c2186909499b71f078837d27e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinigameBestScoreStore
+  explicitGameId: 30
   gameOverMenu: {fileID: 997777517}
   gameTitleText: {fileID: 466835984}
   currentScoreText: {fileID: 294110792}
@@ -25302,6 +25303,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: DoorSceneLoader, Assembly-CSharp
         m_MethodName: LoadNextMinigameScene
         m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 997777517}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

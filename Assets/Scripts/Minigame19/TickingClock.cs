@@ -40,7 +40,7 @@ public class TickingClock : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
 
         score = 0;
 
@@ -85,13 +85,11 @@ public class TickingClock : MonoBehaviour
             statusText == null ||
             bestScoreStore == null)
         {
-            Debug.LogError("Missing UI References.");
             return false;
         }
 
         if (clocks.Length != 3)
         {
-            Debug.LogError("Assign exactly 3 clocks.");
             return false;
         }
 
@@ -300,9 +298,6 @@ public class TickingClock : MonoBehaviour
         bestScoreStore.ShowStats(
             score,
             bestScore);
-
-        Debug.Log(
-            $"Ticking Clock finished.\nCurrent Score : {score}\nBest Score : {bestScore}");
     }
 
     #endregion

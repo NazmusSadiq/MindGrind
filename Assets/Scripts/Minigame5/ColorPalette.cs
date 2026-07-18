@@ -25,7 +25,6 @@ public static class ColorPalette
     {
         if (colorId < 0 || colorId >= Colors.Length)
         {
-            Debug.LogWarning($"ColorPalette: invalid colorId {colorId}, defaulting to white.");
             return Color.white;
         }
 

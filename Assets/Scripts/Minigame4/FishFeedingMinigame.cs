@@ -167,7 +167,6 @@ public class FishFeedingMinigame : MonoBehaviour
 
         if (!hasFishTargets || !hasBoundaries || !hasReferences)
         {
-            Debug.LogError("FishFeedingMinigame is missing required references.", this);
             return false;
         }
 
@@ -175,14 +174,12 @@ public class FishFeedingMinigame : MonoBehaviour
         {
             if (fishTargets[i] == null)
             {
-                Debug.LogError("Every fish target slot needs a valid FishFeedingTarget script assigned.", this);
                 return false;
             }
         }
 
         if (topLeftBoundary.position.x >= bottomRightBoundary.position.x || bottomRightBoundary.position.y >= topLeftBoundary.position.y)
         {
-            Debug.LogError("FishFeedingMinigame boundaries are not configured correctly.", this);
             return false;
         }
 
@@ -241,6 +238,5 @@ public class FishFeedingMinigame : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }

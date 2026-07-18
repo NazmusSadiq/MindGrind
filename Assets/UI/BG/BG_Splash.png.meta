@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 2ff36d3b93148354b914f9355a8ae694
+guid: f9795d6ebad6fda4b8565b5430f80bff
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3541690228945238243
-    second: Options  col_Button_0
+      213: 4777291450946038133
+    second: BG_Splash_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Options  col_Button_0
+      name: BG_Splash_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 600
-        height: 200
+        width: 1685
+        height: 933
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3e8b0c0af7c962130800000000000000
-      internalID: 3541690228945238243
+      spriteID: 579262273495c4240800000000000000
+      internalID: 4777291450946038133
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Options  col_Button_0: 3541690228945238243
+      BG_Splash_0: 4777291450946038133
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

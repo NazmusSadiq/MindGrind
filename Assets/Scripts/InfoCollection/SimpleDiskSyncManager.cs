@@ -32,7 +32,6 @@ public class SimpleDiskSyncManager : MonoBehaviour
 
         if (!File.Exists(localFilePath))
         {
-            Debug.LogWarning("[Live Server Sync] No analytics JSON file found locally on disk.");
             return;
         }
 
@@ -43,7 +42,7 @@ public class SimpleDiskSyncManager : MonoBehaviour
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"[Live Server Sync] Failed accessing data file stream: {ex.Message}");
+            //Debug.LogError($"[Live Server Sync] Failed accessing data file stream: {ex.Message}");
         }
     }
 
@@ -63,14 +62,6 @@ public class SimpleDiskSyncManager : MonoBehaviour
 
             yield return request.SendWebRequest();
 
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                Debug.Log($"[Live Server Sync Success] Server response: {request.downloadHandler.text}");
-            }
-            else
-            {
-                Debug.LogError($"[Live Server Sync Error] Network failed: {request.error} | Response Code: {request.responseCode}");
-            }
         }
     }
 }

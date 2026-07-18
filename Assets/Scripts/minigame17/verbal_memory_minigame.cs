@@ -133,13 +133,11 @@ public class verbal_memory_minigame : MonoBehaviour
 
         if (!hasReferences)
         {
-            Debug.LogError("verbal_memory_minigame is missing required references.", this);
             return false;
         }
 
         if (allWords.Count == 0)
         {
-            Debug.LogError("verbal_memory_minigame dictionary is empty after loading.", this);
             return false;
         }
 
@@ -305,6 +303,5 @@ public class verbal_memory_minigame : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameSceneName, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-        Debug.Log($"Verbal Memory minigame finished. Score: {score}, Best: {bestScore}");
     }
 }

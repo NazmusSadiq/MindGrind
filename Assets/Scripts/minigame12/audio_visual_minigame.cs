@@ -166,13 +166,11 @@ public class audio_visual_minigame : MonoBehaviour
 
         if (!hasReferences)
         {
-            Debug.LogError("audio_visual_minigame is missing required references (ensure sfxAudioSource is assigned in the Inspector).", this);
             return false;
         }
 
         if (allWords.Count == 0)
         {
-            Debug.LogError("audio_visual_minigame dictionary is empty after loading.", this);
             return false;
         }
 
@@ -300,10 +298,6 @@ public class audio_visual_minigame : MonoBehaviour
                     audioSource.Play();
                 }
             }
-            else
-            {
-                Debug.LogWarning($"Failed to download TTS for word '{word}': {www.error}");
-            }
         }
     }
 
@@ -403,6 +397,5 @@ public class audio_visual_minigame : MonoBehaviour
             bestScoreStore.ShowStats(score, bestScore);
         }
 
-        Debug.Log($"Audio Visual Match minigame finished. Score: {score}, Best: {bestScore}");
     }
 }

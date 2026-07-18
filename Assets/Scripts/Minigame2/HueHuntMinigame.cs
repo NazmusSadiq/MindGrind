@@ -25,6 +25,7 @@ public class HueHuntMinigame : MonoBehaviour
     [SerializeField] private float moleVisibleDuration = 1f;
     [SerializeField] private Sprite[] moleTypeSprites;
     [SerializeField] private Sprite bombTargetSprite;
+    [Range(0f, 1f)][SerializeField] private float matchProbability = 0.5f;
 
     private int score;
     private int currentTargetIndex;
@@ -126,7 +127,6 @@ public class HueHuntMinigame : MonoBehaviour
 
         if (!hasSpawnPoints || !hasMoleTypes || !hasReferences)
         {
-            Debug.LogError("HueHuntMinigame is missing required references.", this);
             return false;
         }
 
@@ -134,7 +134,6 @@ public class HueHuntMinigame : MonoBehaviour
         {
             if (spawnPoints[i] == null)
             {
-                Debug.LogError("Every spawn point needs a Transform assigned.", this);
                 return false;
             }
         }
@@ -143,7 +142,6 @@ public class HueHuntMinigame : MonoBehaviour
         {
             if (moleTypeSprites[i] == null)
             {
-                Debug.LogError("Every mole type sprite needs a Sprite assigned.", this);
                 return false;
             }
         }
@@ -173,6 +171,14 @@ public class HueHuntMinigame : MonoBehaviour
         Vector3 spawnWorldPosition = GetSpawnWorldPosition(spawnPoints[spawnPointIndex]);
 
         PickNextTargetType();
+
+        // If the rolled target is not a bomb, check the input probability to force a match
+        if (currentTargetIndex != BombTargetIndex && Random.value < matchProbability)
+        {
+            currentTargetIndex = moleTypeIndex;
+            targetMoleImage.sprite = moleTypeSprites[currentTargetIndex];
+        }
+
         mole.Show(spawnWorldPosition, moleTypeIndex, moleTypeSprites[moleTypeIndex], moleVisibleDuration);
         lastSpawnPointIndex = spawnPointIndex;
     }
@@ -215,7 +221,7 @@ public class HueHuntMinigame : MonoBehaviour
 
         if (currentTargetIndex == BombTargetIndex || mole.TypeIndex != currentTargetIndex)
         {
-            score += 10; 
+            score += 10;
             UpdateScoreUI();
         }
     }
@@ -280,6 +286,5 @@ public class HueHuntMinigame : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }

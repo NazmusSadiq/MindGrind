@@ -62,7 +62,7 @@ public class makeMusic : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
         score = 0;
         sequenceLength = Mathf.Clamp(startingSequenceLength, 1, GetPlayableNoteCount());
         maxSequenceLength = Mathf.Clamp(maxSequenceLength, sequenceLength, GetPlayableNoteCount());
@@ -169,25 +169,17 @@ public class makeMusic : MonoBehaviour
 
         if (!hasReferences)
         {
-            Debug.LogError("makeMusic is missing required references.", this);
             return false;
         }
 
         if (gameDuration <= 0f)
         {
-            Debug.LogError("makeMusic game duration must be greater than zero.", this);
             return false;
         }
 
         if (GetPlayableNoteCount() < 1)
         {
-            Debug.LogError("makeMusic needs at least one playable note with a Button and an AudioSource that has an AudioClip.", this);
             return false;
-        }
-
-        if (noteButtons.Length != 8)
-        {
-            Debug.LogWarning("makeMusic is designed for 8 buttons. It will still use every playable button assigned.", this);
         }
 
         return true;
@@ -586,6 +578,5 @@ public class makeMusic : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }

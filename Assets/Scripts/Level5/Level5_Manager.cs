@@ -41,7 +41,6 @@ public class Level5_Manager : MonoBehaviour
 
         if (playerController == null)
         {
-            Debug.LogError("Level5_Manager could not find a PlayerController.", this);
             enabled = false;
             return;
         }
@@ -111,8 +110,6 @@ public class Level5_Manager : MonoBehaviour
             currentSolvedCount = solvedCounter;
             UpdatePuzzlesUI();
 
-            Debug.Log($"Puzzle Progress Updated: {currentSolvedCount}/{totalPuzzlesCount} completed.");
-
             if (currentSolvedCount >= totalPuzzlesCount && totalPuzzlesCount > 0)
             {
                 UnlockExitGate();
@@ -125,7 +122,6 @@ public class Level5_Manager : MonoBehaviour
         if (exitGate != null && !exitGate.canOpen)
         {
             exitGate.canOpen = true;
-            Debug.Log($"All {totalPuzzlesCount} layout grid puzzles solved! Exit Portal Gate is now unlocked.");
         }
     }
 
@@ -135,7 +131,6 @@ public class Level5_Manager : MonoBehaviour
             return;
 
         isLevelOver = true;
-        Debug.Log($"Level 5 Completed in: {elapsedTime:F2} seconds!");
     }
 
     private void TriggerGameOver()

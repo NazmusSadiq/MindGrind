@@ -33,7 +33,6 @@ public class BoxController : MonoBehaviour, IInteractable
         SetBoxSprite(coveredSprite);
 
         if (promptCanvas != null) promptCanvas.SetActive(false);
-        Debug.Log($"[BoxController Log] {gameObject.name} initialized. PowerSource: {isPowerSource}");
     }
 
     private void Start()
@@ -50,11 +49,9 @@ public class BoxController : MonoBehaviour, IInteractable
     {
         if (isOpened)
         {
-            Debug.Log($"[BoxController Log] {gameObject.name} has already been opened! Ignoring interaction.");
             return;
         }
 
-        Debug.Log($"[BoxController Log] Interact() successfully triggered on {gameObject.name} by {interactor.name}!");
         OpenBox();
     }
 
@@ -67,7 +64,6 @@ public class BoxController : MonoBehaviour, IInteractable
 
         if (isPowerSource)
         {
-            Debug.Log($"[BoxController Log] {gameObject.name} opened: Power Cell found!");
 
             PlaySound2D(successSound);
 
@@ -75,7 +71,6 @@ public class BoxController : MonoBehaviour, IInteractable
         }
         else
         {
-            Debug.LogWarning($"[BoxController Log] {gameObject.name} opened: Boom! Explosive chest triggered!");
 
             PlaySound2D(failureSound);
 
@@ -103,7 +98,6 @@ public class BoxController : MonoBehaviour, IInteractable
         isPlayerInRange = true;
         if (isOpened) return;
 
-        Debug.Log($"[BoxController Log] Player inside trigger radius of {gameObject.name}. Showing prompt UI.");
         if (promptCanvas != null) promptCanvas.SetActive(true);
     }
 

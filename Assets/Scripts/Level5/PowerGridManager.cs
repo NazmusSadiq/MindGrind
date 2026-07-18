@@ -122,7 +122,6 @@ public class PowerGridManager : MonoBehaviour
         if (solvedNow && !alreadySolved)
         {
             OnPuzzleSolved?.Invoke();
-            Debug.Log($"[Puzzle Manager] {gameObject.name} has been solved!");
         }
 
         // Keeps 'alreadySolved' synced perfectly so Level5_Manager knows instantly if a player un-solves it

@@ -12,7 +12,6 @@ public class DoorSceneLoader : MonoBehaviour
 
         if (string.IsNullOrWhiteSpace(sceneName))
         {
-            Debug.LogWarning("DoorSceneLoader is missing a scene name.", this);
             return;
         }
 

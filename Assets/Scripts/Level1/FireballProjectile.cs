@@ -46,9 +46,6 @@ public class FireballProjectile3D : MonoBehaviour
             return;
         }
 
-        // This will now log the exact 3D wall, floor, or object name perfectly!
-        Debug.Log($"<color=yellow>[Fireball Hit]</color> Fireball collided with: <b>{other.gameObject.name}</b>", other.gameObject);
-
         if (other.CompareTag("Player"))
         {
             PlayerController player = other.GetComponentInParent<PlayerController>();
@@ -60,8 +57,6 @@ public class FireballProjectile3D : MonoBehaviour
 
                 if (attackBlocked)
                 {
-                    Debug.Log("<color=cyan>[Fireball]</color> Player blocked successfully! Forcing orientation toward cannon...");
-
                     // Rotates the player toward the firing cannon instantly
                     if (firingCannonTransform != null)
                     {
@@ -76,7 +71,6 @@ public class FireballProjectile3D : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("<color=red>[Fireball]</color> Player hit cleanly!");
                     player.TakeDamage(damageValue);
                 }
             }

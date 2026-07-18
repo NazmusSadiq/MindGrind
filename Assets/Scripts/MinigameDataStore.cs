@@ -329,7 +329,6 @@ public class MinigameDataStore : MonoBehaviour
     {
         if (!TryGetGameData(id, out currentGame))
         {
-            Debug.LogWarning($"Could not find minigame data for id '{id}'.", this);
             return;
         }
 
@@ -374,7 +373,6 @@ public class MinigameDataStore : MonoBehaviour
     public static GameData GetCurrentGame()
     {
         EnsureDataInitialized();
-        //Debug.Log($"[MinigameDataStore] Current Game Info -> ID: {currentGame.id} | Title: {currentGame.gameTitle} | Scene: {currentGame.sceneName}");
         return currentGame;
     }
 }

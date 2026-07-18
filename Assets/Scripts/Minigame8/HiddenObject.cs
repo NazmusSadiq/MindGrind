@@ -78,8 +78,6 @@ public class HiddenObject : MonoBehaviour
 
     public void HandleClick()
     {
-        Debug.Log("Clicked: " + ObjectName);
-
         if (gameManager != null)
         {
             gameManager.OnObjectClicked(this);

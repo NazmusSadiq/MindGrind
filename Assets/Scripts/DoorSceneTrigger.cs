@@ -23,7 +23,6 @@ public class DoorSceneTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponentInParent<PlayerController>() == null || !canOpen) return;
-        //if (EnemyController.IsAnyEnemyAware()) return;
 
         MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
 
@@ -68,18 +67,15 @@ public class DoorSceneTrigger : MonoBehaviour
             {
                 uiStore.DisplayUpdatedUI(finalValueToSave, currentGame.id);
             }
-            else
-            {
-                Debug.LogWarning("DoorSceneTrigger: Found no MinigameBestScoreStore component instance active in this scene scene context.", this);
-            }
+
         }
-        else
-        {
-            Debug.LogError($"DoorSceneTrigger: Could not match the active scene '{UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}' to any entry configured inside MinigameDataStore!", this);
-        }
+
 
         Time.timeScale = 0f;
         if (successMenu != null) successMenu.SetActive(true);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         Level1_Manager levelManager = Object.FindFirstObjectByType<Level1_Manager>();
         if (levelManager != null) levelManager.TriggerLevelComplete();

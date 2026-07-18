@@ -45,7 +45,6 @@ public class Level1_Manager : MonoBehaviour
 
         if (playerController == null)
         {
-            Debug.LogError("Level1_Manager could not find a PlayerController.", this);
             enabled = false;
             return;
         }
@@ -99,7 +98,6 @@ public class Level1_Manager : MonoBehaviour
 
         elapsedTime = Mathf.Max(0f, elapsedTime - amount);
         UpdateTimerUI();
-        Debug.Log($"[Time Bonus] Reduced elapsed match time by {amount} seconds.");
     }
 
     private void ChangeDirection()
@@ -142,7 +140,6 @@ public class Level1_Manager : MonoBehaviour
         if (isLevelOver) return;
 
         isLevelOver = true;
-        Debug.Log($"Level Completed in: {elapsedTime:F2} seconds!");
 
         ShowArrow(null);
     }

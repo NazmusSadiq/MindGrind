@@ -104,7 +104,6 @@ public class TrafficRouterMinigame : MonoBehaviour
 
         if (!hasReferences || !hasSpawn)
         {
-            Debug.LogError("TrafficRouterMinigame is missing required references.", this);
             return false;
         }
 
@@ -221,6 +220,5 @@ public class TrafficRouterMinigame : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }

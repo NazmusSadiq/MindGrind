@@ -108,20 +108,6 @@ public class TheFlash : MonoBehaviour
             return;
         }
 
-        // Additional helpful Audio verification checks inside the console
-        if (sfxAudioSource == null)
-        {
-            Debug.LogError("TheFlash: sfxAudioSource is completely missing or unassigned!", this);
-        }
-        if (successClip == null)
-        {
-            Debug.LogWarning("TheFlash: successClip is not assigned in the inspector fields.", this);
-        }
-        if (failureClip == null)
-        {
-            Debug.LogWarning("TheFlash: failureClip is not assigned in the inspector fields.", this);
-        }
-
         Time.timeScale = 1f;
 
         score = 0;
@@ -184,7 +170,6 @@ public class TheFlash : MonoBehaviour
             timeRemainingText == null ||
             bestScoreStore == null)
         {
-            Debug.LogError("Missing UI references.");
             return false;
         }
 
@@ -201,7 +186,6 @@ public class TheFlash : MonoBehaviour
 
         if (count == 0)
         {
-            Debug.LogError("No buttons assigned.");
             return false;
         }
 
@@ -428,10 +412,6 @@ public class TheFlash : MonoBehaviour
         {
             sfxAudioSource.PlayOneShot(clip);
         }
-        else
-        {
-            Debug.LogWarning($"PlayFeedbackSFX failed. sfxAudioSource is null? {sfxAudioSource == null}. clip is null? {clip == null}");
-        }
     }
 
     private int CalculateReactionScore(float reactionTime)
@@ -544,6 +524,5 @@ public class TheFlash : MonoBehaviour
 
         bestScoreStore.ShowStats(score, bestScore);
 
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }

@@ -16,6 +16,10 @@ public class MinigameBestScoreStore : MonoBehaviour
     public const string PrefPerception = "Cognitive_Perception";
     public const string PrefLearning = "Cognitive_Learning";
 
+    [Header("ID Configuration")]
+    [SerializeField] private int explicitGameId = -1;
+
+    [Header("References")]
     [SerializeField] private GameObject gameOverMenu;
     [SerializeField] private TMP_Text gameTitleText;
     [SerializeField] private TMP_Text currentScoreText;
@@ -211,12 +215,12 @@ public class MinigameBestScoreStore : MonoBehaviour
             case 8: return 170f;
             case 9: return 225f;
             case 10: return 100f;
-            case 11: return 250f;
+            case 11: return 300f;
             case 12: return 200f;
             case 13: return 170f;
             case 14: return 200f;
             case 15: return 80f;
-            case 16: return 250f;
+            case 16: return 400f;
             case 17: return 125f;
             case 18: return 800f;
             case 19: return 175f;
@@ -290,7 +294,7 @@ public class MinigameBestScoreStore : MonoBehaviour
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Error syncing metrics to player_analytics layout: {e.Message}");
+                //Debug.LogError($"Error syncing metrics to player_analytics layout: {e.Message}");
             }
         }
     }
@@ -304,12 +308,22 @@ public class MinigameBestScoreStore : MonoBehaviour
     {
         ShowGameOverMenu();
 
-        MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
+        MinigameDataStore.GameData currentGame;
 
-        if (string.IsNullOrEmpty(currentGame.sceneName))
+        // Core adjustment logic injection to prioritize explicit manual inspector settings
+        if (explicitGameId >= 0 && MinigameDataStore.TryGetGameData(explicitGameId, out MinigameDataStore.GameData explicitGame))
         {
-            string activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-            MinigameDataStore.TryGetGameDataBySceneName(activeSceneName, out currentGame);
+            currentGame = explicitGame;
+        }
+        else
+        {
+            currentGame = MinigameDataStore.GetCurrentGame();
+
+            if (string.IsNullOrEmpty(currentGame.sceneName))
+            {
+                string activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+                MinigameDataStore.TryGetGameDataBySceneName(activeSceneName, out currentGame);
+            }
         }
 
         if (gameTitleText != null && !string.IsNullOrEmpty(currentGame.gameTitle))
@@ -363,7 +377,17 @@ public class MinigameBestScoreStore : MonoBehaviour
 
         if (gameTitleText != null)
         {
-            MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
+            MinigameDataStore.GameData currentGame;
+
+            if (explicitGameId >= 0 && MinigameDataStore.TryGetGameData(explicitGameId, out MinigameDataStore.GameData explicitGame))
+            {
+                currentGame = explicitGame;
+            }
+            else
+            {
+                currentGame = MinigameDataStore.GetCurrentGame();
+            }
+
             if (!string.IsNullOrEmpty(currentGame.gameTitle))
             {
                 gameTitleText.text = currentGame.gameTitle;
@@ -377,12 +401,22 @@ public class MinigameBestScoreStore : MonoBehaviour
 
         Time.timeScale = 0f;
 
-        MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
+        MinigameDataStore.GameData currentGame;
 
-        if (string.IsNullOrEmpty(currentGame.sceneName))
+        // Core adjustment logic injection to prioritize explicit manual inspector settings
+        if (explicitGameId >= 0 && MinigameDataStore.TryGetGameData(explicitGameId, out MinigameDataStore.GameData explicitGame))
         {
-            string activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-            MinigameDataStore.TryGetGameDataBySceneName(activeSceneName, out currentGame);
+            currentGame = explicitGame;
+        }
+        else
+        {
+            currentGame = MinigameDataStore.GetCurrentGame();
+
+            if (string.IsNullOrEmpty(currentGame.sceneName))
+            {
+                string activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+                MinigameDataStore.TryGetGameDataBySceneName(activeSceneName, out currentGame);
+            }
         }
 
         if (gameTitleText != null && !string.IsNullOrEmpty(currentGame.gameTitle))

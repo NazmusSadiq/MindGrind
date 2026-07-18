@@ -3488,6 +3488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee7ca9c2186909499b71f078837d27e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinigameBestScoreStore
+  explicitGameId: 11
   gameOverMenu: {fileID: 111735737}
   gameTitleText: {fileID: 403038766}
   currentScoreText: {fileID: 2143388843}
@@ -3512,7 +3513,7 @@ MonoBehaviour:
   perceptionText: {fileID: 0}
   learningText: {fileID: 0}
   reasoningText: {fileID: 0}
-  storyModeNextSceneName: Level14
+  storyModeNextSceneName: Minigame14
   storyModeDetailsPanel: {fileID: 73303419}
   pauseMenuPanel: {fileID: 1765712424}
   targetThumbnailField: {fileID: 0}
@@ -3799,12 +3800,12 @@ RectTransform:
   - {fileID: 1308145090}
   - {fileID: 862130712}
   - {fileID: 1922503368}
-  - {fileID: 111735738}
   - {fileID: 1077341929}
   - {fileID: 1037642927}
-  - {fileID: 73303420}
   - {fileID: 1765665532}
   - {fileID: 1828661691}
+  - {fileID: 111735738}
+  - {fileID: 73303420}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

@@ -12,17 +12,22 @@ public class sequence_match_minigame : MonoBehaviour
     [SerializeField] private RectTransform gridContainer;
     [SerializeField] private MinigameBestScoreStore bestScoreStore;
     [SerializeField] private AudioSource audioSource;
+    [SerializeField] private Sprite cellSprite;
+
+    [Header("Disruptor Object Interaction")]
+    // Assign the object you want to monitor here in the Inspector
+    [SerializeField] private GameObject triggerObject;
 
     [Header("Additional Audio")]
-    [SerializeField] private AudioSource sfxAudioSource; // Serialized AudioSource for round results
+    [SerializeField] private AudioSource sfxAudioSource;
     [SerializeField] private AudioClip roundSuccessSFX;
     [SerializeField] private AudioClip roundFailureSFX;
 
     [Header("Colors (Rich/Harmonious Slate/Cyan/Green/Red)")]
-    private readonly Color normalColor = new Color(0.12f, 0.16f, 0.23f, 1f);      // Sleek Slate-800 (#1E293B)
-    private readonly Color litColor = new Color(0.06f, 0.71f, 0.85f, 1f);         // Glow Cyan (#0EA5E9)
-    private readonly Color correctColor = new Color(0.18f, 0.8f, 0.44f, 1f);       // Emerald Green (#2ECC71)
-    private readonly Color incorrectColor = new Color(0.9f, 0.22f, 0.27f, 1f);     // Alizarin Red (#E74C3C)
+    private readonly Color normalColor = new Color(0.12f, 0.16f, 0.23f, 1f);
+    private readonly Color litColor = new Color(0.06f, 0.71f, 0.85f, 1f);
+    private readonly Color correctColor = new Color(0.18f, 0.8f, 0.44f, 1f);
+    private readonly Color incorrectColor = new Color(0.9f, 0.22f, 0.27f, 1f);
 
     private readonly List<int> sequence = new List<int>();
     private readonly Image[] cellImages = new Image[16];
@@ -31,14 +36,14 @@ public class sequence_match_minigame : MonoBehaviour
     private AudioClip errorBeep;
 
     private int score;
-    private int k; // Sequence length
+    private int k;
     private int userStepIndex;
     private bool isGameRunning;
     private bool isInputEnabled;
+    private bool isGridHiddenByObject; // Tracks the visibility override state
 
     private void Awake()
     {
-        // Dynamically find references if not explicitly assigned in Unity Editor
         if (scoreText == null) scoreText = GameObject.Find("Score_Value")?.GetComponent<TMP_Text>();
         if (gridContainer == null) gridContainer = GameObject.Find("Container")?.GetComponent<RectTransform>();
         if (bestScoreStore == null) bestScoreStore = FindFirstObjectByType<MinigameBestScoreStore>();
@@ -54,11 +59,11 @@ public class sequence_match_minigame : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale = 1f;
         score = 0;
         k = 1;
         isGameRunning = true;
         isInputEnabled = false;
+        isGridHiddenByObject = false;
 
         UpdateScoreUI();
         SetupGrid();
@@ -67,31 +72,62 @@ public class sequence_match_minigame : MonoBehaviour
         StartNextRound();
     }
 
+    private void Update()
+    {
+        // Continuously check the target object's status while the minigame runs
+        if (!isGameRunning || triggerObject == null || gridContainer == null) return;
+
+        bool isObjectActive = triggerObject.activeInHierarchy;
+
+        // If the object becomes active and the grid is still visible, hide it instantly
+        if (isObjectActive && !isGridHiddenByObject)
+        {
+            isGridHiddenByObject = true;
+            gridContainer.gameObject.SetActive(false);
+        }
+        // If the object becomes inactive and the grid is hidden, restore it instantly
+        else if (!isObjectActive && isGridHiddenByObject)
+        {
+            isGridHiddenByObject = false;
+            gridContainer.gameObject.SetActive(true);
+        }
+    }
+
     private void SetupGrid()
     {
         if (gridContainer == null)
         {
-            Debug.LogError("Grid container RectTransform is not assigned on sequence_match_minigame.", this);
             return;
         }
 
-        // Reparent gridContainer to Canvas at runtime and place it above background (sibling index 1)
         Canvas canvas = FindFirstObjectByType<Canvas>();
         if (canvas != null)
         {
             gridContainer.SetParent(canvas.transform, false);
-            gridContainer.SetSiblingIndex(0);
+            gridContainer.SetAsFirstSibling();
         }
-        gridContainer.gameObject.layer = 5; // UI layer
+        gridContainer.gameObject.layer = 5;
 
-        // Remove any existing LayoutGroup to ensure we use our clean grid layout
+        Canvas gridCanvas = gridContainer.gameObject.GetComponent<Canvas>();
+        if (gridCanvas == null)
+        {
+            gridCanvas = gridContainer.gameObject.AddComponent<Canvas>();
+        }
+        gridCanvas.overrideSorting = true;
+        gridCanvas.sortingOrder = -10;
+
+        GraphicRaycaster raycaster = gridContainer.gameObject.GetComponent<GraphicRaycaster>();
+        if (raycaster == null)
+        {
+            raycaster = gridContainer.gameObject.AddComponent<GraphicRaycaster>();
+        }
+
         HorizontalLayoutGroup existingLayout = gridContainer.GetComponent<HorizontalLayoutGroup>();
         if (existingLayout != null)
         {
             DestroyImmediate(existingLayout);
         }
 
-        // Add and configure GridLayoutGroup
         GridLayoutGroup gridLayout = gridContainer.gameObject.GetComponent<GridLayoutGroup>();
         if (gridLayout == null)
         {
@@ -104,35 +140,19 @@ public class sequence_match_minigame : MonoBehaviour
         gridLayout.spacing = new Vector2(12f, 12f);
         gridLayout.childAlignment = TextAnchor.MiddleCenter;
 
-        // Try to obtain a standard rounded button sprite from the scene UI to keep aesthetics consistent
-        Sprite buttonSprite = null;
-        GameObject sampleBtnObj = GameObject.Find("RestartButton");
-        if (sampleBtnObj == null) sampleBtnObj = GameObject.Find("Play_Button");
-        if (sampleBtnObj == null) sampleBtnObj = GameObject.Find("Resume_Button");
-        if (sampleBtnObj != null)
-        {
-            Image sampleImage = sampleBtnObj.GetComponent<Image>();
-            if (sampleImage != null)
-            {
-                buttonSprite = sampleImage.sprite;
-            }
-        }
-
-        // Spawn the 4x4 grid (16 cells)
         for (int i = 0; i < 16; i++)
         {
             GameObject cellObj = new GameObject($"Cell_{i}", typeof(RectTransform));
             cellObj.transform.SetParent(gridContainer, false);
-            cellObj.layer = 5; // UI layer
+            cellObj.layer = 5;
 
             Image cellImg = cellObj.AddComponent<Image>();
-            cellImg.sprite = buttonSprite;
+            cellImg.sprite = cellSprite;
             cellImg.type = Image.Type.Sliced;
             cellImg.color = normalColor;
             cellImages[i] = cellImg;
 
             Button cellBtn = cellObj.AddComponent<Button>();
-            // Set navigation to None to prevent keyboard selection highlights
             Navigation nav = new Navigation { mode = Navigation.Mode.None };
             cellBtn.navigation = nav;
             cellButtons[i] = cellBtn;
@@ -144,13 +164,12 @@ public class sequence_match_minigame : MonoBehaviour
 
     private void GenerateAudioClips()
     {
-        // 16 pitches mapping to a diatonic C Major scale starting from C4 (261.63Hz)
         float[] pitches = new float[]
         {
-            261.63f, 293.66f, 329.63f, 349.23f, // C4, D4, E4, F4
-            392.00f, 440.00f, 493.88f, 523.25f, // G4, A4, B4, C5
-            587.33f, 659.25f, 698.46f, 783.99f, // D5, E5, F5, G5
-            880.00f, 987.77f, 1046.50f, 1174.66f // A5, B5, C6, D6
+            261.63f, 293.66f, 329.63f, 349.23f,
+            392.00f, 440.00f, 493.88f, 523.25f,
+            587.33f, 659.25f, 698.46f, 783.99f,
+            880.00f, 987.77f, 1046.50f, 1174.66f
         };
 
         for (int i = 0; i < 16; i++)
@@ -158,7 +177,6 @@ public class sequence_match_minigame : MonoBehaviour
             cellBeeps[i] = CreateBeepClip(pitches[i], 0.35f);
         }
 
-        // Synthesize a low warning buzz for incorrect clicks (110Hz C2/A2-ish buzz)
         errorBeep = CreateBeepClip(110f, 0.5f);
     }
 
@@ -171,7 +189,6 @@ public class sequence_match_minigame : MonoBehaviour
         for (int i = 0; i < sampleCount; i++)
         {
             float t = (float)i / sampleRate;
-            // Apply linear fade-out to prevent popping sounds at the end
             float fade = 1.0f - ((float)i / sampleCount);
             samples[i] = Mathf.Sin(2f * Mathf.PI * frequency * t) * fade * 0.35f;
         }
@@ -185,7 +202,6 @@ public class sequence_match_minigame : MonoBehaviour
     {
         if (!isGameRunning) return;
 
-        // Generate a random sequence of length K
         sequence.Clear();
         for (int i = 0; i < k; i++)
         {
@@ -198,23 +214,32 @@ public class sequence_match_minigame : MonoBehaviour
     private IEnumerator ShowSequenceCoroutine()
     {
         isInputEnabled = false;
-
         yield return new WaitForSeconds(0.6f);
 
         for (int i = 0; i < sequence.Count; i++)
         {
+            // Smart Pause: If the overlay object is currently active, wait here 
+            // so flashes don't play invisibly in the background.
+            while (isGridHiddenByObject)
+            {
+                yield return null;
+            }
+
             int cellIndex = sequence[i];
 
-            // Play the corresponding synthesized beep
             if (audioSource != null && cellBeeps[cellIndex] != null)
             {
                 audioSource.PlayOneShot(cellBeeps[cellIndex]);
             }
 
-            // Flash the cell visual with cyan and micro-animation
             StartCoroutine(FlashCellCoroutine(cellIndex, litColor, 0.4f));
-
             yield return new WaitForSeconds(0.45f);
+        }
+
+        // Final sanity check before handing control back to the player
+        while (isGridHiddenByObject)
+        {
+            yield return null;
         }
 
         userStepIndex = 0;
@@ -235,7 +260,6 @@ public class sequence_match_minigame : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
-            // Smooth sine curve for standard flashing animation
             float wave = Mathf.Sin(t * Mathf.PI);
 
             img.color = Color.Lerp(normalColor, flashColor, wave);
@@ -250,12 +274,11 @@ public class sequence_match_minigame : MonoBehaviour
 
     private void OnCellClicked(int index)
     {
-        if (!isGameRunning || !isInputEnabled) return;
+        // Added 'isGridHiddenByObject' check to prevent unexpected clicks if raycasts leak through
+        if (!isGameRunning || !isInputEnabled || isGridHiddenByObject) return;
 
-        // Verify user choice
         if (index == sequence[userStepIndex])
         {
-            // Correct click
             if (audioSource != null && cellBeeps[index] != null)
             {
                 audioSource.PlayOneShot(cellBeeps[index]);
@@ -264,12 +287,10 @@ public class sequence_match_minigame : MonoBehaviour
             StartCoroutine(FlashCellCoroutine(index, correctColor, 0.25f));
             userStepIndex++;
 
-            // Check if full sequence replicated
             if (userStepIndex == sequence.Count)
             {
                 isInputEnabled = false;
 
-                // Play custom success sound clip via the serialized audio source
                 if (sfxAudioSource != null && roundSuccessSFX != null)
                 {
                     sfxAudioSource.PlayOneShot(roundSuccessSFX);
@@ -279,27 +300,22 @@ public class sequence_match_minigame : MonoBehaviour
                 k++;
                 UpdateScoreUI();
 
-                // Advance to next level after brief delay
                 Invoke(nameof(StartNextRound), 0.8f);
             }
         }
         else
         {
-            // Incorrect click - Game Over!
             isInputEnabled = false;
 
-            // Play custom failure sound clip via the serialized audio source
             if (sfxAudioSource != null && roundFailureSFX != null)
             {
                 sfxAudioSource.PlayOneShot(roundFailureSFX);
             }
             else if (audioSource != null && errorBeep != null)
             {
-                // Fallback to standard generated error buzz if serialized clip is missing
                 audioSource.PlayOneShot(errorBeep);
             }
 
-            // Flash wrong cell red, and correct one green to help the user learn
             StartCoroutine(FlashCellCoroutine(index, incorrectColor, 0.6f));
             int expectedIndex = sequence[userStepIndex];
             StartCoroutine(FlashCellCoroutine(expectedIndex, correctColor, 0.6f));
@@ -321,11 +337,8 @@ public class sequence_match_minigame : MonoBehaviour
         if (!isGameRunning) return;
 
         isGameRunning = false;
-
-        // Stop all active sequence showing or flashing coroutines
         StopAllCoroutines();
 
-        // Destroy the dynamic grid cells
         for (int i = 0; i < 16; i++)
         {
             if (cellImages[i] != null)
@@ -344,6 +357,5 @@ public class sequence_match_minigame : MonoBehaviour
             bestScoreStore.ShowStats(score, bestScore);
         }
 
-        Debug.Log($"Sequence Grid Match minigame finished. Final Score: {score}, Best Score: {bestScore}");
     }
 }

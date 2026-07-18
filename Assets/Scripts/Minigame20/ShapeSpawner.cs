@@ -27,7 +27,6 @@ public class ShapeSpawner : MonoBehaviour
         int colorIndex,
         int count)
     {
-        Debug.Log($"Offset = {offset}");
 
         Clear();
 
@@ -36,11 +35,6 @@ public class ShapeSpawner : MonoBehaviour
         Color color = objectColors[colorIndex];
 
         Vector2[] positions = GetPositions(count);
-
-        for (int i = 0; i < positions.Length; i++)
-        {
-            Debug.Log($"Generated Position {i}: {positions[i]}");
-        }
 
         for (int i = 0; i < count; i++)
         {
@@ -58,8 +52,6 @@ public class ShapeSpawner : MonoBehaviour
 
             rect.anchoredPosition =
                 positions[i];
-
-            Debug.Log($"Assigned: {rect.anchoredPosition}");
 
             img.sprite = sprite;
 

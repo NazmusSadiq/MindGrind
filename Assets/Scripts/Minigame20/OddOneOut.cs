@@ -137,14 +137,12 @@ public class OddOneOut : MonoBehaviour
     {
         if (scoreText == null || timerText == null || statusText == null || bestScoreStore == null)
         {
-            Debug.LogError("Missing UI references.");
             return false;
         }
 
         // Changed validation check from 4 to 6
         if (optionCards == null || optionCards.Length != 6)
         {
-            Debug.LogError("Assign six option cards.");
             return false;
         }
 
@@ -152,7 +150,6 @@ public class OddOneOut : MonoBehaviour
         {
             if (optionCards[i] == null)
             {
-                Debug.LogError($"Option Card {i + 1} is missing.");
                 return false;
             }
         }
@@ -479,7 +476,6 @@ public class OddOneOut : MonoBehaviour
             bestScoreStore.ShowStats(score, bestScore);
         }
 
-        Debug.Log($"Odd One Out Finished\nScore : {score}\nBest : {bestScore}");
     }
 
     private void CacheGameOverMenu()

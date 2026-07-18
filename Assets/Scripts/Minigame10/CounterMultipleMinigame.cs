@@ -267,6 +267,5 @@ public class CounterMultipleMinigame : MonoBehaviour
         int best = MinigameBestScoreStore.UpdateBestScore(id, score);
 
         bestScoreStore.ShowStats(score, best);
-        Debug.Log("Game Over Score : " + score);
     }
 }

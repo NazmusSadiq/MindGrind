@@ -172,7 +172,6 @@ public class HiddenObjectGame : MonoBehaviour
         Camera activeCamera = Camera.main;
         if (activeCamera == null)
         {
-            Debug.LogError("Hidden Object minigame needs a MainCamera for object clicks.", this);
             return;
         }
 
@@ -196,19 +195,16 @@ public class HiddenObjectGame : MonoBehaviour
     {
         if (hiddenObjectPrefab == null)
         {
-            Debug.LogError("Hidden Object Prefab missing.", this);
             return false;
         }
 
         if (floorArea == null || floorArea.areaCollider == null)
         {
-            Debug.LogError("Floor Area missing.", this);
             return false;
         }
 
         if (shelfAreas == null || shelfAreas.Length == 0)
         {
-            Debug.LogError("Shelf Areas missing.", this);
             return false;
         }
 
@@ -216,14 +212,12 @@ public class HiddenObjectGame : MonoBehaviour
         {
             if (shelfAreas[i] == null || shelfAreas[i].areaCollider == null)
             {
-                Debug.LogError("Every shelf area needs a BoxCollider2D.", this);
                 return false;
             }
         }
 
         if (allObjects == null || allObjects.Length < 2)
         {
-            Debug.LogError("Object Database needs at least 2 objects so the target appears only once.", this);
             return false;
         }
 
@@ -231,20 +225,17 @@ public class HiddenObjectGame : MonoBehaviour
         {
             if (allObjects[i] == null || allObjects[i].sprite == null)
             {
-                Debug.LogError("Every hidden object data entry needs a sprite.", this);
                 return false;
             }
         }
 
         if (targetImage == null)
         {
-            Debug.LogError("Target Image missing.", this);
             return false;
         }
 
         if (bestScoreStore == null)
         {
-            Debug.LogError("BestScoreStore missing.", this);
             return false;
         }
 
@@ -262,7 +253,6 @@ public class HiddenObjectGame : MonoBehaviour
 
         if (sprites == null || sprites.Length == 0)
         {
-            Debug.LogError($"No sprites found in Resources/{resourcesObjectFolder}. Make sure the images are inside a Resources folder and imported as Sprite.", this);
             return;
         }
 
@@ -595,7 +585,6 @@ public class HiddenObjectGame : MonoBehaviour
 
         bestScoreStore.ShowStats(score, bestScore);
 
-        Debug.Log($"Hidden Object minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 
     private void ClearSpawnedObjects()

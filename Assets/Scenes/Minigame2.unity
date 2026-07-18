@@ -2350,6 +2350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee7ca9c2186909499b71f078837d27e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinigameBestScoreStore
+  explicitGameId: 1
   gameOverMenu: {fileID: 59048858}
   gameTitleText: {fileID: 1469673840}
   currentScoreText: {fileID: 1850200449}
@@ -2390,6 +2391,7 @@ MonoBehaviour:
   - {fileID: -5427164653334127848, guid: 901658ddeb0ed274a81b6954d48cb20b, type: 3}
   - {fileID: -6118088770634362597, guid: a7b140be254ea9746b94d9f74569640e, type: 3}
   bombTargetSprite: {fileID: -2613247888821195678, guid: c9f46f7cc0364ec45a47b83fb587affc, type: 3}
+  matchProbability: 0.75
 --- !u!1 &946670853
 GameObject:
   m_ObjectHideFlags: 0
@@ -3190,7 +3192,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 94.97, y: -54}
+  m_AnchoredPosition: {x: 94.97003, y: -54}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1299597001
@@ -3496,6 +3498,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: processNext
         m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 59048858}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

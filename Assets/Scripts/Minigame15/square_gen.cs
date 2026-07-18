@@ -83,7 +83,6 @@ public class square_gen : MonoBehaviour
     private void Start()
     {
 #if !ENABLE_INPUT_SYSTEM
-        Debug.LogError("square_gen requires the Input System package.", this);
         enabled = false;
         return;
 #endif
@@ -195,7 +194,6 @@ public class square_gen : MonoBehaviour
 
         if (wordDictionaryFile == null)
         {
-            Debug.LogError("Dictionary file missing.");
             return;
         }
 
@@ -244,14 +242,12 @@ public class square_gen : MonoBehaviour
 
         if (!hasSquares || !hasReferences)
         {
-            Debug.LogError("square_gen is missing required references.", this);
             return false;
         }
 
         List<string> uniqueWords = BuildUniqueWordList();
         if (uniqueWords.Count == 0)
         {
-            Debug.LogError("square_gen needs at least one unique word longer than three letters.", this);
             return false;
         }
 
@@ -266,7 +262,6 @@ public class square_gen : MonoBehaviour
 
         if (longestWordLength > squares.Length)
         {
-            Debug.LogError("square_gen needs enough assigned square objects for the longest word.", this);
             return false;
         }
 
@@ -278,7 +273,6 @@ public class square_gen : MonoBehaviour
         {
             if (squares[i] == null)
             {
-                Debug.LogError("Every square slot must be assigned in square_gen.", this);
                 return false;
             }
 
@@ -291,7 +285,6 @@ public class square_gen : MonoBehaviour
 
             if (squareTexts[i] == null || squareImages[i] == null)
             {
-                Debug.LogError("Each square needs an Image and a child TMP_Text.", squares[i]);
                 return false;
             }
 
@@ -574,6 +567,5 @@ public class square_gen : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }

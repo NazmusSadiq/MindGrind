@@ -49,7 +49,6 @@ public class Level3_Manager : MonoBehaviour
 
         if (playerController == null)
         {
-            Debug.LogError("PlayerController missing", this);
             enabled = false;
             return;
         }
@@ -77,7 +76,6 @@ public class Level3_Manager : MonoBehaviour
     {
         if (rhymes.Length < doors.Length)
         {
-            Debug.LogError("Not enough rhymes for doors!");
             return;
         }
 
@@ -171,7 +169,6 @@ public class Level3_Manager : MonoBehaviour
 
     public void OnDoorCompleted(int doorIndex)
     {
-        Debug.Log($"Door {doorIndex} completed");
 
         if (doorIndex + 1 < doors.Length)
         {
@@ -180,7 +177,6 @@ public class Level3_Manager : MonoBehaviour
         else
         {
             StopMusic();
-            Debug.Log("All doors completed. Music stopped.");
         }
     }
 
@@ -206,7 +202,6 @@ public class Level3_Manager : MonoBehaviour
 
         isLevelOver = true;
         StopMusic();
-        Debug.Log($"Level 3 Completed in: {elapsedTime:F2}");
     }
 
     private void TriggerGameOver()
@@ -245,6 +240,5 @@ public class Level3_Manager : MonoBehaviour
 
         UpdateTimerUI();
 
-        Debug.Log($"Penalty applied: +{seconds:F2}s (elapsed now {elapsedTime:F2})");
     }
 }

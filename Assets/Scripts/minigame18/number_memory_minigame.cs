@@ -96,11 +96,6 @@ public class number_memory_minigame : MonoBehaviour
             && answerInputField != null
             && bestScoreStore != null;
 
-        if (!hasReferences)
-        {
-            Debug.LogError("number_memory_minigame is missing required references.", this);
-        }
-
         return hasReferences;
     }
 
@@ -277,6 +272,5 @@ public class number_memory_minigame : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameSceneName, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-        Debug.Log($"Number Memory minigame finished. Score: {score}, Best: {bestScore}");
     }
 }

@@ -420,9 +420,7 @@ public class EnemyController : MonoBehaviour
         if (currentState == EnemyState.Dead)
             return;
 
-        Debug.Log($"Enemy taking damage: {amount}. Health before: {currentHealth}");
         currentHealth -= amount;
-        Debug.Log($"Enemy health after damage: {currentHealth}");
 
         PlayRandomSound2D(hitSounds);
 
@@ -570,7 +568,6 @@ public class EnemyController : MonoBehaviour
                     continue;
 
                 player.TakeDamage(damageAmount);
-                Debug.Log("Hit player: " + hit.name);
             }
         }
     }

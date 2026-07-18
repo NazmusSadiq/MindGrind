@@ -99,7 +99,6 @@ public class ColumnWordMinigame : MonoBehaviour
     private void Start()
     {
 #if !ENABLE_INPUT_SYSTEM
-        Debug.LogError("ColumnWordMinigame requires the Input System package.", this);
         enabled = false;
         return;
 #endif
@@ -170,7 +169,6 @@ public class ColumnWordMinigame : MonoBehaviour
     {
         if (skipButton == null)
         {
-            Debug.LogWarning("ColumnWordMinigame has no skip button assigned. The skip feature will be unavailable.", this);
             return;
         }
 
@@ -226,13 +224,11 @@ public class ColumnWordMinigame : MonoBehaviour
 
         if (selectionDictionaryFile == null)
         {
-            Debug.LogError("ColumnWordMinigame is missing the selection dictionary file.", this);
             return;
         }
 
         if (wordDictionaryFile == null)
         {
-            Debug.LogError("ColumnWordMinigame is missing the dictionary file.", this);
             return;
         }
 
@@ -254,25 +250,21 @@ public class ColumnWordMinigame : MonoBehaviour
 
         if (!hasReferences)
         {
-            Debug.LogError("ColumnWordMinigame is missing required references.", this);
             return false;
         }
 
         if (gameDuration <= 0f)
         {
-            Debug.LogError("ColumnWordMinigame game duration must be greater than zero.", this);
             return false;
         }
 
         if (startingColumnCount < 1 || maxColumnCount < 1)
         {
-            Debug.LogError("ColumnWordMinigame needs positive column counts.", this);
             return false;
         }
 
         if (lettersPerColumn < 3)
         {
-            Debug.LogError("ColumnWordMinigame needs at least three letters per column.", this);
             return false;
         }
 
@@ -281,7 +273,6 @@ public class ColumnWordMinigame : MonoBehaviour
             Mathf.Min(bottomBoxes.Length, answerBoxes.Length));
         if (availableBoxCount < 1)
         {
-            Debug.LogError("ColumnWordMinigame needs top, middle, bottom, and answer boxes assigned.", this);
             return false;
         }
 
@@ -290,13 +281,11 @@ public class ColumnWordMinigame : MonoBehaviour
 
         if (wordsByLength.Count == 0)
         {
-            Debug.LogError("ColumnWordMinigame dictionary is empty after loading.", this);
             return false;
         }
 
         if (selectionWordsByLength.Count == 0)
         {
-            Debug.LogError("ColumnWordMinigame selection dictionary is empty after loading.", this);
             return false;
         }
 
@@ -393,13 +382,6 @@ public class ColumnWordMinigame : MonoBehaviour
 
         RefreshRoundVisuals();
         SetActiveColumn(0);
-
-        Debug.Log("Puzzle words:");
-
-        foreach (string word in selectedWords)
-        {
-            Debug.Log(word);
-        }
 
         return true;
     }
@@ -787,7 +769,6 @@ public class ColumnWordMinigame : MonoBehaviour
     {
         if (boxes == null)
         {
-            Debug.LogError($"ColumnWordMinigame is missing the {rowName} row.", this);
             return false;
         }
 
@@ -795,7 +776,6 @@ public class ColumnWordMinigame : MonoBehaviour
         {
             if (boxes[i] == null)
             {
-                Debug.LogError($"Every {rowName} box must be assigned in ColumnWordMinigame.", this);
                 return false;
             }
 
@@ -809,7 +789,6 @@ public class ColumnWordMinigame : MonoBehaviour
 
             if (texts[i] == null || images[i] == null)
             {
-                Debug.LogError($"Each {rowName} box needs an Image and a child TMP_Text.", boxes[i]);
                 return false;
             }
 
@@ -909,7 +888,6 @@ public class ColumnWordMinigame : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 
     private void OnDestroy()

@@ -133,7 +133,6 @@ public class WordleMinigame : MonoBehaviour
     {
         if (wordListFile == null)
         {
-            Debug.LogError("WordleMinigame: Word List TextAsset is not assigned!");
             wordPool.Add("UNITY");
             return;
         }
@@ -168,7 +167,6 @@ public class WordleMinigame : MonoBehaviour
         }
 
         targetWord = wordPool[Random.Range(0, wordPool.Count)];
-        Debug.Log($"Target Word (Cheat): {targetWord}");
 
         for (int r = 0; r < rows.Length; r++)
         {
@@ -349,7 +347,6 @@ public class WordleMinigame : MonoBehaviour
             bestScoreStore.ShowStats(score, bestScore);
         }
 
-        Debug.Log($"Wordle minigame finished. Score: {score}, Best Score: {bestScore}");
     }
 
     #region Audio Processing

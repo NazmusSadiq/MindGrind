@@ -142,7 +142,6 @@ public class GoodBadMinigame : MonoBehaviour
 
         if (!hasObjectSprites || !hasGoodPreviewSlots || !hasBadPreviewSlots || !hasGridObjects || !hasReferences)
         {
-            Debug.LogError("GoodBadMinigame is missing required references.", this);
             return false;
         }
 
@@ -150,7 +149,6 @@ public class GoodBadMinigame : MonoBehaviour
         {
             if (objectSprites[i] == null)
             {
-                Debug.LogError("All object sprites must be assigned.", this);
                 return false;
             }
         }
@@ -159,7 +157,6 @@ public class GoodBadMinigame : MonoBehaviour
         {
             if (goodPreviewSlots[i] == null || badPreviewSlots[i] == null)
             {
-                Debug.LogError("All preview slots must be assigned.", this);
                 return false;
             }
         }
@@ -168,7 +165,6 @@ public class GoodBadMinigame : MonoBehaviour
         {
             if (gridObjects[i] == null)
             {
-                Debug.LogError("Every grid object slot needs a GoodBadGridObject assigned.", this);
                 return false;
             }
         }
@@ -374,6 +370,5 @@ public class GoodBadMinigame : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 }

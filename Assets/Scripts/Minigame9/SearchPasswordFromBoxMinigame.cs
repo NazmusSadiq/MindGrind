@@ -252,7 +252,6 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
 
         if (!hasValidColors || !hasSpawnPoints || !hasReferences || !hasTimeValue || !hasPasswordUi || !hasLeftLaunchOptions || !hasRightLaunchOptions || !hasValidGravity)
         {
-            Debug.LogError("SearchPasswordFromBoxMinigame is missing required references.", this);
             return false;
         }
 
@@ -260,7 +259,6 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
         {
             if (colors[i] == null)
             {
-                Debug.LogError("Every color entry needs to be assigned.", this);
                 return false;
             }
         }
@@ -339,7 +337,6 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
 
         if (launchOptions == null || launchOptions.Length == 0)
         {
-            Debug.LogError("SearchPasswordFromBoxMinigame needs at least one launch option on each side.", this);
             return false;
         }
 
@@ -348,7 +345,6 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
 
         if (launchOption == null)
         {
-            Debug.LogError("A launch option is missing in the inspector.", this);
             return false;
         }
 
@@ -521,7 +517,6 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
 
         bestScoreStore.ShowStats(score, bestScore);
 
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 
     private void BeginPasswordEntry()

@@ -30,7 +30,6 @@ public class Level4_Manager : MonoBehaviour
 
         if (playerController == null)
         {
-            Debug.LogError("Level4_Manager could not find a PlayerController.", this);
             enabled = false;
             return;
         }
@@ -75,7 +74,6 @@ public class Level4_Manager : MonoBehaviour
             return;
 
         isLevelOver = true;
-        Debug.Log($"Level 4 Completed in: {elapsedTime:F2} seconds!");
     }
 
     private void TriggerGameOver()

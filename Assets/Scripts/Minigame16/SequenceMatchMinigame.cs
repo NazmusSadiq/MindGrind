@@ -71,20 +71,6 @@ public class SequenceMatchMinigame : MonoBehaviour
             return;
         }
 
-        // Additional helpful Audio verification checks inside the console
-        if (sfxAudioSource == null)
-        {
-            Debug.LogError("SequenceMatchMinigame: sfxAudioSource is completely missing or unassigned!", this);
-        }
-        if (successClip == null)
-        {
-            Debug.LogWarning("SequenceMatchMinigame: successClip is not assigned in the inspector fields.", this);
-        }
-        if (failureClip == null)
-        {
-            Debug.LogWarning("SequenceMatchMinigame: failureClip is not assigned in the inspector fields.", this);
-        }
-
         Time.timeScale = 1f;
         score = 0;
         targetCount = Mathf.Clamp(startingTargetCount, 1, GetMaxPossibleTargetCount());
@@ -133,19 +119,16 @@ public class SequenceMatchMinigame : MonoBehaviour
 
         if (!hasReferences)
         {
-            Debug.LogError("SequenceMatchMinigame is missing required references.", this);
             return false;
         }
 
         if (sequencePreviewDuration <= 0f || gameDuration <= 0f)
         {
-            Debug.LogError("SequenceMatchMinigame durations must be greater than zero.", this);
             return false;
         }
 
         if (GetUniqueCharacterCount() == 0)
         {
-            Debug.LogError("SequenceMatchMinigame needs at least one unique character in the character pool.", this);
             return false;
         }
 
@@ -332,7 +315,6 @@ public class SequenceMatchMinigame : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-        Debug.Log($"Minigame finished. Current score: {score}, Best score: {bestScore}");
     }
 
     private int GetMaxPossibleTargetCount()

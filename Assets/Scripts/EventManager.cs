@@ -67,7 +67,6 @@ public class MainMenu : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("Quit!");
         Application.Quit();
     }
 
@@ -83,7 +82,6 @@ public class MainMenu : MonoBehaviour
         MinigameDataStore.GameData currentGame = MinigameDataStore.GetCurrentGame();
         if (string.IsNullOrWhiteSpace(currentGame.sceneName))
         {
-            Debug.LogWarning("Current minigame scene name is not set.", this);
             return;
         }
 
@@ -99,6 +97,12 @@ public class MainMenu : MonoBehaviour
     public void StartGame()
     {
         Time.timeScale = 1f;
+
+        if (MinigameDataStore.TryGetGameData(30, out MinigameDataStore.GameData storyStartGame))
+        {
+            MinigameDataStore.SetCurrentGame(storyStartGame);
+        }
+
         SceneManager.LoadScene(StartSceneName);
     }
 
@@ -108,7 +112,6 @@ public class MainMenu : MonoBehaviour
         {
             if (string.IsNullOrWhiteSpace(storyModeNextSceneName))
             {
-                Debug.LogWarning("Story mode next scene name is not set.", this);
                 return;
             }
 
@@ -178,6 +181,10 @@ public class MainMenu : MonoBehaviour
 
         isGamePaused = true;
         Time.timeScale = 0f;
+
+        // Unlock and display the cursor when showing the story mode details assignment UI overlay
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         string activeSceneName = SceneManager.GetActiveScene().name;
         string targetLookupName = (activeSceneName == "MainMenu") ? storyModeNextSceneName : activeSceneName;
@@ -306,7 +313,6 @@ public class MainMenu : MonoBehaviour
         if (!MinigameDataStore.TryGetGameData(levelId, out gameData)
             && !MinigameDataStore.TryGetGameDataBySceneName(SceneManager.GetActiveScene().name, out gameData))
         {
-            Debug.LogWarning($"Could not find minigame details.", this);
             return;
         }
 
@@ -391,7 +397,6 @@ public class MainMenu : MonoBehaviour
         Transform child = storyModeDetailsPanel.transform.Find(childObjectName);
         if (child == null)
         {
-            Debug.LogWarning($"Could not find '{childObjectName}' under '{storyModeDetailsPanel.name}'.", this);
             return null;
         }
 
@@ -399,11 +404,6 @@ public class MainMenu : MonoBehaviour
         if (text == null)
         {
             text = child.GetComponentInChildren<TMP_Text>(true);
-        }
-
-        if (text == null)
-        {
-            Debug.LogWarning($"'{childObjectName}' does not have a TMP_Text component.", this);
         }
 
         return text;
@@ -416,7 +416,6 @@ public class MainMenu : MonoBehaviour
         MainMenu mainMenu = FindObjectOfType<MainMenu>();
         if (mainMenu == null)
         {
-            Debug.LogWarning($"Could not find a {nameof(MainMenu)} in scene '{scene.name}'.");
             Time.timeScale = 1f;
             return;
         }
@@ -436,54 +435,42 @@ public class MainMenu : MonoBehaviour
         GameObject miniGamesButtonObject = GameObject.Find(MiniGamesButtonName);
         if (miniGamesButtonObject == null)
         {
-            Debug.LogWarning($"Could not find '{MiniGamesButtonName}' in scene '{MainMenuSceneName}'.");
             return;
         }
 
         Button miniGamesButton = miniGamesButtonObject.GetComponent<Button>();
         if (miniGamesButton == null)
         {
-            Debug.LogWarning($"'{MiniGamesButtonName}' does not have a Button component.");
             return;
         }
 
         miniGamesButton.onClick.Invoke();
     }
 
-    /// <summary>
-    /// Updates the serialized 'targetThumbnailField' with the Sprite asset provided from the inspector event.
-    /// </summary>
     public void UpdateThumbnail(Sprite newSprite)
     {
         if (targetThumbnailField == null)
         {
-            Debug.LogWarning("Target Thumbnail Field is not assigned in the MainMenu inspector settings.", this);
             return;
         }
 
         if (newSprite == null)
         {
-            Debug.LogWarning("The provided input sprite asset is null.", this);
             return;
         }
 
         targetThumbnailField.sprite = newSprite;
     }
 
-    /// <summary>
-    /// Alternative: Copies the sprite out of a source Image component into the serialized target field.
-    /// </summary>
     public void UpdateThumbnailFromImage(Image sourceImage)
     {
         if (targetThumbnailField == null)
         {
-            Debug.LogWarning("Target Thumbnail Field is not assigned in the MainMenu inspector settings.", this);
             return;
         }
 
         if (sourceImage == null)
         {
-            Debug.LogWarning("The source image component provided is null.", this);
             return;
         }
 
