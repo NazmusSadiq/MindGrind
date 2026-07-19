@@ -89,7 +89,7 @@ public class audio_visual_minigame : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
         score = 0;
         lives = 3;
         isGameRunning = true;

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -17,6 +18,10 @@ public class sequence_match_minigame : MonoBehaviour
     [Header("Disruptor Object Interaction")]
     // Assign the object you want to monitor here in the Inspector
     [SerializeField] private GameObject triggerObject;
+
+    [Header("Direct Input Override Fix")]
+    [Tooltip("Drag your Pause_Button GameObject here to force manual click checks.")]
+    [SerializeField] private RectTransform pauseButtonRect;
 
     [Header("Additional Audio")]
     [SerializeField] private AudioSource sfxAudioSource;
@@ -55,6 +60,12 @@ public class sequence_match_minigame : MonoBehaviour
         }
         audioSource.loop = false;
         audioSource.playOnAwake = false;
+
+        if (pauseButtonRect == null)
+        {
+            GameObject btn = GameObject.Find("Pause_Button");
+            if (btn != null) pauseButtonRect = btn.GetComponent<RectTransform>();
+        }
     }
 
     private void Start()
@@ -74,8 +85,10 @@ public class sequence_match_minigame : MonoBehaviour
 
     private void Update()
     {
+        HandlePointerInput();
+
         // Continuously check the target object's status while the minigame runs
-        if (!isGameRunning || triggerObject == null || gridContainer == null || Time.timeScale == 0f) return;
+        if (!isGameRunning || triggerObject == null || gridContainer == null) return;
 
         bool isObjectActive = triggerObject.activeInHierarchy;
 
@@ -90,6 +103,45 @@ public class sequence_match_minigame : MonoBehaviour
         {
             isGridHiddenByObject = false;
             gridContainer.gameObject.SetActive(true);
+        }
+    }
+
+    private void HandlePointerInput()
+    {
+        if (!isGameRunning) return;
+
+        if (Pointer.current == null || !Pointer.current.press.wasPressedThisFrame)
+        {
+            return;
+        }
+
+        Vector2 screenPosition = Pointer.current.position.ReadValue();
+
+        // Check if the screen click hits the screen coordinates of the Pause Button
+        if (pauseButtonRect != null && RectTransformUtility.RectangleContainsScreenPoint(pauseButtonRect, screenPosition, Camera.main))
+        {
+            ExecuteManualPause();
+        }
+    }
+
+    private void ExecuteManualPause()
+    {
+        // Try calling the public function directly first
+        MainMenu menuManager = FindFirstObjectByType<MainMenu>();
+        if (menuManager != null)
+        {
+            menuManager.PauseGame();
+            return;
+        }
+
+        // Fallback: If PauseGame() isn't accessible, manually invoke the UI Button's onClick event directly
+        if (pauseButtonRect != null)
+        {
+            Button btn = pauseButtonRect.GetComponent<Button>();
+            if (btn != null && btn.onClick != null)
+            {
+                btn.onClick.Invoke();
+            }
         }
     }
 
@@ -214,20 +266,13 @@ public class sequence_match_minigame : MonoBehaviour
     private IEnumerator ShowSequenceCoroutine()
     {
         isInputEnabled = false;
-
-        // FIX: Replaced standard WaitForSeconds to ensure pause state behaves correctly
-        float initialElapsed = 0f;
-        while (initialElapsed < 0.6f)
-        {
-            if (Time.timeScale > 0f) initialElapsed += Time.deltaTime;
-            yield return null;
-        }
+        yield return new WaitForSeconds(0.6f);
 
         for (int i = 0; i < sequence.Count; i++)
         {
-            // Smart Pause: If the overlay object is currently active OR game is paused, wait here 
+            // Smart Pause: If the overlay object is currently active, wait here 
             // so flashes don't play invisibly in the background.
-            while (isGridHiddenByObject || Time.timeScale == 0f)
+            while (isGridHiddenByObject)
             {
                 yield return null;
             }
@@ -240,18 +285,11 @@ public class sequence_match_minigame : MonoBehaviour
             }
 
             StartCoroutine(FlashCellCoroutine(cellIndex, litColor, 0.4f));
-
-            // FIX: Replaced standard WaitForSeconds with a pause-safe tracking loop
-            float flashElapsed = 0f;
-            while (flashElapsed < 0.45f)
-            {
-                if (Time.timeScale > 0f) flashElapsed += Time.deltaTime;
-                yield return null;
-            }
+            yield return new WaitForSeconds(0.45f);
         }
 
         // Final sanity check before handing control back to the player
-        while (isGridHiddenByObject || Time.timeScale == 0f)
+        while (isGridHiddenByObject)
         {
             yield return null;
         }
@@ -272,16 +310,12 @@ public class sequence_match_minigame : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            // FIX: Prevent flash animation from evaluating if Time.timeScale is 0
-            if (Time.timeScale > 0f)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / duration;
-                float wave = Mathf.Sin(t * Mathf.PI);
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            float wave = Mathf.Sin(t * Mathf.PI);
 
-                img.color = Color.Lerp(normalColor, flashColor, wave);
-                trans.localScale = Vector3.Lerp(originalScale, targetScale, wave);
-            }
+            img.color = Color.Lerp(normalColor, flashColor, wave);
+            trans.localScale = Vector3.Lerp(originalScale, targetScale, wave);
 
             yield return null;
         }
@@ -292,8 +326,8 @@ public class sequence_match_minigame : MonoBehaviour
 
     private void OnCellClicked(int index)
     {
-        // FIX: Block clicks instantly if the game is paused (Time.timeScale == 0)
-        if (!isGameRunning || !isInputEnabled || isGridHiddenByObject || Time.timeScale == 0f) return;
+        // Added 'isGridHiddenByObject' check to prevent unexpected clicks if raycasts leak through
+        if (!isGameRunning || !isInputEnabled || isGridHiddenByObject) return;
 
         if (index == sequence[userStepIndex])
         {
@@ -318,8 +352,7 @@ public class sequence_match_minigame : MonoBehaviour
                 k++;
                 UpdateScoreUI();
 
-                // FIX: Replaced Invoke with a pause-friendly coroutine delay
-                StartCoroutine(DelayedRoundStart(0.8f));
+                Invoke(nameof(StartNextRound), 0.8f);
             }
         }
         else
@@ -339,31 +372,8 @@ public class sequence_match_minigame : MonoBehaviour
             int expectedIndex = sequence[userStepIndex];
             StartCoroutine(FlashCellCoroutine(expectedIndex, correctColor, 0.6f));
 
-            // FIX: Replaced Invoke with a pause-friendly coroutine delay
-            StartCoroutine(DelayedGameOver(0.8f));
+            Invoke(nameof(GameOver), 0.8f);
         }
-    }
-
-    private IEnumerator DelayedRoundStart(float delay)
-    {
-        float elapsed = 0f;
-        while (elapsed < delay)
-        {
-            if (Time.timeScale > 0f) elapsed += Time.deltaTime;
-            yield return null;
-        }
-        StartNextRound();
-    }
-
-    private IEnumerator DelayedGameOver(float delay)
-    {
-        float elapsed = 0f;
-        while (elapsed < delay)
-        {
-            if (Time.timeScale > 0f) elapsed += Time.deltaTime;
-            yield return null;
-        }
-        GameOver();
     }
 
     private void UpdateScoreUI()
@@ -398,5 +408,6 @@ public class sequence_match_minigame : MonoBehaviour
         {
             bestScoreStore.ShowStats(score, bestScore);
         }
+
     }
 }

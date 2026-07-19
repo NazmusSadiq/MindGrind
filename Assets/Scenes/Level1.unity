@@ -19279,7 +19279,7 @@ MonoBehaviour:
   perceptionText: {fileID: 0}
   learningText: {fileID: 0}
   reasoningText: {fileID: 0}
-  storyModeNextSceneName: Level1
+  storyModeNextSceneName: Minigame1
   storyModeDetailsPanel: {fileID: 25580560}
   pauseMenuPanel: {fileID: 87801929}
   targetThumbnailField: {fileID: 0}
@@ -25299,9 +25299,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7469255943026739190}
-        m_TargetAssemblyTypeName: DoorSceneLoader, Assembly-CSharp
-        m_MethodName: LoadNextMinigameScene
+      - m_Target: {fileID: 919082307}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: processNext
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -40157,7 +40157,7 @@ GameObject:
   - component: {fileID: 1816990633}
   m_Layer: 0
   m_Name: Floor
-  m_TagString: Untagged
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47825,17 +47825,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 554f95a89ea1a524d90aa1321913b334, type: 3}
---- !u!114 &7469255943026739190 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1451315246912685930, guid: 554f95a89ea1a524d90aa1321913b334, type: 3}
-  m_PrefabInstance: {fileID: 7469255943026739188}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a1088624bd0b644fbd160d59ecabb0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DoorSceneLoader
 --- !u!1001 &7996722295469401613
 PrefabInstance:
   m_ObjectHideFlags: 0

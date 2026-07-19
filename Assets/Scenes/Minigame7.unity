@@ -10790,7 +10790,7 @@ MonoBehaviour:
   perceptionText: {fileID: 0}
   learningText: {fileID: 0}
   reasoningText: {fileID: 0}
-  storyModeNextSceneName: Level1
+  storyModeNextSceneName: MainMenu
   storyModeDetailsPanel: {fileID: 2028519228}
   pauseMenuPanel: {fileID: 1893261637}
   targetThumbnailField: {fileID: 0}

@@ -46,7 +46,7 @@ public class number_memory_minigame : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
         score = 0;
         timeRemaining = gameDuration;
         k = 1;

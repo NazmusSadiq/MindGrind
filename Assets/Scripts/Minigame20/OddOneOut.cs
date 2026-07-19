@@ -100,7 +100,7 @@ public class OddOneOut : MonoBehaviour
 
         CacheGameOverMenu();
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
         score = 0;
         roundNumber = 1;
         timeRemaining = gameDuration;

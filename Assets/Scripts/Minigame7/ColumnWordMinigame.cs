@@ -113,7 +113,7 @@ public class ColumnWordMinigame : MonoBehaviour
 
         SetupSkipButton();
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
         score = 0;
         timeRemaining = gameDuration;
         isGameRunning = true;

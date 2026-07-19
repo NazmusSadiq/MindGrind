@@ -71,7 +71,7 @@ public class SequenceMatchMinigame : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
         score = 0;
         targetCount = Mathf.Clamp(startingTargetCount, 1, GetMaxPossibleTargetCount());
         maxTargetCount = Mathf.Clamp(maxTargetCount, targetCount, GetMaxPossibleTargetCount());

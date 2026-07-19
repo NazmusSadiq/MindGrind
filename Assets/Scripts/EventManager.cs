@@ -120,8 +120,12 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        if (GetCurrentLevelId() < 30)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
         LoadMainMenu();
     }
 

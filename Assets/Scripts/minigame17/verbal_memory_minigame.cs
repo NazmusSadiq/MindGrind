@@ -62,7 +62,7 @@ public class verbal_memory_minigame : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
         score = 0;
         lives = 3;
         isGameRunning = true;

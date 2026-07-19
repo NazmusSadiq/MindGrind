@@ -1,6 +1,4 @@
-﻿using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 public class MusicDoor : MonoBehaviour, IInteractable
 {
@@ -11,221 +9,95 @@ public class MusicDoor : MonoBehaviour, IInteractable
     [Header("Penalty")]
     [SerializeField] private float wrongPasswordPenaltySeconds = 5f;
 
-    [Header("UI")]
-    [SerializeField] private GameObject passwordPanel;
-    [SerializeField] private TMP_InputField passwordInput;
-    [SerializeField] private Button submitButton;
-    [SerializeField] private Button backButton;
-    [SerializeField] private TMP_Text feedbackText;
-    
-    // Add a reference to the placeholder text component
-    [SerializeField] private TMP_Text placeholderText;
-
     [Header("Prompt UI")]
     [SerializeField] private GameObject promptCanvas;
 
-    private PlayerController currentPlayer;
     private Level3_Manager levelManager;
-
     private bool isPlayerInRange;
     private bool isCompleted;
-    private bool isPanelOpen;
 
     private Level3_Manager.RhymeData assignedData;
     private string password;
-
-    private float lastCheckPasswordTime = -1f;
-    private const float CheckPasswordDebounce = 0.15f;
 
     private void Start()
     {
         levelManager = Object.FindFirstObjectByType<Level3_Manager>();
 
-        if (passwordPanel != null)
-            passwordPanel.SetActive(false);
-
         if (promptCanvas != null)
             promptCanvas.SetActive(false);
-            
-        // Fallback: Try to grab the placeholder automatically if not explicitly dragged in
-        if (placeholderText == null && passwordInput != null && passwordInput.placeholder != null)
-        {
-            placeholderText = passwordInput.placeholder.GetComponent<TMP_Text>();
-        }
     }
 
     public void AssignData(Level3_Manager.RhymeData data)
     {
         assignedData = data;
         password = data.password;
-        
-        // Dynamically update the placeholder layout based on the password's character length
-        UpdatePlaceholderText();
     }
 
-    private void UpdatePlaceholderText()
-    {
-        if (placeholderText == null || string.IsNullOrEmpty(password))
-            return;
-
-        // e.g., If the password is "4567894", password.Length is 7.
-        // It outputs: "letter count of words, e.g. 7 digits" or exact formats depending on what you prefer.
-        placeholderText.text = $"letter count of words, e.g. {password.Length} digits";
-    }
-
-    public AudioClip GetDoorAudio()
-    {
-        return assignedData?.rhymeClip;
-    }
+    public string GetPassword() => password;
+    public float GetPenaltySeconds() => wrongPasswordPenaltySeconds;
+    public AudioClip GetDoorAudio() => assignedData?.rhymeClip;
 
     public void Interact(GameObject interactor)
     {
-        if (isCompleted)
+        if (isCompleted || levelManager == null)
             return;
 
-        currentPlayer = interactor.GetComponent<PlayerController>();
-        OpenPanel();
+        // Pass control operations universally to manager script
+        levelManager.OpenUniversalPanel(this, password);
     }
 
-    private void OpenPanel()
-    {
-        if (currentPlayer == null) return;
-
-        isPanelOpen = true;
-
-        currentPlayer.SetGameStarted(false);
-
-        UpdatePromptState();
-
-        if (levelManager != null)
-            levelManager.PauseMusicForInteraction(true);
-
-        submitButton?.onClick.RemoveAllListeners();
-        submitButton?.onClick.AddListener(CheckPassword);
-
-        backButton?.onClick.RemoveAllListeners();
-        backButton?.onClick.AddListener(ClosePanel);
-
-        passwordInput?.onSubmit.RemoveAllListeners();
-        passwordInput?.onSubmit.AddListener((text) => CheckPassword());
-
-        passwordPanel.SetActive(true);
-        passwordInput.text = "";
-        feedbackText.text = "";
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-        passwordInput.Select();
-        passwordInput.ActivateInputField();
-
-        Time.timeScale = 0f;
-    }
-
-    private void ClosePanel()
-    {
-        isPanelOpen = false;
-
-        passwordPanel.SetActive(false);
-
-        if (currentPlayer != null)
-            currentPlayer.SetGameStarted(true);
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        UpdatePromptState();
-
-        if (levelManager != null && !isCompleted)
-            levelManager.PauseMusicForInteraction(false);
-
-        Time.timeScale = 1f;
-    }
-
-    private void CheckPassword()
-    {
-        if (isCompleted) return;
-
-        if (Time.unscaledTime - lastCheckPasswordTime < CheckPasswordDebounce)
-            return;
-
-        lastCheckPasswordTime = Time.unscaledTime;
-
-        if (passwordInput.text.Trim()
-            .Equals(password, System.StringComparison.OrdinalIgnoreCase))
-        {
-            CompleteDoor();
-            ClosePanel();
-        }
-        else
-        {
-            if (levelManager != null)
-                levelManager.AddTimePenalty(wrongPasswordPenaltySeconds);
-
-            feedbackText.text = "Incorrect Password";
-
-            passwordInput.Select();
-            passwordInput.ActivateInputField();
-        }
-    }
-
-    private void CompleteDoor()
+    public void CompleteDoor(GameObject playerObj)
     {
         if (isCompleted) return;
 
         isCompleted = true;
-
-        TeleportPlayer();
+        TeleportPlayer(playerObj);
 
         if (levelManager != null)
             levelManager.OnDoorCompleted(doorIndex);
     }
 
-    private void TeleportPlayer()
+    private void TeleportPlayer(GameObject playerObj)
     {
-        if (currentPlayer == null || teleportLocation == null)
-            return;
+        if (playerObj == null || teleportLocation == null) return;
 
-        CharacterController cc = currentPlayer.GetComponent<CharacterController>();
+        CharacterController cc = playerObj.GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = false;
 
-        if (cc != null)
-            cc.enabled = false;
+        playerObj.transform.position = teleportLocation.position;
 
-        currentPlayer.transform.position = teleportLocation.position;
+        if (cc != null) cc.enabled = true;
+    }
 
-        if (cc != null)
-            cc.enabled = true;
+    public void ClearInteractionPrompt()
+    {
+        UpdatePromptState(false);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player") || isCompleted)
-            return;
-
+        if (!other.CompareTag("Player") || isCompleted) return;
         isPlayerInRange = true;
-        UpdatePromptState();
+        UpdatePromptState(true);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag("Player"))
-            return;
-
+        if (!other.CompareTag("Player")) return;
         isPlayerInRange = false;
-        UpdatePromptState();
+        UpdatePromptState(false);
     }
 
-    private void UpdatePromptState()
+    private void UpdatePromptState(bool shouldShow)
     {
-        if (promptCanvas == null)
-            return;
+        if (promptCanvas == null) return;
 
-        if (isCompleted || isPanelOpen)
+        if (isCompleted)
         {
             promptCanvas.SetActive(false);
             return;
         }
 
-        promptCanvas.SetActive(isPlayerInRange);
+        promptCanvas.SetActive(shouldShow);
     }
 }
