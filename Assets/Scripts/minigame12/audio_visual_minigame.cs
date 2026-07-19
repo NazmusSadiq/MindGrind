@@ -106,7 +106,7 @@ public class audio_visual_minigame : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning)
+        if (!isGameRunning || Time.timeScale == 0f)
         {
             return;
         }

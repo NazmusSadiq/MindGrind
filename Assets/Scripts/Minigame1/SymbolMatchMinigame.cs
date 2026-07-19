@@ -68,7 +68,8 @@ public class SymbolMatchMinigame : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning)
+        // FIX: If the game is not running OR the game is paused (Time.timeScale is 0), do nothing.
+        if (!isGameRunning || Time.timeScale == 0f)
         {
             return;
         }
@@ -141,6 +142,13 @@ public class SymbolMatchMinigame : MonoBehaviour
 
         while (isGameRunning)
         {
+            // If paused, wait until the next frame before checking condition again
+            if (Time.timeScale == 0f)
+            {
+                yield return null;
+                continue;
+            }
+
             SpawnFallingObject();
             yield return new WaitForSeconds(spawnInterval);
         }
@@ -290,6 +298,5 @@ public class SymbolMatchMinigame : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-
     }
 }

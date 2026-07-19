@@ -75,7 +75,7 @@ public class sequence_match_minigame : MonoBehaviour
     private void Update()
     {
         // Continuously check the target object's status while the minigame runs
-        if (!isGameRunning || triggerObject == null || gridContainer == null) return;
+        if (!isGameRunning || triggerObject == null || gridContainer == null || Time.timeScale == 0f) return;
 
         bool isObjectActive = triggerObject.activeInHierarchy;
 
@@ -214,13 +214,20 @@ public class sequence_match_minigame : MonoBehaviour
     private IEnumerator ShowSequenceCoroutine()
     {
         isInputEnabled = false;
-        yield return new WaitForSeconds(0.6f);
+
+        // FIX: Replaced standard WaitForSeconds to ensure pause state behaves correctly
+        float initialElapsed = 0f;
+        while (initialElapsed < 0.6f)
+        {
+            if (Time.timeScale > 0f) initialElapsed += Time.deltaTime;
+            yield return null;
+        }
 
         for (int i = 0; i < sequence.Count; i++)
         {
-            // Smart Pause: If the overlay object is currently active, wait here 
+            // Smart Pause: If the overlay object is currently active OR game is paused, wait here 
             // so flashes don't play invisibly in the background.
-            while (isGridHiddenByObject)
+            while (isGridHiddenByObject || Time.timeScale == 0f)
             {
                 yield return null;
             }
@@ -233,11 +240,18 @@ public class sequence_match_minigame : MonoBehaviour
             }
 
             StartCoroutine(FlashCellCoroutine(cellIndex, litColor, 0.4f));
-            yield return new WaitForSeconds(0.45f);
+
+            // FIX: Replaced standard WaitForSeconds with a pause-safe tracking loop
+            float flashElapsed = 0f;
+            while (flashElapsed < 0.45f)
+            {
+                if (Time.timeScale > 0f) flashElapsed += Time.deltaTime;
+                yield return null;
+            }
         }
 
         // Final sanity check before handing control back to the player
-        while (isGridHiddenByObject)
+        while (isGridHiddenByObject || Time.timeScale == 0f)
         {
             yield return null;
         }
@@ -258,12 +272,16 @@ public class sequence_match_minigame : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
-            float t = elapsed / duration;
-            float wave = Mathf.Sin(t * Mathf.PI);
+            // FIX: Prevent flash animation from evaluating if Time.timeScale is 0
+            if (Time.timeScale > 0f)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                float wave = Mathf.Sin(t * Mathf.PI);
 
-            img.color = Color.Lerp(normalColor, flashColor, wave);
-            trans.localScale = Vector3.Lerp(originalScale, targetScale, wave);
+                img.color = Color.Lerp(normalColor, flashColor, wave);
+                trans.localScale = Vector3.Lerp(originalScale, targetScale, wave);
+            }
 
             yield return null;
         }
@@ -274,8 +292,8 @@ public class sequence_match_minigame : MonoBehaviour
 
     private void OnCellClicked(int index)
     {
-        // Added 'isGridHiddenByObject' check to prevent unexpected clicks if raycasts leak through
-        if (!isGameRunning || !isInputEnabled || isGridHiddenByObject) return;
+        // FIX: Block clicks instantly if the game is paused (Time.timeScale == 0)
+        if (!isGameRunning || !isInputEnabled || isGridHiddenByObject || Time.timeScale == 0f) return;
 
         if (index == sequence[userStepIndex])
         {
@@ -300,7 +318,8 @@ public class sequence_match_minigame : MonoBehaviour
                 k++;
                 UpdateScoreUI();
 
-                Invoke(nameof(StartNextRound), 0.8f);
+                // FIX: Replaced Invoke with a pause-friendly coroutine delay
+                StartCoroutine(DelayedRoundStart(0.8f));
             }
         }
         else
@@ -320,8 +339,31 @@ public class sequence_match_minigame : MonoBehaviour
             int expectedIndex = sequence[userStepIndex];
             StartCoroutine(FlashCellCoroutine(expectedIndex, correctColor, 0.6f));
 
-            Invoke(nameof(GameOver), 0.8f);
+            // FIX: Replaced Invoke with a pause-friendly coroutine delay
+            StartCoroutine(DelayedGameOver(0.8f));
         }
+    }
+
+    private IEnumerator DelayedRoundStart(float delay)
+    {
+        float elapsed = 0f;
+        while (elapsed < delay)
+        {
+            if (Time.timeScale > 0f) elapsed += Time.deltaTime;
+            yield return null;
+        }
+        StartNextRound();
+    }
+
+    private IEnumerator DelayedGameOver(float delay)
+    {
+        float elapsed = 0f;
+        while (elapsed < delay)
+        {
+            if (Time.timeScale > 0f) elapsed += Time.deltaTime;
+            yield return null;
+        }
+        GameOver();
     }
 
     private void UpdateScoreUI()
@@ -356,6 +398,5 @@ public class sequence_match_minigame : MonoBehaviour
         {
             bestScoreStore.ShowStats(score, bestScore);
         }
-
     }
 }

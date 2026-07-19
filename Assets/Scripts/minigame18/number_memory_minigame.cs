@@ -65,7 +65,7 @@ public class number_memory_minigame : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning) return;
+        if (!isGameRunning || Time.timeScale == 0f) return;
 
         timeRemaining -= Time.deltaTime;
         if (timeRemaining <= 0f)

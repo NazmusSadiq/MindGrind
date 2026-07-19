@@ -117,7 +117,7 @@ public class OddOneOut : MonoBehaviour
 
     private void Update()
     {
-        if (!gameRunning)
+        if (!gameRunning || Time.timeScale == 0f)
             return;
 
         timeRemaining -= Time.deltaTime;
@@ -362,7 +362,8 @@ public class OddOneOut : MonoBehaviour
 
     private void OnOptionSelected(int selectedIndex)
     {
-        if (!gameRunning)
+        // FIX: Ignore card choices immediately if the layout canvas is paused
+        if (!gameRunning || Time.timeScale == 0f)
             return;
 
         foreach (OptionCard card in optionCards)
@@ -392,7 +393,13 @@ public class OddOneOut : MonoBehaviour
 
     private IEnumerator StartNextRound()
     {
-        yield return new WaitForSeconds(1.5f);
+        // FIX: Replaced standard WaitForSeconds with a scale-compliant checking loop
+        float nextRoundElapsed = 0f;
+        while (nextRoundElapsed < 1.5f)
+        {
+            if (Time.timeScale > 0f) nextRoundElapsed += Time.deltaTime;
+            yield return null;
+        }
 
         if (gameRunning)
             GenerateRound();
@@ -475,7 +482,6 @@ public class OddOneOut : MonoBehaviour
         {
             bestScoreStore.ShowStats(score, bestScore);
         }
-
     }
 
     private void CacheGameOverMenu()

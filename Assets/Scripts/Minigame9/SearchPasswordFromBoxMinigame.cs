@@ -9,55 +9,13 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
 {
     private const float DefaultGameDuration = 60f;
     private static readonly string[] DefaultPasswordWords =
-{
-        "backplate",
-        "landscape",
-        "rainstorm",
-        "moonlight",
-        "blueprint",
-        "headphone",
-        "notebooks",
-        "container",
-        "pineapple",
-        "firestone",
-        "stargazer",
-        "goldenrod",
-        "storybook",
-        "strongbox",
-        "waterfall",
-        "snowflake",
-        "timetable",
-        "sandstorm",
-        "lightwave",
-        "starfield",
-        "workbench",
-        "breakfast",
-        "checkmark",
-        "hurricane",
-        "cardboard",
-        "blacklist",
-        "jellyfish",
-        "sunflower",
-        "grapevine",
-        "dashboard",
-        "snowstorm",
-        "keyboards",
-        "clipboard",
-        "paperclip",
-        "crossroad",
-        "tightrope",
-        "overdrive",
-        "rainbowed",
-        "northgate",
-        "sandpaper",
-        "mountains",
-        "transfers",
-        "reference",
-        "bluewater",
-        "snowbound",
-        "yardstick",
-        "quicksand",
-        "paperwork"
+    {
+        "backplate", "blueprint", "bluewater", "blacklist", "checkmark",
+        "clipboard", "firestone", "goldenrod", "hurricane", "lightwave",
+        "moonlight", "northgate", "overdrive", "paperclip", "paperwork",
+        "quicksand", "rainbowed", "rainstorm", "sandpaper", "sandstorm",
+        "snowbound", "snowflake", "snowstorm", "starfield", "stargazer",
+        "storybook", "strongbox", "tightrope", "workbench", "yardstick"
     };
 
     [System.Serializable]
@@ -176,7 +134,7 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning && !isAwaitingPassword)
+        if (!isGameRunning && !isAwaitingPassword || Time.timeScale == 0f)
         {
             return;
         }

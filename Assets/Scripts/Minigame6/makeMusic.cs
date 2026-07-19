@@ -79,7 +79,7 @@ public class makeMusic : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning)
+        if (!isGameRunning || Time.timeScale == 0f)
         {
             return;
         }
@@ -246,7 +246,8 @@ public class makeMusic : MonoBehaviour
 
     public void ReplayCurrentSequence()
     {
-        if (!isGameRunning || isPreviewPlaying || replayRoutine != null || currentSequence.Count == 0)
+        // FIX: Ignore click action completely if the game is paused (Time.timeScale == 0)
+        if (!isGameRunning || Time.timeScale == 0f || isPreviewPlaying || replayRoutine != null || currentSequence.Count == 0)
         {
             return;
         }
@@ -284,7 +285,8 @@ public class makeMusic : MonoBehaviour
 
     public void StartAnswerPhase()
     {
-        if (!isGameRunning || isPreviewPlaying || replayRoutine != null || currentSequence.Count == 0)
+        // FIX: Ignore click action completely if the game is paused (Time.timeScale == 0)
+        if (!isGameRunning || Time.timeScale == 0f || isPreviewPlaying || replayRoutine != null || currentSequence.Count == 0)
         {
             return;
         }
@@ -296,7 +298,8 @@ public class makeMusic : MonoBehaviour
 
     private void HandleNotePressed(int noteIndex)
     {
-        if (!isGameRunning || isPreviewPlaying || replayRoutine != null || !IsPlayableNote(noteIndex))
+        // FIX: Ignore click action completely if the game is paused (Time.timeScale == 0)
+        if (!isGameRunning || Time.timeScale == 0f || isPreviewPlaying || replayRoutine != null || !IsPlayableNote(noteIndex))
         {
             return;
         }
@@ -482,6 +485,13 @@ public class makeMusic : MonoBehaviour
         float elapsed = 0f;
         while (isGameRunning && elapsed < duration)
         {
+            // If the game gets paused, temporarily freeze the preview loop timers as well
+            if (Time.timeScale == 0f)
+            {
+                yield return null;
+                continue;
+            }
+
             elapsed += Time.deltaTime;
             yield return null;
         }

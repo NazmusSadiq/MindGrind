@@ -79,7 +79,7 @@ public class WordleMinigame : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
         GenerateAudioClips();
         LoadWordPool();
         StartNewGame();
@@ -100,7 +100,8 @@ public class WordleMinigame : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameActive || Keyboard.current == null) return;
+        // FIX: Verify Time.timeScale is not 0 before resolving key queries
+        if (!isGameActive || Keyboard.current == null || Time.timeScale == 0f) return;
 
         if (Keyboard.current.backspaceKey.wasPressedThisFrame)
         {
@@ -114,7 +115,8 @@ public class WordleMinigame : MonoBehaviour
 
     private void OnTextInputReceived(char character)
     {
-        if (!isGameActive) return;
+        // FIX: Ignore incoming input buffer values instantly if game layout execution is paused
+        if (!isGameActive || Time.timeScale == 0f) return;
         if (character == '\n' || character == '\r' || character == '\b') return;
 
         if (char.IsLetter(character) && currentGuess.Length < 5)
@@ -288,7 +290,14 @@ public class WordleMinigame : MonoBehaviour
             }
 
             UpdateScoreUI();
-            yield return new WaitForSeconds(0.12f);
+
+            // FIX: Replaced standard WaitForSeconds with pause-compliant check loop
+            float revealElapsed = 0f;
+            while (revealElapsed < 0.12f)
+            {
+                if (Time.timeScale > 0f) revealElapsed += Time.deltaTime;
+                yield return null;
+            }
         }
 
         // Evaluate state
@@ -301,7 +310,13 @@ public class WordleMinigame : MonoBehaviour
             UpdateInstructionUI($"Success! Word was: {targetWord}");
             if (audioSource != null) audioSource.PlayOneShot(winBeep);
 
-            yield return new WaitForSeconds(0.5f);
+            // FIX: Replaced standard WaitForSeconds with pause-compliant check loop
+            float winElapsed = 0f;
+            while (winElapsed < 0.5f)
+            {
+                if (Time.timeScale > 0f) winElapsed += Time.deltaTime;
+                yield return null;
+            }
             EndGame();
         }
         else if (currentAttempt >= 6)
@@ -309,7 +324,13 @@ public class WordleMinigame : MonoBehaviour
             UpdateInstructionUI($"Out of turns! Word was: {targetWord}");
             if (audioSource != null) audioSource.PlayOneShot(loseBeep);
 
-            yield return new WaitForSeconds(0.5f);
+            // FIX: Replaced standard WaitForSeconds with pause-compliant check loop
+            float loseElapsed = 0f;
+            while (loseElapsed < 0.5f)
+            {
+                if (Time.timeScale > 0f) loseElapsed += Time.deltaTime;
+                yield return null;
+            }
             EndGame();
         }
         else
@@ -346,7 +367,6 @@ public class WordleMinigame : MonoBehaviour
         {
             bestScoreStore.ShowStats(score, bestScore);
         }
-
     }
 
     #region Audio Processing

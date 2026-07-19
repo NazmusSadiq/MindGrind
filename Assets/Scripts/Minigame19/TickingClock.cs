@@ -63,7 +63,7 @@ public class TickingClock : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning)
+        if (!isGameRunning || Time.timeScale == 0f)
             return;
 
         timeRemaining -= Time.deltaTime;
@@ -122,8 +122,6 @@ public class TickingClock : MonoBehaviour
 
             clocks[i].StartClock();
         }
-
-        
     }
 
     private bool AreAllClocksStopped()
@@ -161,15 +159,14 @@ public class TickingClock : MonoBehaviour
         }
     }
 
-    
-
     #endregion
 
     #region Gameplay
 
     private void StopClock(int index)
     {
-        if (!isGameRunning)
+        // FIX: Reject click callbacks immediately if the game loop layout is paused
+        if (!isGameRunning || Time.timeScale == 0f)
             return;
 
         if (index < 0 || index >= clocks.Length)
@@ -204,7 +201,6 @@ public class TickingClock : MonoBehaviour
             $"Clock {index + 1}\n" +
             $"Accuracy: {accuracy:0}%   Score: +{gainedScore}";
 
-        
         if (AreAllClocksStopped())
         {
             StartNextRound();

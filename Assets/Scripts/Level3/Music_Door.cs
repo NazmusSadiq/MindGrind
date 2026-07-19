@@ -17,6 +17,9 @@ public class MusicDoor : MonoBehaviour, IInteractable
     [SerializeField] private Button submitButton;
     [SerializeField] private Button backButton;
     [SerializeField] private TMP_Text feedbackText;
+    
+    // Add a reference to the placeholder text component
+    [SerializeField] private TMP_Text placeholderText;
 
     [Header("Prompt UI")]
     [SerializeField] private GameObject promptCanvas;
@@ -31,10 +34,6 @@ public class MusicDoor : MonoBehaviour, IInteractable
     private Level3_Manager.RhymeData assignedData;
     private string password;
 
-    // Guards against a single submit (Enter key) firing CheckPassword more
-    // than once, since both passwordInput.onSubmit AND submitButton.onClick
-    // can trigger for the same keypress depending on UI focus/navigation.
-    // Time.timeScale is 0 while the panel is open, so we use unscaled time.
     private float lastCheckPasswordTime = -1f;
     private const float CheckPasswordDebounce = 0.15f;
 
@@ -47,18 +46,31 @@ public class MusicDoor : MonoBehaviour, IInteractable
 
         if (promptCanvas != null)
             promptCanvas.SetActive(false);
-
-        // NOTE: listeners for submitButton / backButton / passwordInput are
-        // (re)bound in OpenPanel() instead of here. These UI elements are
-        // shared across all MusicDoor instances, so wiring them once per
-        // door in Start() caused every door's CheckPassword to fire on a
-        // single submit (each applying its own penalty).
+            
+        // Fallback: Try to grab the placeholder automatically if not explicitly dragged in
+        if (placeholderText == null && passwordInput != null && passwordInput.placeholder != null)
+        {
+            placeholderText = passwordInput.placeholder.GetComponent<TMP_Text>();
+        }
     }
 
     public void AssignData(Level3_Manager.RhymeData data)
     {
         assignedData = data;
         password = data.password;
+        
+        // Dynamically update the placeholder layout based on the password's character length
+        UpdatePlaceholderText();
+    }
+
+    private void UpdatePlaceholderText()
+    {
+        if (placeholderText == null || string.IsNullOrEmpty(password))
+            return;
+
+        // e.g., If the password is "4567894", password.Length is 7.
+        // It outputs: "letter count of words, e.g. 7 digits" or exact formats depending on what you prefer.
+        placeholderText.text = $"letter count of words, e.g. {password.Length} digits";
     }
 
     public AudioClip GetDoorAudio()
@@ -85,14 +97,9 @@ public class MusicDoor : MonoBehaviour, IInteractable
 
         UpdatePromptState();
 
-        // 🔥 Tell manager to pause context music on UI focus
         if (levelManager != null)
             levelManager.PauseMusicForInteraction(true);
 
-        // Rebind the shared panel's listeners to THIS door. These UI
-        // elements are reused across all doors, so we clear any previous
-        // door's listeners first to make sure only one CheckPassword/
-        // ClosePanel call fires per submit/click.
         submitButton?.onClick.RemoveAllListeners();
         submitButton?.onClick.AddListener(CheckPassword);
 
@@ -112,7 +119,6 @@ public class MusicDoor : MonoBehaviour, IInteractable
         passwordInput.Select();
         passwordInput.ActivateInputField();
 
-        // 🛑 PAUSE THE GAME WORLD: This halts physics, enemy updates, and time-based movements
         Time.timeScale = 0f;
     }
 
@@ -130,11 +136,9 @@ public class MusicDoor : MonoBehaviour, IInteractable
 
         UpdatePromptState();
 
-        // 🔥 Tell manager to unpause/resume context loops now that UI interaction is completed
         if (levelManager != null && !isCompleted)
             levelManager.PauseMusicForInteraction(false);
 
-        // ▶️ RESUME THE GAME WORLD: Return the timescale back to active mode
         Time.timeScale = 1f;
     }
 

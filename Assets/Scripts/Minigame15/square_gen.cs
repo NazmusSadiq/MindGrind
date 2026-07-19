@@ -130,7 +130,7 @@ public class square_gen : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning)
+        if (!isGameRunning || Time.timeScale == 0f)
         {
             return;
         }
@@ -178,7 +178,8 @@ public class square_gen : MonoBehaviour
 
     private void HandleTextInput(char typedCharacter)
     {
-        if (!isGameRunning || activeIndex < 0 || typedCharacter == '\n' || typedCharacter == '\r' || !char.IsLetter(typedCharacter))
+        // FIX: Reject keystrokes immediately if the game is globally paused
+        if (!isGameRunning || Time.timeScale == 0f || activeIndex < 0 || typedCharacter == '\n' || typedCharacter == '\r' || !char.IsLetter(typedCharacter))
         {
             return;
         }
@@ -515,24 +516,37 @@ public class square_gen : MonoBehaviour
     {
         messageText.color = color;
         messageText.text = message;
-        yield return new WaitForSeconds(2f);
+
+        // FIX: Substituted classic WaitForSeconds block with pause-safe time progression evaluation loop
+        float textElapsed = 0f;
+        while (textElapsed < 2f)
+        {
+            if (Time.timeScale > 0f) textElapsed += Time.deltaTime;
+            yield return null;
+        }
+
         SetMessage(string.Empty);
         messageRoutine = null;
     }
 
     public void SkipWord()
     {
-        if (!isGameRunning || enteredLetters == null)
+        // Ensure the button only drops out if the game is structurally dead or actively paused
+        if (!isGameRunning || Time.timeScale == 0f)
         {
             return;
+        }
+
+        // Safety fallback: if enteredLetters hasn't been allocated yet, skip the reset but allow the word rotation
+        if (enteredLetters != null)
+        {
+            ResetPlayerInput();
         }
 
         score = Mathf.Max(0, score - 3);
         UpdateScoreUI();
 
         ShowTemporaryMessage("Skipped", Color.yellow);
-
-        ResetPlayerInput();
 
         if (!LoadNextWord())
         {

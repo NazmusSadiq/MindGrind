@@ -71,7 +71,7 @@ public class Level1_Manager : MonoBehaviour
 
     private void Update()
     {
-        if (isLevelOver) return;
+        if (isLevelOver || Time.timeScale == 0f) return;
 
         if (playerController.IsDead)
         {

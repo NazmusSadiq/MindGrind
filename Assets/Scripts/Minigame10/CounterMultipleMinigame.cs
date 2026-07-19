@@ -69,7 +69,16 @@ public class CounterMultipleMinigame : MonoBehaviour
     {
         while (running)
         {
-            yield return new WaitForSeconds(0.8f);
+            // FIX: Use a loop to yield until unpaused rather than blindly counting down seconds
+            float elapsed = 0f;
+            while (elapsed < 0.8f)
+            {
+                if (Time.timeScale > 0f)
+                {
+                    elapsed += Time.deltaTime;
+                }
+                yield return null;
+            }
 
             leftCounter++;
             rightCounter--;
@@ -86,7 +95,7 @@ public class CounterMultipleMinigame : MonoBehaviour
 
     private void Update()
     {
-        if (!running)
+        if (!running || Time.timeScale == 0f)
             return;
 
         // target changing
@@ -132,7 +141,8 @@ public class CounterMultipleMinigame : MonoBehaviour
 
     private void CheckLeftCounter()
     {
-        if (!running)
+        // FIX: Ignore clicks completely if the game is paused (Time.timeScale == 0)
+        if (!running || Time.timeScale == 0f)
             return;
 
         if (leftCounter % leftTarget == 0)
@@ -157,7 +167,8 @@ public class CounterMultipleMinigame : MonoBehaviour
 
     private void CheckRightCounter()
     {
-        if (!running)
+        // FIX: Ignore clicks completely if the game is paused (Time.timeScale == 0)
+        if (!running || Time.timeScale == 0f)
             return;
 
         if (rightCounter % rightTarget == 0)
@@ -182,7 +193,8 @@ public class CounterMultipleMinigame : MonoBehaviour
 
     private void CheckBonus()
     {
-        if (!running)
+        // FIX: Ignore clicks completely if the game is paused (Time.timeScale == 0)
+        if (!running || Time.timeScale == 0f)
             return;
 
         if (leftCounter % bonusTarget == 0 && rightCounter % bonusTarget == 0)
@@ -226,7 +238,17 @@ public class CounterMultipleMinigame : MonoBehaviour
 
     private IEnumerator HideBonusAfterTime()
     {
-        yield return new WaitForSeconds(10f);
+        // FIX: Ensure the bonus display duration freezes along with everything else if paused
+        float elapsed = 0f;
+        while (elapsed < 10f)
+        {
+            if (Time.timeScale > 0f)
+            {
+                elapsed += Time.deltaTime;
+            }
+            yield return null;
+        }
+
         bonusTargetBox.SetActive(false);
         bonusButton.gameObject.SetActive(false);
     }

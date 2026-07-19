@@ -79,7 +79,7 @@ public class verbal_memory_minigame : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning)
+        if (!isGameRunning || Time.timeScale == 0f)
         {
             return;
         }

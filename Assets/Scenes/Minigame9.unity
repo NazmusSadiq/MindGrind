@@ -2503,20 +2503,20 @@ MonoBehaviour:
   targetSpawnChance: 0.35
   leftLaunchOptions:
   - angleDegrees: 80
-    launchSpeed: 8.5
+    launchSpeed: 17
   - angleDegrees: 70
-    launchSpeed: 9.5
+    launchSpeed: 19
   - angleDegrees: 60
-    launchSpeed: 10.5
+    launchSpeed: 21
   rightLaunchOptions:
   - angleDegrees: 100
-    launchSpeed: 8.5
+    launchSpeed: 17
   - angleDegrees: 110
-    launchSpeed: 9.5
+    launchSpeed: 19
   - angleDegrees: 120
-    launchSpeed: 10.5
+    launchSpeed: 21
   spawnJitter: {x: 0.3, y: 0.2}
-  launchGravityScale: 0.5
+  launchGravityScale: 2
   passwordWords:
   - backplane
   - landscape

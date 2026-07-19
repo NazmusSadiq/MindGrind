@@ -99,6 +99,9 @@ public class Level2_Manager : MonoBehaviour
 
     private void Update()
     {
+        if (isLevelOver || Time.timeScale == 0f)
+            return;
+
         if (!isLevelOver && cachedTrigger != null)
         {
             System.Reflection.FieldInfo successMenuField = typeof(DoorSceneTrigger).GetField("successMenu",

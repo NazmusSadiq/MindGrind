@@ -108,7 +108,7 @@ public class HiddenObjectGame : MonoBehaviour
 
     private void Update()
     {
-        if (!gameRunning)
+        if (!gameRunning || Time.timeScale == 0f)
         {
             return;
         }

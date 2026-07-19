@@ -60,7 +60,7 @@ public class TheFlash : MonoBehaviour
     private int hitCount;
 
     private float timeRemaining;
-    private float activeLitTime;
+    private float activeLitTime; // Now stores elapsedGameTime at the moment of lighting up
 
     private float elapsedGameTime;
 
@@ -108,7 +108,7 @@ public class TheFlash : MonoBehaviour
             return;
         }
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
 
         score = 0;
         hitCount = 0;
@@ -130,7 +130,7 @@ public class TheFlash : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning)
+        if (!isGameRunning || Time.timeScale == 0f)
             return;
 
         timeRemaining -= Time.deltaTime;
@@ -298,7 +298,13 @@ public class TheFlash : MonoBehaviour
 
     private IEnumerator LightLoop(float delay)
     {
-        yield return new WaitForSeconds(delay);
+        // FIX: Replaced standard WaitForSeconds with pause-compliant loop tracking
+        float delayElapsed = 0f;
+        while (delayElapsed < delay)
+        {
+            if (Time.timeScale > 0f) delayElapsed += Time.deltaTime;
+            yield return null;
+        }
 
         while (isGameRunning)
         {
@@ -306,7 +312,14 @@ public class TheFlash : MonoBehaviour
 
             LightRandomButton();
 
-            yield return new WaitForSeconds(GetCurrentInterval());
+            // FIX: Replaced standard WaitForSeconds with pause-compliant loop tracking
+            float intervalElapsed = 0f;
+            float targetInterval = GetCurrentInterval();
+            while (intervalElapsed < targetInterval)
+            {
+                if (Time.timeScale > 0f) intervalElapsed += Time.deltaTime;
+                yield return null;
+            }
         }
     }
 
@@ -345,7 +358,8 @@ public class TheFlash : MonoBehaviour
                     activeRow = r;
                     activeColumn = c;
 
-                    activeLitTime = Time.time;
+                    // FIX: Track using our pause-safe elapsedGameTime instead of real-time Time.time
+                    activeLitTime = elapsedGameTime;
 
                     if (activeButtonImage != null)
                         activeButtonImage.color = litColor;
@@ -360,7 +374,8 @@ public class TheFlash : MonoBehaviour
 
     private void HandleButtonClicked(int row, int column)
     {
-        if (!isGameRunning)
+        // FIX: Ignore click metrics completely if the game is paused (Time.timeScale == 0)
+        if (!isGameRunning || Time.timeScale == 0f)
             return;
 
         if (statusHistory.Count > 0)
@@ -388,7 +403,8 @@ public class TheFlash : MonoBehaviour
             return;
         }
 
-        float reactionTime = Time.time - activeLitTime;
+        // FIX: Calculate using pause-safe elapsed game time metrics
+        float reactionTime = elapsedGameTime - activeLitTime;
 
         int points = CalculateReactionScore(reactionTime);
 
@@ -523,6 +539,5 @@ public class TheFlash : MonoBehaviour
         int bestScore = MinigameBestScoreStore.UpdateBestScore(minigameId, score);
 
         bestScoreStore.ShowStats(score, bestScore);
-
     }
 }

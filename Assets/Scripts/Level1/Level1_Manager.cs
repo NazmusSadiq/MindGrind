@@ -55,7 +55,7 @@ public class Level4_Manager : MonoBehaviour
 
     private void Update()
     {
-        if (isLevelOver)
+        if (isLevelOver || Time.timeScale == 0f)
             return;
 
         if (playerController.IsDead)

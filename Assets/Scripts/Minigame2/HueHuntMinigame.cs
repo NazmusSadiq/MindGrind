@@ -57,7 +57,7 @@ public class HueHuntMinigame : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning)
+        if (!isGameRunning || Time.timeScale == 0f)
         {
             return;
         }
