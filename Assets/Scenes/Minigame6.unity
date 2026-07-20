@@ -3248,10 +3248,10 @@ MonoBehaviour:
   - {fileID: 983241530}
   - {fileID: 1075537326}
   gameDuration: 60
-  startingSequenceLength: 3
+  startingSequenceLength: 2
   maxSequenceLength: 8
   pointsPerCorrectNote: 10
-  penaltyPerWrongNote: 5
+  penaltyPerWrongNote: 0
   firstPreviewHoldDuration: 3
   previewHoldDuration: 2
   resultHoldDuration: 3

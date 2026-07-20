@@ -28,12 +28,13 @@ public class FishFeedingMinigame : MonoBehaviour
     [SerializeField] private AudioClip rechargeClip;
 
     private int score;
+    private int fedFishCount;
     private float timeRemaining;
     private float nextFeedAllowedTime;
     private bool isGameRunning;
     private Color readyFoodColor;
     private Color cooldownFoodColor;
-    private bool wasCooldownActive; // Tracks when to fire the recharge sound clip
+    private bool wasCooldownActive;
 
     public bool IsGameRunning => isGameRunning;
 
@@ -60,6 +61,7 @@ public class FishFeedingMinigame : MonoBehaviour
         }
 
         score = 0;
+        fedFishCount = 0;
         timeRemaining = gameDuration;
         nextFeedAllowedTime = 0f;
         isGameRunning = true;
@@ -85,6 +87,7 @@ public class FishFeedingMinigame : MonoBehaviour
 
         if (timeRemaining <= 0f)
         {
+            timeRemaining = 0f;
             EndGame();
         }
     }
@@ -127,6 +130,7 @@ public class FishFeedingMinigame : MonoBehaviour
             {
                 // Feeding an unfed fish (Success)
                 score += 10;
+                fedFishCount++;
                 PlaySound(successClip);
                 fish.MarkAsFed();
             }
@@ -144,14 +148,19 @@ public class FishFeedingMinigame : MonoBehaviour
         if (didFeedAttemptOccur)
         {
             nextFeedAllowedTime = Time.time + feedCooldown;
-            wasCooldownActive = true; // Cooldown has officially begun tracking
+            wasCooldownActive = true;
             UpdateScoreUI();
+
+            // Check if all fish are fed to end the game early
+            if (fedFishCount >= fishTargets.Length)
+            {
+                EndGame();
+            }
         }
     }
 
     private void HandleRechargeAudioCheck()
     {
-        // Check if the cooldown has completely run its course this frame
         if (wasCooldownActive && Time.time >= nextFeedAllowedTime)
         {
             PlaySound(rechargeClip);
@@ -231,7 +240,12 @@ public class FishFeedingMinigame : MonoBehaviour
     private void EndGame()
     {
         isGameRunning = false;
-        timeRemaining = 0f;
+
+        // Add remaining time in seconds to total score
+        int timeBonus = Mathf.FloorToInt(Mathf.Max(0f, timeRemaining));
+        score += timeBonus;
+
+        UpdateScoreUI();
         UpdateTimerUI();
 
         string minigameId = SceneManager.GetActiveScene().name;

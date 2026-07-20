@@ -433,12 +433,6 @@ public class SearchPasswordFromBoxMinigame : MonoBehaviour
             return;
         }
 
-        if (fallingBox.ColorIndex == currentTargetIndex)
-        {
-            score -= 5;
-            UpdateScoreUI();
-        }
-
         fallingBox.Remove();
     }
 

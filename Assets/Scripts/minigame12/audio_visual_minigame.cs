@@ -22,6 +22,9 @@ public class audio_visual_minigame : MonoBehaviour
     [SerializeField] private TextAsset wordDictionaryFile;
     [SerializeField] private AudioSource audioSource;
 
+    [Tooltip("Assign the Story Mode Details Panel here. Audio playback and user input will wait until this object is hidden/disabled.")]
+    [SerializeField] private GameObject triggerObject;
+
     [Tooltip("The serialized AudioSource used to play success and failure sound effects.")]
     [SerializeField] private AudioSource sfxAudioSource;
 
@@ -43,6 +46,9 @@ public class audio_visual_minigame : MonoBehaviour
     private int lives;
     private bool isGameRunning;
     private Coroutine ttsCoroutine;
+
+    // Helper property to check if details panel is active on screen
+    private bool IsDetailsPanelActive => triggerObject != null && triggerObject.activeInHierarchy;
 
     private void Awake()
     {
@@ -89,7 +95,6 @@ public class audio_visual_minigame : MonoBehaviour
             return;
         }
 
-        //Time.timeScale = 1f;
         score = 0;
         lives = 3;
         isGameRunning = true;
@@ -106,7 +111,8 @@ public class audio_visual_minigame : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameRunning || Time.timeScale == 0f)
+        // Block player keyboard inputs while game is paused, non-running, or while details panel is visible
+        if (!isGameRunning || Time.timeScale == 0f || IsDetailsPanelActive)
         {
             return;
         }
@@ -162,7 +168,7 @@ public class audio_visual_minigame : MonoBehaviour
             && bestScoreStore != null
             && wordDictionaryFile != null
             && audioSource != null
-            && sfxAudioSource != null; // Ensure the serialized sfx source is assigned
+            && sfxAudioSource != null;
 
         if (!hasReferences)
         {
@@ -209,8 +215,6 @@ public class audio_visual_minigame : MonoBehaviour
             unusedWords.AddRange(allWords);
         }
 
-        // Pick a random word from unusedWords to display on screen
-        // Make sure it's not the same as the previous text word, if possible
         List<string> textCandidates = new List<string>(unusedWords);
         if (textCandidates.Count > 1 && !string.IsNullOrEmpty(currentTextWord))
         {
@@ -228,8 +232,6 @@ public class audio_visual_minigame : MonoBehaviour
         }
 
         // 2. Choose the sound word
-        // A Match means soundWord was previously shown on screen (is in shownWords, excluding currentTextWord)
-        // A No Match means soundWord has not been shown on screen, and is also not currentTextWord.
         List<string> matchCandidates = new List<string>();
         foreach (string w in shownWords)
         {
@@ -284,15 +286,27 @@ public class audio_visual_minigame : MonoBehaviour
 
     private IEnumerator PlayWordSoundCoroutine(string word)
     {
+        // 1. Wait here if the details panel is active or if Time.timeScale is 0
+        while (IsDetailsPanelActive || Time.timeScale == 0f)
+        {
+            yield return null;
+        }
+
         string url = "https://translate.google.com/translate_tts?ie=UTF-8&q=" + UnityWebRequest.EscapeURL(word) + "&tl=en&client=tw-ob";
         using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
         {
             yield return www.SendWebRequest();
 
+            // 2. Double-check before playing clip in case details panel re-opened during the network request
+            while (IsDetailsPanelActive || Time.timeScale == 0f)
+            {
+                yield return null;
+            }
+
             if (www.result == UnityWebRequest.Result.Success)
             {
                 AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
-                if (audioSource != null && clip != null)
+                if (audioSource != null && clip != null && isGameRunning)
                 {
                     audioSource.clip = clip;
                     audioSource.Play();
@@ -313,7 +327,8 @@ public class audio_visual_minigame : MonoBehaviour
 
     private void HandleAnswer(bool answeredMatch)
     {
-        if (!isGameRunning)
+        // Prevent action if game is stopped or details panel is showing
+        if (!isGameRunning || IsDetailsPanelActive || Time.timeScale == 0f)
         {
             return;
         }
@@ -396,6 +411,5 @@ public class audio_visual_minigame : MonoBehaviour
         {
             bestScoreStore.ShowStats(score, bestScore);
         }
-
     }
 }

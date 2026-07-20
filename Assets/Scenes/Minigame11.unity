@@ -2995,6 +2995,7 @@ MonoBehaviour:
   audioSource: {fileID: 1077341930}
   cellSprite: {fileID: 0}
   triggerObject: {fileID: 1611745161}
+  pauseButtonRect: {fileID: 0}
   sfxAudioSource: {fileID: 1187635974}
   roundSuccessSFX: {fileID: 8300000, guid: 9f6e939b1e40c1a489012f3e594c7db4, type: 3}
   roundFailureSFX: {fileID: 8300000, guid: 969ff1a493b653142a09059a1fd466c8, type: 3}

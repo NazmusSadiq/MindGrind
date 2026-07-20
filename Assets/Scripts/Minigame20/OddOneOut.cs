@@ -357,7 +357,7 @@ public class OddOneOut : MonoBehaviour
             optionCards[i].SetInteractable(true);
         }
 
-        statusText.text = $"Find & Click The Odd One Out.\n\nRound {roundNumber}";
+        statusText.text = $"Find & Click The Odd One Out.\nRound {roundNumber}";
     }
 
     private void OnOptionSelected(int selectedIndex)
@@ -376,13 +376,13 @@ public class OddOneOut : MonoBehaviour
         if (isCorrect)
         {
             score += scorePerCorrect;
-            statusText.text = $"Find & Click The Odd One Out.\n\nCorrect! (+{scorePerCorrect})";
+            statusText.text = $"Find & Click The Odd One Out.\nCorrect! (+{scorePerCorrect})";
             PlaySound(successMusic);
         }
         else
         {
             score -= scorePenalty;
-            statusText.text = $"Find & Click The Odd One Out.\n\nWrong! Correct : Option {correctOption + 1}";
+            statusText.text = $"Find & Click The Odd One Out.\nWrong! Correct : Option {correctOption + 1}";
             PlaySound(failureMusic);
         }
 
